@@ -24,6 +24,9 @@ if __name__ == '__main__':
 
     print Lattices[0].up_counter[1]
 
-    Lattices[0].correlation(1, 1, 1)
-
-    print Lattices[0].down_counter[4]
+    for i in range(20):
+        for j in range(20):
+            for k in range(20):
+                print i, j, k
+                Lattices[0].correlation(i,j,k)
+    print Lattices[0].down_counter

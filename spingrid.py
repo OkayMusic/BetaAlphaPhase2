@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import sets
 
 
@@ -8,7 +9,9 @@ class SpinGrid(object):
         self.dimensions = dimensions
         self.temperature = temperature
         self.spins = np.random.choice(a=[1, -1],
-                                      size=[self.dimensions[0], self.dimensions[1], self.dimensions[2]])
+                                      size=[self.dimensions[0],
+                                            self.dimensions[1],
+                                            self.dimensions[2]])
 
         # the keys for the up and down counter dicts need to be generated
 
@@ -16,7 +19,7 @@ class SpinGrid(object):
         for items in down:
             up.append(items)
 
-        key_list = np.sort(list(sets.Set(up)))
+        self.key_list = np.sort(list(sets.Set(up)))
 
         self.up_counter = {x: 0 for x in key_list}
         self.down_counter = self.up_counter
@@ -34,7 +37,10 @@ class SpinGrid(object):
 
         E_final = self.local_energy(x, y, z)
 
-        if E_init <= E_final and np.exp((E_init - E_final) / float(self.temperature)) < np.random.random():
+        if (E_init <= E_final and
+            np.exp((E_init - E_final) / float(self.temperature)) <
+            np.random.random()):
+
             self.spins[x, y, z] = -self.spins[x, y, z]
 
     def local_energy(self, x, y, z):
@@ -74,6 +80,7 @@ class SpinGrid(object):
         for distances in down_distances:
             self.down_counter[distances] += 1
 
+
     def get_distances(self, x, y, z):
         # gets distances for use in correlation
         up_distances = []
@@ -86,17 +93,41 @@ class SpinGrid(object):
                         continue
                     # periodic boundary conditions:
                     if abs(x - i) > self.spins.shape[0] / 2:
-                        i = -self.spins.shape[0] + i
+                        if x < self.spins.shape[0] / 2:
+                            i = -self.spins.shape[0] + i
+                        elif x > self.spins.shape[0] /2:
+                            i = self.spins.shape[0] + i
                     if abs(y - j) > self.spins.shape[1] / 2:
-                        j = -self.spins.shape[1] + j
+                        if y < self.spins.shape[1] / 2:
+                            j = -self.spins.shape[1] + j
+                        elif y > self.spins.shape[1] / 2:
+                            j = self.spins.shape[1] + j
                     if abs(k - z) > self.spins.shape[2] / 2:
-                        k = -self.spins.shape[2] + k
+                        if z < self.spins.shape[2]/2:
+                            k = -self.spins.shape[2] + k
+                        elif z > self.spins.shape[2]/2:
+                            k = self.spins.shape[2] + k
 
                     D = np.sqrt((x - i)**2 + (y - j)**2 + (z - k)**2)
-                    if D == 0:
-                        print (x, y, z), (i, j, k)
-                    if self.spins[i, j, k] == 1:
-                        up_distances.append(D)
-                    elif self.spins[i, j, k] == -1:
-                        down_distances.append(D)
+
+                    # python will be sad if we try to access out of range array
+                    # elements, so here we undo periodic boundary conditions iff
+                    # the lattice site was shifted 'up', as python is happy with
+                    # negative array indices
+                    if i > self.spins.shape[0] - 1:
+                        i = i - self.spins.shape[0]
+                    if j > self.spins.shape[1] - 1:
+                        j = j - self.spins.shape[1]
+                    if k >self.spins.shape[2] - 1:
+                        k = k - self.spins.shape[2]
+                    try:
+                        if self.spins[i, j, k] == 1:
+                            up_distances.append(D)
+                        elif self.spins[i, j, k] == -1:
+                            down_distances.append(D)
+                    except:
+                        print "spin index out of bounds, check get_distances"
+                        print self.spins.shape, '\n\n'
+                        print i, j, k
+                        exit(1)
         return up_distances, down_distances
