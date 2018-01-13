@@ -21,7 +21,7 @@ class SpinGrid(object):
 
         self.key_list = np.sort(list(sets.Set(up)))
 
-        self.up_counter = {x: 0 for x in key_list}
+        self.up_counter = {x: 0 for x in self.key_list}
         self.down_counter = self.up_counter
 
     def reduce_energy(self):
@@ -39,7 +39,7 @@ class SpinGrid(object):
 
         if (E_init <= E_final and
             np.exp((E_init - E_final) / float(self.temperature)) <
-            np.random.random()):
+                np.random.random()):
 
             self.spins[x, y, z] = -self.spins[x, y, z]
 
@@ -80,7 +80,6 @@ class SpinGrid(object):
         for distances in down_distances:
             self.down_counter[distances] += 1
 
-
     def get_distances(self, x, y, z):
         # gets distances for use in correlation
         up_distances = []
@@ -95,7 +94,7 @@ class SpinGrid(object):
                     if abs(x - i) > self.spins.shape[0] / 2:
                         if x < self.spins.shape[0] / 2:
                             i = -self.spins.shape[0] + i
-                        elif x > self.spins.shape[0] /2:
+                        elif x > self.spins.shape[0] / 2:
                             i = self.spins.shape[0] + i
                     if abs(y - j) > self.spins.shape[1] / 2:
                         if y < self.spins.shape[1] / 2:
@@ -103,9 +102,9 @@ class SpinGrid(object):
                         elif y > self.spins.shape[1] / 2:
                             j = self.spins.shape[1] + j
                     if abs(k - z) > self.spins.shape[2] / 2:
-                        if z < self.spins.shape[2]/2:
+                        if z < self.spins.shape[2] / 2:
                             k = -self.spins.shape[2] + k
-                        elif z > self.spins.shape[2]/2:
+                        elif z > self.spins.shape[2] / 2:
                             k = self.spins.shape[2] + k
 
                     D = np.sqrt((x - i)**2 + (y - j)**2 + (z - k)**2)
@@ -118,7 +117,7 @@ class SpinGrid(object):
                         i = i - self.spins.shape[0]
                     if j > self.spins.shape[1] - 1:
                         j = j - self.spins.shape[1]
-                    if k >self.spins.shape[2] - 1:
+                    if k > self.spins.shape[2] - 1:
                         k = k - self.spins.shape[2]
                     try:
                         if self.spins[i, j, k] == 1:
