@@ -19,10 +19,14 @@ class SpinGrid(object):
         for items in down:
             up.append(items)
 
-        self.key_list = np.sort(list(sets.Set(up)))
+        self.__key_list = np.sort(list(sets.Set(up)))
+        self.key_list = [x for x in self.__key_list if x <= 10]
 
-        self.up_counter = {x: 0 for x in self.key_list}
-        self.down_counter = {x: 0 for x in self.key_list}
+        # these guys keep track of the partial pair distribution
+        self.up_up = {x: 0 for x in self.key_list if x <= 10}
+        self.down_down = self.up_up.copy()
+        self.up_down = self.up_up.copy()
+        print self.up_up
 
     def reduce_energy(self):
         for trials in range(self.spins.size):
@@ -70,27 +74,33 @@ class SpinGrid(object):
                     energy += self.local_energy(i, j, k)
         return energy
 
-    def correlation(self, x, y, z):
+    def total_pair_distribution(self):
+        for i in range(self.spins.shape[0] / 4):
+            for j in range(self.spinss.shape[1] / 4):
+                for k in range(self.spins.shape[2] / 4):
+                    self.site_pair_distribution(i, j, k)
+
+    def site_pair_distribution(self, x, y, z):
+        site_type = self.spins[x, y, z]
         # get distances from get_distances()
-        up_distances, down_distances = self.get_distances(x, y, z)
+        up_distances, down_distances = self.get_distances(
+            x, y, z, truncate=True)
 
-        # print up_distances, len(up_distances)
-        for distances in up_distances:
-            self.up_counter[distances] += 1
-        counter = 0
-        for keys in self.key_list:
-            counter += self.up_counter[keys]
-        print 'number of up distances counted = ', counter
+        if site_type == 1:
+            for keys in self.key_list:
+                self.up_up[keys] += up_distances[keys]
+                self.up_down[keys] += down_distances[keys]
+        elif site_type == -1:
+            for keys in self.key_list:
+                self.up_down[keys] += up_distances[keys]
+                self.down_down[keys] += down_distances[keys]
+        else:
+            print "error! Check SpinGrid.spins!"
+            return(1)
 
-        for distances in down_distances:
-            self.down_counter[distances] += 1
-        counter = 0
-        for keys in self.key_list:
-            counter += self.down_counter[keys]
-        print 'number of down distances counted = ', counter
-
-    def get_distances(self, x, y, z):
+    def get_distances(self, x, y, z, truncate=False):
         # gets distances for use in correlation
+        print x, y, z
         up_distances = []
         down_distances = []
         for i in range(self.spins.shape[0]):
@@ -118,6 +128,10 @@ class SpinGrid(object):
 
                     D = np.sqrt((x - i)**2 + (y - j)**2 + (z - k)**2)
 
+                    if truncate == True:
+                        if D > 10:
+                            continue
+
                     # python will be sad if we try to access out of range array
                     # elements, so here we undo periodic boundary conditions iff
                     # the lattice site was shifted 'up', as python is happy with
@@ -138,6 +152,5 @@ class SpinGrid(object):
                         print self.spins.shape, '\n\n'
                         print i, j, k
                         exit(1)
-        print ('Number of spin up particles for temperature:',
-               self.temperature, len(up_distances))
+
         return up_distances, down_distances
