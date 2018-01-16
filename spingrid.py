@@ -22,7 +22,7 @@ class SpinGrid(object):
         self.key_list = np.sort(list(sets.Set(up)))
 
         self.up_counter = {x: 0 for x in self.key_list}
-        self.down_counter = self.up_counter
+        self.down_counter = {x: 0 for x in self.key_list}
 
     def reduce_energy(self):
         for trials in range(self.spins.size):
@@ -77,8 +77,17 @@ class SpinGrid(object):
         # print up_distances, len(up_distances)
         for distances in up_distances:
             self.up_counter[distances] += 1
+        counter = 0
+        for keys in self.key_list:
+            counter += self.up_counter[keys]
+        print 'number of up distances counted = ', counter
+
         for distances in down_distances:
             self.down_counter[distances] += 1
+        counter = 0
+        for keys in self.key_list:
+            counter += self.down_counter[keys]
+        print 'number of down distances counted = ', counter
 
     def get_distances(self, x, y, z):
         # gets distances for use in correlation
@@ -129,4 +138,6 @@ class SpinGrid(object):
                         print self.spins.shape, '\n\n'
                         print i, j, k
                         exit(1)
+        print ('Number of spin up particles for temperature:',
+               self.temperature, len(up_distances))
         return up_distances, down_distances

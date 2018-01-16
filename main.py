@@ -24,9 +24,22 @@ if __name__ == '__main__':
 
     print Lattices[0].up_counter[1]
 
-    for i in range(20):
-        for j in range(20):
-            for k in range(20):
-                print i, j, k
-                Lattices[0].correlation(i,j,k)
-    print Lattices[0].down_counter
+    counter = 0
+    Lattices[0].correlation(0, 0, 0)
+    for keys in Lattices[0].key_list:
+        counter += Lattices[0].up_counter[keys]
+    print counter
+
+    total_counter = []
+
+    for keys in Lattices[0].key_list:
+        total_counter.append(Lattices[0].up_counter[keys])
+        total_counter.append(why)
+
+    counter = 0
+    for items in total_counter:
+        counter += items
+    print 'mem', counter
+
+    plt.plot(Lattices[0].key_list, total_counter)
+    plt.show()
