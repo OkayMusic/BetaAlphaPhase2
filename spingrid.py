@@ -5,9 +5,11 @@ import sets
 
 class SpinGrid(object):
 
-    def __init__(self, dimensions=[20, 20, 20], temperature=0):
+    def __init__(self, dimensions=[20, 20, 20], temperature=0, hist_steps=20):
         self.dimensions = dimensions
         self.temperature = temperature
+        self.hist_steps = hist_steps
+        self.radii = np.linspace(0, 10, num=self.hist_steps)
         self.spins = np.random.choice(a=[1, -1],
                                       size=[self.dimensions[0],
                                             self.dimensions[1],
@@ -26,7 +28,11 @@ class SpinGrid(object):
         self.up_up = {x: 0 for x in self.key_list if x <= 10}
         self.down_down = self.up_up.copy()
         self.up_down = self.up_up.copy()
-        print self.up_up
+        # print self.up_up
+
+        self.norm_up_up = [0 for x in range(hist_steps)]
+        self.norm_down_down = [0 for x in range(hist_steps)]
+        self.norm_up_down = [0 for x in range(hist_steps)]
 
     def reduce_energy(self):
         for trials in range(self.spins.size):
@@ -74,9 +80,35 @@ class SpinGrid(object):
                     energy += self.local_energy(i, j, k)
         return energy
 
+    def normalize_total_dist(self):
+        """
+        Take the crappy n_ij correlation functions determined by the total pair
+        distribution function and turns it into a proper pair distribution
+        function, as described by David Keen.
+        """
+        print self.hist_steps
+        step_size = 10. / (self.hist_steps - 1.)
+
+        for i in range(len(self.radii) - 1):
+            # these -1's come from the definition of the total pair dist fn
+            self.norm_up_up -= 1
+            self.norm_up_down -= 1
+            self.norm_up_down -= 1
+            for keys in self.up_up:
+                if keys >= self.radii[i] and keys < self.radii[i + 1]:
+                    # here I set rho_j = 1, which is true in my units
+
+                    r_sq = ((self.radii[i] - self.radii[i + 1]) / 2.)**2.
+                    prefactor = 1. / (4. * np.pi * r_sq * step_size)
+
+                    self.norm_up_up[i] += prefactor * self.up_up[keys]
+                    self.norm_down_down[i] += prefactor * self.down_down[keys]
+                    self.norm_up_down[i] += prefactor * self.up_down[keys]
+
     def total_pair_distribution(self):
+        # first, calculate all the sulphur-iodine pdfs
         for i in range(self.spins.shape[0] / 4):
-            for j in range(self.spinss.shape[1] / 4):
+            for j in range(self.spins.shape[1] / 4):
                 for k in range(self.spins.shape[2] / 4):
                     self.site_pair_distribution(i, j, k)
 
@@ -87,13 +119,17 @@ class SpinGrid(object):
             x, y, z, truncate=True)
 
         if site_type == 1:
-            for keys in self.key_list:
-                self.up_up[keys] += up_distances[keys]
-                self.up_down[keys] += down_distances[keys]
+            n = 0
+            for keys in self.up_up:
+                # print keys, n
+                # print type(self.up_up)
+                self.up_up[keys] += up_distances.count(keys)
+                self.up_down[keys] += down_distances.count(keys)
         elif site_type == -1:
             for keys in self.key_list:
-                self.up_down[keys] += up_distances[keys]
-                self.down_down[keys] += down_distances[keys]
+                # print type(self.up_down)
+                self.up_down[keys] += up_distances.count(keys)
+                self.down_down[keys] += down_distances.count(keys)
         else:
             print "error! Check SpinGrid.spins!"
             return(1)
@@ -126,7 +162,20 @@ class SpinGrid(object):
                         elif z > self.spins.shape[2] / 2:
                             k = self.spins.shape[2] + k
 
-                    D = np.sqrt((x - i)**2 + (y - j)**2 + (z - k)**2)
+                    # The lattice does funny things depending on z odd or even
+                    if (z - k) % 2 == 0:
+                        D = np.sqrt((x - i)**2 + (y - j) **
+                                    2 + ((z - k) / 2.)**2)
+                    else:
+                        D = np.sqrt((x - i + 0.5)**2 + (y - j + 0.5)
+                                    ** 2 + ((z - k) / 2.)**2)
+                    if D == np.sqrt(0.5):
+                        print x, y, z, i, j, k
+
+                        A = (x - i + 0.5) ** 2
+                        B = (y - j + 0.5) ** 2
+                        C = ((z - k) / 2)**2
+                        print A, B, C
 
                     if truncate == True:
                         if D > 10:
@@ -152,5 +201,7 @@ class SpinGrid(object):
                         print self.spins.shape, '\n\n'
                         print i, j, k
                         exit(1)
+
+        # print up_distances, down_distances
 
         return up_distances, down_distances
