@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+   <TITLE>Testing problems in Tck/Tk for EXPGUI, etc.</TITLE>
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+<CENTER><H1>
+<HR noshade width="75%" size="2" align="center">
+Testing problems in Tck/Tk for EXPGUI, etc.
+<HR noshade width="75%" size="2" align="center">
+</H1></CENTER>
+<h4>Problems</H4>
+EXPGUI (and soon CMPR) is distributed with a version of Tcl/Tk
+that includes the Tkcon, BWidget and BLT packages included within the Tcl/Tk
+executable. The Bwidget package is required for EXPGUI (someday the 
+same for CMPR). The BLT package is required for CMPR and is needed by all the 
+graphics routines in EXPGUI. The Tkcon package is optional. 
+EXPGUI includes the La (Linear algebra) package for use in the BKGFIT 
+routine. 
+<P>
+If you are not using the version of Tcl/Tk packaged with the program, 
+perhaps because you want to use them on a platform other than the 
+ones supported by me, you will need to confirm that these packages 
+work properly.
+You can test if Tcl/Tk and the BLT package are installed correctly using the 
+following unix commands: 
+(In Windows, instead double-click on the appropriate icon.)
+<PRE>
+     [d120234:~] toby% wish
+     % package require BLT
+     2.4
+     % pack [blt::graph .g]
+     % Blt_ZoomStack .g
+     % exit
+</PRE>
+When you type "wish" and press Enter, a new small blank window should appear.
+when you type the 2nd line, "package require BLT," there will be no change in
+the blank window, but the computer should respond "2.4". After the 
+"pack [blt::graph .g]" command is entered, a set of x- and y-axes should appear
+in this window. After the Blt_ZoomStack command is typed the plot should "zoom" with the mouse.
+
+The window should disappear after "exit" is typed.
+
+Problems:
+<OL>
+<LI> If wish does not work, then Tcl/Tk is not installed or is not found in the path
+
+<LI> if the package require command is not working then BLT is not loaded or is not found by Tcl/Tk
+
+<LI> if the pack command does not work, you probably mistyped it (assuming that 1 & 2 worked OK)
+
+<LI> if the Blt_ZoomStack command does not work, then BLT is not finding the support file bltGraph.tcl.
+    This is usually found by looking for a subdirectory named .../blt2.4/ 
+in one of the directories referenced by tcl variable auto_path;  this command 
+causes file .../blt2.4/pkgIndex.tcl to be loaded which references the libBLT.so
+file (for example) and the bltGraph.tcl file.
+</OL>
+<P>
+Likewise, this command should work for BWidget:
+<PRE>
+     [d120234:~] toby% wish
+     % package require BWidget
+     1.6
+     % exit
+</PRE>
+Note that EXPGUI and CMPR have not been tested with BWidget versions later 
+than 1.6.
+
+</HTML>

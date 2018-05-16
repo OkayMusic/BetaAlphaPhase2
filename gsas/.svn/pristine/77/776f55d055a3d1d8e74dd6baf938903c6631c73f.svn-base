@@ -1,0 +1,17 @@
+            123456789012345678901234567890123456789012345678901234567890        
+INS   BANK      1                                                               
+INS   DTYPE   STND                                                              
+INS   HTYPE   PXCR                                                              
+INS  1 IRAD     0                                                               
+INS  1 ICONS  1.147500  0.000000       0.0         0      0.95    0             
+INS  1I HEAD  DUMMY INCIDENT SPECTRUM FOR X-RAY DIFFRACTOMETER                  
+INS  1I ITYP    0    0.0000  180.0000         1                                 
+INS  1CHI      90.0000                                                          
+INS  1OMEGA     0.0000                                                          
+INS  1PHI       0.0000                                                          
+INS  1PRCF1     2    6      0.01                                                
+INS  1PRCF11   1.000000E+00  -1.000000E+00   2.000000E+00   0.000000E+00        
+INS  1PRCF12   0.000000E+00   0.000000E+00                                      
+INS  1PRCF2     3    8      0.01                                                
+INS  1PRCF21    .000000E+00    .000000E+00    .000000E+00    .198335E+00        
+INS  1PRCF22    .000000E+00    .000000E+00    .870000E-02    .147872E-01        

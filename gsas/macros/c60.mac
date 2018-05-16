@@ -1,0 +1,179 @@
+y			!Create a new experiment
+C60 rigid body definition
+p			!We need a data set to dothis, so generate a powder histogram
+p			!Enter phase info
+i			!insert phase
+C60
+p 1
+12 13 14 92 94 96	!Fairly simple unit cell
+x			!done here
+h			!Set up to generate a histogram
+j			!Create a histogram
+$			!I need to find a Instrument parameter file
+dir ..\testdata		!There are a bunch in the PARM directory
+../testdata/iparm_06.hip	!The latest HIPD I could quickly find
+-1			!List the bank info
+1			!use bank 1 @ +153 degrees
+l
+/			!Default resolution
+2.0 15.0		!New TOF range
+x			!A lot of reflections, but it is of no consequence
+0			!We have accomplished our mission here
+x			!I repeat, .....
+x			! and again
+l			!Select the LS control editing option
+a			!Atom editing, we need to enter 60 atoms
+i 1 c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+i n c 0 0 0 1 / i /	!put them all @ 000 and use defaults
+v 1:60 x		!We will need to turn on the refinement flags
+			!Continue
+			!Continue
+			!Continue
+x			!Now return to the LS menu
+?			!Check on which option to use
+b			!See it wasn't the anticipated 'r'
+?			!Get some more instructions
+b			!Define a new rigid body
+5			!In this case we will use a pentagon as the base unit
+2		!We will define this unit in terms of the c-c bond length and the distance to the center of the body
+1.2			!This gives a C-C bond of 1.4107 in the pentagonal faces
+1 0 0			!Build the pentagon in the x-y plane
+c72 s72 0		!This notation generates the cosine and sine of 72 degrees
+c144 s144 0
+c216 s216 0
+c288 s288 0
+3.4			!This is the distance from the polyhedron center to the pentagonal face
+0 0 1			!All 5 atoms will be the same
+0 0 1			!All 5 atoms will be the same
+0 0 1			!All 5 atoms will be the same
+0 0 1			!All 5 atoms will be the same
+0 0 1			!All 5 atoms will be the same
+?			!HELP, I need directions to get through this thing
+i 1		!We will need to insert 12 of these things, 6 type 1 and 6 type 2, type 2 is identical to type 1
+1			!Start this body at atom sequence number 1
+.5 .5 .5		!Place where you believe the center on the molecule is
+x 0 y 0 z 0		!This one will be centered on the z-axis
+x 0 x 0 x 0		!These angles will be used to define the orientation of the entire molecule
+i 1			!The second piece of the molecule
+6 .5 .5 .5 z 180 y 63.4 x 0 x 0 x 0 x 0
+i 1			!The third piece of the molecule
+11 .5 .5 .5 z 252 y 63.4 x 0 x 0 x 0 x 0
+i 1			!The fourth piece of the molecule
+16 .5 .5 .5 z 324 y 63.4 x 0 x 0 x 0 x 0
+i 1			!The fifth piece of the molecule
+21 .5 .5 .5 z 36 y 63.4 x 0 x 0 x 0 x 0
+i 1			!The sixth piece of the molecule
+26 .5 .5 .5 z 108 y 63.4 x 0 x 0 x 0 x 0	!Unfortunately only 9 bodies of any one type can be used
+b			!Define a second rigid body, just like the first
+5			!In this case we will use a pentagon as the base unit
+2
+1.2
+1 0 0
+c72 s72 0
+c144 s144 0
+c216 s216 0
+c288 s288 0
+3.4
+0 0 1
+0 0 1
+0 0 1
+0 0 1
+0 0 1
+i 2			!The seventh piece of the molecule
+31 .5 .5 .5 z 180 y -116.6 x 0 x 0 x 0 x 0
+i 2			!The eighth piece of the molecule
+36 .5 .5 .5 z 252 y -116.6 x 0 x 0 x 0 x 0
+i 2			!The nineth piece of the molecule
+41 .5 .5 .5 z 324 y -116.6 x 0 x 0 x 0 x 0
+i 2			!The tenth piece of the molecule
+46 .5 .5 .5 z 36 y -116.6 x 0 x 0 x 0 x 0
+i 2			!The eleventh piece of the molecule
+51 .5 .5 .5 z 108 y -116.6 x 0 x 0 x 0 x 0
+i 2			!The twelveth piece of the molecule
+56 .5 .5 .5 z 0 y 180 x 0 x 0 x 0 x 0	!The bottom
+l			!Now update the EXP file
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+x			!Let's check this out with DISAGL
+x
+d d			!Set up for a DISAGL run
+c			!Change some things
+			!Fine
+			!No
+			!yes
+Y			!Change these
+.1			!We don't want angles for this test
+x x			!Exit
+x			!Exit the program

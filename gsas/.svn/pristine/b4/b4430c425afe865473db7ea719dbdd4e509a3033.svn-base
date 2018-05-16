@@ -1,0 +1,105 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expguic.html">Next page (Menus)</A>
+</TH><TH><A Href="expgui6A.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 9
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.9 Preferential Orientation Panel</h3></a>
+<DL><DL>
+The Preferential Orientation Panel is used to control parameters related
+to fitting parameters using the March-Dollase formulation 
+or the spherical harmonic formulation 
+for preferred orientation. Note that GSAS allows both sets of terms to be 
+used at the same time, but it seems unlikely that anyone would 
+actually want to try this.
+
+</DL></DL>
+<a name="MD"></a>
+<h4>A.9.a March-Dollase</H4>
+<DL><DL>
+In this model one or more axes are designated
+as directions [designated by (<i>hkl</i>)] where crystallites are over 
+(Ratio > 1) or underrepresented (Ratio < 1).
+The checkbox to the right of the Ratio value determines if it will 
+be refined.
+</DL></DL>
+<img SRC="po1.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<DL><DL>
+If more than one axis is present, one must define the relative fraction 
+of preferred orientation for each direction. These fractions are normalized, 
+so do not vary the fractions for all directions in a phase.
+</DL></DL>
+<img SRC="po2.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<DL><DL>
+If 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> is set to any value other than 
+"Off", all terms are displayed for all selected histograms. 
+No attempt is made to group terms or flags.
+
+</DL></DL>
+<a name="ODF"></a>
+<H4>A.9.b Spherical harmonic</H4>
+<DL><DL>
+The spherical harmonic formulation, also referred to as an "orientation
+distribution function" defines a set of terms to treat preferential 
+orientation as a function of the sample symmetry and as a function of
+the Laue phase symmetry of the phase and the selected order expansion. 
+Note that only one set of terms
+is used for each phase, so this function should not be used when the 
+different types of powder data, 
+for example neutron and x-ray data, are used in a single refinement. 
+The setting angles define the orientation of the sample with respect to
+the detectors and are typically used for texture analysis using TOF data
+only.
+
+</DL></DL>
+<img SRC="po3.gif" align=TEXTTOP  alt="EXPGUI Screen snapshot">
+<DL><DL>
+When more than one phase is present, the phase is selected with the buttons
+in the upper left. Note that 
+when additional terms are added by increasing the spherical harmonic order,
+the new parameters default to zero. Thus, is the order is set to zero
+and then reset to the previous non-zero value, all terms will be
+reset to zero.
+Also, as in EXPEDT, when the sample symmetry is changed, the 
+order is reset to zero.
+</DL></DL>
+
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expguic.html">Next page (Menus)</A>
+</TH><TH><A Href="expgui6A.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

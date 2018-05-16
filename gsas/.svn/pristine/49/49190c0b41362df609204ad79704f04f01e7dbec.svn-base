@@ -1,0 +1,4594 @@
+#!/bin/sh
+# the next line restarts this script using wish found in the path\
+exec wish "$0" "$@"
+# If this does not work, change the #!/usr/bin/wish line below
+# to reflect the actual wish location and delete all preceeding lines
+#
+# (delete here and above)
+#!/usr/bin/wish
+# $Id$
+set expgui(Revision) {$Revision$ $Date$}
+
+package require Tk
+
+# to do: 
+#
+# need to change heading and button label depending on where getExpFileName
+# is called from?
+#
+# global background editing & profile work differently: should both 
+# start out blank with a "load from option"?
+# 
+# idea:
+# a scroll list for all histogram refinement flags ; click on takes you to the 
+# appropriate menu.
+#
+# idea: 
+#   change cell parameters to labels and have a edit cell button
+#   that enforces metric symmetry
+#
+# to allow "global" access on phase page
+#   change buttons from radio to multiple
+#   -- or display all 9 cell flag/damps and all atoms
+#   make editMultipleRecords work with multiple phases, also cell flag/damp
+#   blank cell entries
+#   add phase to atom number in listing
+#   DisplayAllAtoms needs to loop over phases
+#
+# idea: load more than one bank from a multi-bank .RAW file
+#
+if {$tcl_version < 8.0} {
+    tk_dialog .expFileErrorMsg "Version Error" \
+	    "EXPGUI requires Tcl/Tk version 8.0 or higher" error 0 "Exit"
+    exit
+}
+
+# the shell variable tells expgui to act as a shell for GSAS
+# as well as edit the EXP file. In no-shell mode, it can 
+# only be used to edit the .EXP file as a callable program
+set expgui(shell) 1
+catch {if $env(EXPGUI_NOSHELL) {set expgui(shell) 0}}
+
+set expgui(expfile) {}
+if {$argv != ""} {
+    if {[string match *noshell* [string tolower $argv]]} {
+	# I doubt that noshell mode is used by anyone
+	set expgui(shell) 0
+	set expgui(expfile)  [lindex $argv 1]
+    } else {
+	set expgui(expfile)  [lindex $argv 0]
+    }
+}
+
+set expgui(curhist) {}
+set expmap(powderlist) {}
+set expgui(bkgcolor1) #fdf
+
+set expgui(debug) 0
+catch {if $env(DEBUG) {set expgui(debug) 1}}
+#set expgui(debug) 1
+set expgui(HistSelectList) {}
+# location for web pages, if not found locally
+set expgui(website) subversion.xray.aps.anl.gov/EXPGUI/trunk/doc/
+# default for archive mode = on
+set expgui(archive) 1
+# default for autoexec load = off
+set expgui(autoexpload) 0
+# default for execprompt = on
+set expgui(execprompt) 1
+# default for autostart GRWND = off
+set expgui(autoGRWND) 0
+# by default expgui is iconified while GENLES, etc runs
+set expgui(autoiconify) 1
+# default for show EXPTOOL output = off
+set expgui(showexptool) 0
+# save the name of the wish executable
+set wishshell [info nameofexecutable] 
+# misc constants 
+set txtvw(font) "Courier"
+set expgui(font) 14
+set liveplot(hst) 1
+set liveplot(legend) 1
+set expgui(filesort) 1
+set expgui(initstring) {}
+# use a separate window for DISAGL (default)
+set expgui(disaglSeparateBox) 1
+set expgui(DefaultPeakType) 0
+# default: keep current atoms when replacing a phase
+set expgui(DeleteAllAtoms) 0
+# flags for running POWPREF
+set expgui(needpowpref) 0
+set expgui(needpowpref_why) ""
+# on Mac associate a app with .EXP file (on by default)
+set expgui(MacAssignApp) 1
+#=============================================================================
+#----------------------------------------------------------------
+# where are we?
+set expgui(script) [info script]
+# translate links -- go six levels deep
+foreach i {1 2 3 4 5 6} {
+    if {[file type $expgui(script)] == "link"} {
+	set link [file readlink $expgui(script)]
+	if { [file  pathtype  $link] == "absolute" } {
+	    set expgui(script) $link
+	} {
+	    set expgui(script) [file dirname $expgui(script)]/$link
+	}
+    } else {
+	break
+    }
+}
+# fixup relative paths
+if {[file pathtype $expgui(script)] == "relative"} {
+    set expgui(script) [file join [pwd] $expgui(script)]
+}
+set expgui(script) [file normalize $expgui(script)]
+# save the package installation location; fix if possible, warn later (after 
+# routines are sourced)
+set scriptdir [
+	       set expgui(scriptdir) [file dirname $expgui(script) ]
+	       ]
+
+if {[string first " " $expgui(scriptdir)] != -1} {
+    if {$tcl_platform(platform) == "windows"} {
+	# translate to the windows 8.3 version, if supported for this drive
+	set expgui(scriptdir) [file attributes $expgui(scriptdir) -shortname]
+    }
+}
+set expgui(gsasdir) [file dirname $expgui(scriptdir)]
+set expgui(gsasexe) [file join $expgui(gsasdir) exe]
+set expgui(docdir) [file join $expgui(scriptdir) doc]
+#----------------------------------------------------------------
+# use EXPGUI directory for packages
+lappend auto_path $expgui(scriptdir)
+#----------------------------------------------------------------
+source [file join $expgui(scriptdir) opts.tcl]
+# fetch EXP file processing routines 
+source [file join $expgui(scriptdir) readexp.tcl]
+# commands for running GSAS programs
+source [file join $expgui(scriptdir) gsascmds.tcl]
+# contents of GSAS menus
+source [file join $expgui(scriptdir) gsasmenu.tcl]
+# commands for adding phases, histograms & atoms
+source [file join $expgui(scriptdir) addcmds.tcl]
+# commands for preferred orientation
+source [file join $expgui(scriptdir) orient.tcl]
+# setting data range/excluded regions
+source [file join $expgui(scriptdir) exclinit.tcl]
+# setup DISAGL viewer & editor
+source [file join $expgui(scriptdir) disagledit.tcl]
+source [file join $expgui(scriptdir) Geo_Viewer.tcl]
+# setup Anomalous Dispersion Coefficent Editor
+source [file join $expgui(scriptdir) anomal.tcl]
+#---------------------------------------------------------------------------
+# override options with locally defined values
+lappend filelist [file join $expgui(scriptdir) localconfig]
+if {$tcl_platform(platform) == "windows"} {
+    lappend filelist "c:/gsas.config"
+}
+lappend filelist [file join ~ .gsas_config]
+if {[catch {
+    foreach file $filelist {
+	if [file exists $file] {source $file}
+    }
+} errmsg]} {
+    set msg "Error reading file $file (aka [file nativename $file]): $errmsg"
+    MyMessageBox -parent . -title "Customize warning" \
+	-message $msg -icon warning -type Ignore -default ignore \
+	-helplink "expguierr.html Customizewarning"
+}
+# warn/stop on spaces in install location
+if {[string first " " $scriptdir] != -1} {
+    if {$tcl_platform(platform) == "windows"} {
+	# did the translation it work?
+	if {[string first " " $expgui(scriptdir)] != -1} {
+	    update
+	    MyMessageBox -parent . -title "Spaces in path" \
+		-message "You are using an install directory with a space in the name ($scriptdir) that on Windows that does not have a corresponding DOS name. Is this on a networked drive? This install location will not work for EXPGUI. Sorry." \
+		-icon warning -type Quit -default quit
+	    exit
+	}
+    }
+    set warn 1
+    catch {set warn $expgui(warnonscriptspace)}
+    if $warn {
+	update
+	MyMessageBox -parent . -title "Good luck..." \
+	    -message "You are using an install directory with a space in the name ($scriptdir) -- You may encounter bugs in EXPGUI that I am trying to fix. If so, please e-mail enough detail to Brian.Toby@ANL.gov so that I can try to reproduce it." \
+	    -icon warning -type Continue -default continue
+	set expgui(warnonscriptspace) 0
+    }
+}
+
+if [catch {package require BWidget}] {
+    set msg "Error loading the BWidget package: This should not happen if you use the version of Tcl/Tk (tcl84+.exe) distributed with EXPGUI"
+    MyMessageBox -parent . -title "BWidget load error" \
+	-message $msg -icon error -type Error -default error \
+	-helplink "debug_tcltk.html"
+    destroy .
+}
+SetTkDefaultOptions $expgui(font)
+#---------------------------------------------------------------------------
+set expgui(resize) 0
+# platform-specific code
+if {$tcl_platform(platform) == "windows" \
+	&& $tcl_platform(os) == "Windows 95"} {
+    if {[catch {package require winexec}] && \
+	    [catch {package require winutils}]} {
+	MyMessageBox -parent . -title "WINEXEC Error" \
+	    -message "Error -- Unable to load the WINEXEC or the WINUTILS package. This is needed in Win-95/-98/-me machines" \
+	    -icon error -type Quit -default quit \
+	    -helplink "expgui_Win_readme.html Winexec"
+	destroy .
+    }
+}
+if {$tcl_platform(platform) == "windows"} {
+    # check the path -- can DOS use it?
+    if {[string first {\\} $expgui(script) ] != -1} {
+	MyMessageBox -parent . -title "Networked Path" \
+		-message "Note -- You may have problems running EXPGUI/GSAS from a network drive. If you have errors, map $expgui(gsasdir) to a \"drive\" (like F:). (Use \"Map network drive\" to do this.)" \
+		-icon error -type {"Be brave"} -default "be brave" \
+		-helplink "expgui_Win_readme.html NetPath"
+    }
+    # test for error in COMSPEC environment variable setting
+    if {[catch {set env(COMSPEC)}]} { 
+	set env(COMSPEC) {c:\windows\system32\cmd.exe}
+    }
+    if {[auto_execok $env(COMSPEC)] == ""} {
+	set env(COMSPEC) {c:\windows\system32\cmd.exe}
+    }
+    if {[auto_execok $env(COMSPEC)] == ""} {
+	MyMessageBox -parent . -title "cmd.exe not found " \
+	    -message "The Windows COMSPEC environment variable is not set correctly. It should point to a copy of cmd.exe (or command.com on -95/-98/-ME). EXPGUI also did not find the file in the most common location (c:\\windows\\system32\\cmd.exe). Please fix: EXPGUI cannot run GSAS programs without this." \
+	    -icon "error" -type Sorry -default sorry
+#	    -helplink "expguierr.html Customizewarning"
+	return
+    }
+    set expgui(exptool) [file join $expgui(gsasexe) exptool.exe]
+} else {
+    set expgui(exptool) [file join $expgui(gsasexe) exptool]
+    if {$tcl_platform(os) != "Darwin"} {
+	if [catch {set env(GSASBACKSPACE)}] {set env(GSASBACKSPACE) 1}
+    }
+}
+# find the pgplot directory
+if {[file exists [file join $expgui(gsasdir) pgl]]} {
+    set expgui(pgplotdir) [file join $expgui(gsasdir) pgl]
+} elseif {[file exists [file join $expgui(gsasdir) pgplot]]} {
+    set expgui(pgplotdir) [file join $expgui(gsasdir) pgplot]
+} else {
+    MyMessageBox -parent . -title "PGPLOT Error" \
+	    -message "Warning -- Unable to find PGPLOT directory. GSAS graphics will not work without this. Is GSAS correctly installed?" \
+	    -icon warning -type {"Limp Ahead"} -default "Limp Ahead" \
+	    -helplink "expguierr.html NoPGPLOT"
+    set expgui(resize) 1
+    set expgui(pgplotdir) ""
+}
+
+# old code used to fix up bad distributions
+# # do we have a PGPLOT fonts file?
+# # if it is in the "wrong" place/name -- make it "right"
+# if {![file exists [file join $expgui(pgplotdir) grfont.dat]] && \
+# 	[file exists [file join $expgui(gsasdir) fonts grfont.dat]]} {
+#     catch {file mkdir $expgui(pgplotdir)}
+#     file copy [file join $expgui(gsasdir) fonts grfont.dat] \
+# 	    [file join $expgui(pgplotdir)  grfont.dat]
+# }
+# # do we have a PGPLOT fonts file?
+# if {![file exists [file join $expgui(pgplotdir)  grfont.dat]] && \
+# 	[file exists [file join $expgui(gsasdir) fonts pgfont.dat]]} {
+#     catch {file mkdir $expgui(pgplotdir)}
+#     file copy [file join $expgui(gsasdir) fonts pgfont.dat] \
+# 	    [file join $expgui(pgplotdir)  grfont.dat]
+# }
+# # do we have a PGPLOT fonts file?
+# if {![file exists [file join $expgui(pgplotdir)  grfont.dat]] && \
+# 	[file exists [file join $expgui(pgplotdir)  pgfont.dat]]} {
+#     file copy [file join $expgui(pgplotdir)  pgfont.dat] \
+# 	    [file join $expgui(pgplotdir)  grfont.dat]
+# }
+
+if { $expgui(pgplotdir) != "" && \
+	 ![file exists [file join $expgui(pgplotdir)  grfont.dat]]} {
+    MyMessageBox -parent . -title "PGPLOT Error" \
+	    -message "Warning -- Unable to find file GRFONT.DAT in $expgui(pgplotdir). GSAS graphics will not work. Is GSAS correctly installed?" \
+	    -icon warning -type {"Limp Ahead"} -default "Limp Ahead" \
+	    -helplink "expguierr.html NoPGPLOT"
+    set expgui(resize) 1
+}
+#---------------------------------------------------------------------------
+if {$expgui(expfile) != ""} {
+    if {[string match -nocase {.o[0-9a-f][0-9a-f]} \
+	     [file extension $expgui(expfile)]]} {
+	if {[file exists $expgui(expfile)]} {
+	    # this is an archived file -- archive the current .EXP file
+	    set expnam [file rootname $expgui(expfile)]
+	    # get the last archived version
+	    set lastf [lindex [lsort [glob -nocomplain $expnam.{O\[0-9A-F\]\[0-9A-F\]}]] end]
+	    if {$lastf == ""} {
+		set num 01
+	    } else {
+		regexp {.*\.O([0-9A-F][0-9A-F])$} $lastf a num
+		scan $num %x num
+		if {$num >= 255} {
+		    set num FF
+		} else {
+		    set num [string toupper [format %.2x [incr num]]]
+		}
+	    }
+	    catch {
+		set newfile $expnam.O$num
+		file rename -force $expnam.EXP $newfile
+		set fp [open $expnam.LST a+]
+		puts $fp "\n----------------------------------------------"
+		puts $fp "     Regressing to archive file [file tail $expgui(expfile)]"
+		puts $fp "     but first archiving [file tail $expnam.EXP] as [file tail $newfile]"
+		puts $fp "----------------------------------------------\n"
+		close $fp
+	    }
+	    file copy -force $expgui(expfile) $expnam.EXP
+	    set expgui(expfile) $expnam.EXP
+	    wm title . "EXPGUI interface to GSAS: [file tail $expgui(expfile)]"
+	    set expgui(titleunchanged) 1
+	} else {
+	    MyMessageBox -parent . -title "File not found" \
+		-message "Warning -- Archive file $expgui(expfile) was not found." \
+		-icon warning -type OK -default ok
+	    set expgui(expfile) {}
+	}
+    } else {
+	set expgui(expfile) [SetEXPfile $expgui(expfile)]
+    }
+}
+if {$expgui(expfile) == ""} {
+    # place the parent window because the getExpFileName window will be centered above it.
+    set xpos 50
+    catch {set xpos $expgui(xpos)}
+    set ypos 50
+    catch {set ypos $expgui(ypos)}
+    set poscntr "nsew"
+    catch {set poscntr $expgui(poscenter)}
+    LocateWindow "." $xpos $ypos $poscntr
+    # windows needed this update before when using tk_getOpenFile. 
+    # I am not sure it is still needed.
+    update
+    set expgui(expfile) [SetEXPfile [getExpFileName ""]]
+    set expgui(resize) 1
+}
+if {$expgui(expfile) == ""} exit
+
+#
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# <<<<<<<<<<    BEGINNING OF MAIN: GLOBAL AREA FOR DATA EXTRACTION >>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# load exp file and set up dialogs
+proc loadexp {expfile} {
+    global expgui expmap entryvar entrycmd tcl_platform
+    set expfile [SetEXPfile $expfile]
+    if {$expfile == ""} {
+	return
+    }
+    # change the icon and assign an app to this .EXP file
+    if {$tcl_platform(os) == "Darwin" && $expgui(MacAssignApp)} {
+	MacSetResourceFork $expfile
+    }
+    # read in the .EXP file
+    set fmt [expload $expfile]
+    set expgui(expfile) $expfile
+    # if the file was not in the correct format, force a rewrite before use
+    if {$fmt < 0} {
+	# read error
+	return
+    } elseif {$fmt == 1} {
+	set expgui(changed) 0
+    } else {
+	set expgui(changed) 1
+    }
+    mapexp 
+    if {$expgui(MacroRunning)} {
+	set expgui(MacroStatus) "?"
+	catch {
+	    set expgui(MacroStatus) \
+		"[expinfo cyclesrun] cycles; Chi2=$expgui(LastChi2); $expgui(LastnVars) vars"
+	}
+    }
+
+    set expgui(expModifiedLast) 0
+    catch {
+	set expgui(expModifiedLast) [file mtime $expgui(expfile)]
+    }
+    set expgui(last_History) [string range [string trim [lindex [exphistory last] 1]] 0 50 ]
+    # set the window/icon title
+    wm title . "EXPGUI interface to GSAS: [file tail $expgui(expfile)]"
+    set expgui(titleunchanged) 1
+    wm iconname . [file tail $expfile]
+
+    # load current information into EXPGUI pages
+    PaintEXPGUIpages
+
+    # start checking for external changes
+    afterawhile
+    # check if the file seems corrupt
+    set warnings [ScanEXPforError]
+    if {$warnings != ""} {
+	ExplainEXPerror . $warnings $expfile
+    }
+}
+
+# [re]load all screens with current state of EXPGUI file
+proc PaintEXPGUIpages {} {
+    global expgui expmap entryvar entrycmd
+    # reset the phase buttons
+    set expgui(curPhase) ""
+    # set the number of phases on the phase page
+    setphases
+
+    # disable the "global options" that don't make sense based on 
+    # which histograms present
+    foreach num {1 2 3 4 5} {
+	set flag($num) 0
+    }
+    # save a list of the allowed modes, too
+    set expgui(AllowedHistSelectModes) {0 6}
+    foreach h $expmap(powderlist) {
+	if {[string range $expmap(htype_$h) 2 2] == "T"} {set flag(1) 1}
+	if {[string range $expmap(htype_$h) 1 2] == "NC"} {set flag(2) 1}
+	if {[string range $expmap(htype_$h) 1 2] == "XC" && \
+		[histinfo $h lam2] != 0.0} {set flag(3) 1}
+	if {[string range $expmap(htype_$h) 1 2] == "XC" && \
+		[histinfo $h lam2] == 0.0} {set flag(4) 1}
+	if {[string range $expmap(htype_$h) 1 2] == "XE"} {set flag(5) 1}
+    }
+    foreach num {1 2 3 4 5} \
+	    lbl {TOF "CW Neutron" "Alpha12 Xray" "Monochromatic Xray" \
+	    "Energy Disp Xray"} {
+	if $flag($num) {
+	    $expgui(fm).option.menu.editmode entryconfigure $lbl -state normal
+	    lappend expgui(AllowedHistSelectModes) $num
+	} else {
+	    $expgui(fm).option.menu.editmode entryconfigure $lbl -state disabled
+	}
+    }
+    # disable traces on entryvar until we are ready
+    set entrycmd(trace) 0
+    trace vdelete entryvar w entvartrace
+
+    # propogate changes on the least squares page
+    set entryvar(cycles) [expinfo cycles]
+    set entrycmd(cycles) "expinfo cycles"
+    set entryvar(mbw) [expinfo mbw]
+    set entrycmd(mbw) "expinfo mbw"
+    # set expgui(globalmode) 0
+    set expgui(printopt) "Print Options ([expinfo print])"
+    set entryvar(title) [expinfo title]
+    global printopts
+    foreach num [array names printopts] {
+	set entrycmd(printopt$num) "printsetting $num"
+	set entryvar(printopt$num) [printsetting $num]
+    }
+    # enable traces on entryvar
+    set entrycmd(trace) 1
+    trace variable entryvar w entvartrace
+
+    # set fo extraction on LS page
+    SetupExtractHist
+    # set convergence criterion
+    InitLSvars
+
+    # update the histogram list & update the page
+    sethistlist
+}
+
+# called to reread the .EXP file
+proc rereadexp {expfile} {
+    global expgui
+    if $expgui(changed) {
+	set decision [tk_dialog .instrSaveData {Save .EXP changes} \
+		{You have made changes to the Experiment. Rereading will cause the changes to be lost. Select an option:} \
+		{} 0 "Save and reread" "Reread without Save" "Cancel reread command"]
+	switch $decision {
+	    0 { savearchiveexp }
+	    1 { }
+	    2 { return }
+	}
+    }
+    loadexp $expgui(expfile)
+}
+
+proc SaveAsFile {} {
+    global expgui
+    global tcl_platform
+    set newexpfile [SetEXPfile [getExpFileName new] 1]
+    if {$newexpfile == ""} return
+    expwrite $newexpfile
+    set expgui(expfile) $newexpfile
+    # change the icon and assign an app to this .EXP file
+    if {$tcl_platform(os) == "Darwin" && $expgui(MacAssignApp)} {
+	MacSetResourceFork $expgui(expfile)
+    }
+    set expgui(changed) 0
+    set expgui(expModifiedLast) [file mtime $expgui(expfile)]
+    set expgui(last_History) [string range [string trim [lindex [exphistory last] 1]] 0 50 ]
+    # set the window/icon title
+    wm title . $expgui(expfile)
+    set expgui(titleunchanged) 1
+    wm iconname . [file tail $expgui(expfile)]
+    # set convergence criterion
+    InitLSvars
+    set expgui(needpowpref) 2
+    set expgui(needpowpref_why) "\tA new .EXP file was created\n" 
+}
+
+# called to read a different .EXP file
+proc readnewexp {"mode 0"} {
+    global expgui expmap
+    if $expgui(changed) {
+	set decision [tk_dialog .instrSaveData {Save .EXP changes} \
+		{You have made changes to the Experiment. Reading a different file without first saving will cause the changes to be lost. Select an option:} \
+		{} 0 "Save and read" "Read without Save" "Cancel read command"]
+	switch $decision {
+	    0 { savearchiveexp }
+	    1 {                }
+	    2 { return }
+	}
+    }
+    if {$mode == 0} {
+	set newexpfile [getExpFileName old]
+    } else {
+	set newexpfile [RevertExpFile]
+    }
+    if {$newexpfile == ""} return
+
+    set expgui(globalmode) 0
+    loadexp $newexpfile
+
+    # reset the phase selection
+    set expgui(curPhase) {}
+
+    # select the first histogram in the list by default (if there are any)
+    if {[llength $expmap(histlistboxcontents)] > 0} {
+	set expgui(curhist) 0
+    } else {
+	set expgui(curhist) {}
+    }
+    # switch to the appropriate 1st page
+    #StageTabUse
+    SetStartPanel
+}
+
+#------------- set up data read/write layer ----------------------
+# trace routine on entryvar
+proc entvartrace {array elem action} {
+    global expgui entrycmd entryvar entrybox
+    if !$entrycmd(trace) return
+    
+    catch {
+	if {$entrycmd($elem) == ""} return
+	incr expgui(changed)
+	if $expgui(debug) {puts "$entrycmd($elem)  set $entryvar($elem) "}
+	if {$entrycmd($elem) == ""} return
+	if [catch {
+	    set result [eval $entrycmd($elem) set [list $entryvar($elem)]]
+	    if {!$result} {
+		if $expgui(debug) {puts "error with $entrycmd($elem)"}
+		catch {$entrybox($elem) config -fg red}
+	    } else {
+		catch {$entrybox($elem) config -fg black}
+		RecordMacroEntry "incr expgui(changed); $entrycmd($elem) set [list $entryvar($elem)]" 1
+	    }
+	    if {[string match "*atominfo" [lindex $entrycmd($elem) 0]]} {
+		after idle "UpdateAtomLine \
+			[list [lindex $entrycmd($elem) 2]] \
+			[lindex $entrycmd($elem) 1]"
+	    }
+	} errmsg] {error $errmsg}	
+    }
+}
+
+# disable traces on entryvar until we are ready
+set entrycmd(trace) 0
+trace variable entryvar w entvartrace
+
+#
+#
+#
+##############################################################################
+#####                    #####################################################
+##### PROCEDURES SECTION #####################################################
+#####                    #####################################################
+##############################################################################
+
+# save some of the global options in ~/.gsas_config or ~/gsas.config in Windows
+proc SaveOptions {} {
+    global expgui env tcl_platform graph peakinfo
+    if {$tcl_platform(platform) == "windows"} {
+	set fp [open c:/gsas.config a]
+    } else {
+	set fp [open [file join ~ .gsas_config] a]
+    }
+
+    puts $fp "# EXPGUI saved options from [clock format [clock seconds]]"
+    set itemlist {archive asorttype hsorttype filesort disaglSeparateBox \
+	font autoexpload autoiconify autotick execprompt ShowGENLES}
+    if {$tcl_platform(os) == "Darwin"} {
+	lappend itemlist MacAssignApp
+    }
+    if {$tcl_platform(platform) == "windows" && \
+	    $tcl_platform(os) == "Windows 95"} {
+	lappend itemlist autoGRWND
+    }
+    foreach item $itemlist {
+	puts $fp "set expgui($item) [list $expgui($item)]"
+    }
+    if {$tcl_platform(platform) != "windows"} {
+	puts $fp "set env(GSASBACKSPACE) [list $env(GSASBACKSPACE)]"
+    }
+    foreach v {printout legend outname outcmd autoraise color_excl \
+	    color_obs color_calc} {
+	puts $fp "set graph($v) [list $graph($v)]"
+    }
+    foreach v {obssym obssize exclsym exclsize} {
+	puts $fp "set peakinfo($v) [list $peakinfo($v)]"
+    }
+    close $fp
+}
+
+# save some of the global options in ~/.gsas_config or ~/gsas.config in Windows
+proc SavePosition {} {
+    global expgui env tcl_platform graph peakinfo
+    if {$tcl_platform(platform) == "windows"} {
+	set fp [open c:/gsas.config a]
+    } else {
+	set fp [open [file join ~ .gsas_config] a]
+    }
+
+    puts $fp "# EXPGUI saved screen position on [clock format [clock seconds]]"
+    puts $fp "set expgui(xpos) [expr {[winfo x .]*100./[winfo screenwidth .]}]"
+    puts $fp "set expgui(ypos) [expr {[winfo y .]*100./[winfo screenheight .]}]"
+    puts $fp "set expgui(poscenter) NW"
+    close $fp
+}
+
+proc About { } {
+    global expgui expmap
+    set version "Revision [lindex $expgui(Revision) 1] (readexp.tcl [lindex $expmap(Revision) 1])"
+    catch {
+	set version "[GetSVNVersion $::expgui(gsasdir)]\ntrack: $::expgui(SVNversion)"
+    }
+    tk_dialog .about {About...} \
+"EXPGUI\n\
+Brian Toby\n\
+APS, Argonne National Laboratory\n\n\
+Not subject to copyright\n\n\
+$version\n\n\
+Cite: B. H. Toby, EXPGUI, a graphical\n\
+user interface for GSAS, J. Appl. Cryst.\n\
+34, 210-21 (2001).
+\n\n\
+Generalized Structure Analysis System\n(GSAS)\n\
+R. B. Von Dreele,\n 
+APS, Argonne National Laboratory\n
+and A. C. Larson, Los Alamos (retired)\n\n\
+" \
+	info 0 OK
+}
+proc Cite { } {
+    global expgui expmap
+    tk_dialog .about {Citations...} \
+"If you use EXPGUI, please cite\n\n\
+B.H. Toby, EXPGUI, a graphical\n\
+user interface for GSAS, J. Appl. Cryst.\n\
+34, 210-21 (2001).\n\n\
+as well as\n\n\
+A.C. Larson and R.B. Von Dreele,\n\
+\"General Structure Analysis System (GSAS)\",\n\
+Los Alamos National Laboratory Report\n\
+LAUR 86-748 (2004)." \
+	info 0 OK
+}
+
+# this proc is no longer called, but I am leaving it here as it may 
+# be of use in the future
+proc MakeAppleScript {} {
+    global wishshell expgui
+    # create a local script directory, if it does not exist
+    if {![file exists ~/Library/Scripts]} {file mkdir  ~/Library/Scripts}
+    set tmpfile [file nativename ~/tmpscriptfile]
+    set startdir [tk_chooseDirectory -initialdir [pwd] -mustexist 1 \
+		      -title "Choose GSAS starting directory"]
+    if {$startdir == ""} {set startdir "~"}
+    set dir [file nativename  ~/Library/Scripts]
+    if {[set xterm [auto_execok xterm]] == ""} {
+	MyMessageBox -parent . -title "xterm not found " \
+	    -message "The AppleScript could not be created because the X11 xterm application was not found. Please correct your path and try again." \
+	    -icon "error" -type Sorry -default sorry
+#	    -helplink "expguierr.html Customizewarning"
+	return
+    }
+    set file [tk_getSaveFile -initialdir $dir -initialfile EXPGUI.scpt \
+		      -title "Choose location to save script"]
+    set path {$PATH:}
+    append path [file dirname $xterm]
+    set fp [open $tmpfile w]
+    # the applescript starts here
+    puts $fp {on run}
+    puts $fp {  tell application "Finder"}
+    puts $fp {     launch application "X11"}
+    puts $fp {   end tell}
+    puts $fp "  set results to do shell script \"cd $startdir; DISPLAY=:0.0 PATH=$path $wishshell $expgui(script)  > /dev/null 2>&1 &\""
+    puts $fp {end run}
+    # drag & drop
+    puts $fp {on open these_files}
+    puts $fp {  tell application "Finder"}
+    puts $fp {     launch application "X11"}
+    puts $fp {   end tell}
+    puts $fp {	repeat with this_file in these_files}
+    puts $fp "  set results to do shell script \"cd $startdir; DISPLAY=:0.0 PATH=$path $wishshell $expgui(script) \" & the quoted form of the POSIX path of this_file & \" > /dev/null 2>&1 &\""
+    puts $fp {	end repeat}
+    puts $fp {end open}
+    close $fp
+    if {[catch {
+	exec osacompile -l AppleScript -o $file  $tmpfile
+	file delete -force $tmpfile
+	MyMessageBox -parent . -title "AppleScript created" \
+	    -message "Script $file created & compiled. You may wish to use the Script Editor to save this as an application" \
+	    -icon "info" -type OK -default ok \
+	    -helplink "osx.html CompileAppleScript"
+    } errmsg]} {
+	MyMessageBox -parent . -title "AppleScript warning" \
+	-message "An error occurred while attempting to create the script. Please report this bug, including these details:\n$errmsg"\
+	    -icon warning -type Ignore -default ignore
+#	-helplink "expguierr.html Customizewarning"
+    }
+}
+
+# this proc gets called when the export coordinate button is pressed
+# it loads export
+proc BuildCoordExpMenu {menu} {
+    global expgui_cmdlist expgui
+    # do this only once
+    $menu config -postcommand {}
+    $menu delete 1 end
+    # add the cif export routine
+    set cmd gsas2cif
+    set action {}
+    catch {set action [lindex $expgui_cmdlist($cmd) 0]}
+    if {$action != "" && $action != "-"} {
+	$menu add command -label $cmd -command [subst $action]
+    }
+    # get a list of files to read
+    set filelist [glob -nocomplain [file join $expgui(scriptdir) export_*.tcl]]
+    foreach file $filelist {
+	source $file
+	$menu add command -label $label -command $action
+    }
+}
+
+# utility export routines for the export_*.tcl files:
+# make a box for export
+proc MakeExportBox {win title webref {bookmark ""}} {
+    global expmap expgui
+    catch {destroy $win}
+    toplevel $win
+    wm title $win "Export coordinates"
+    if {$webref != ""} {
+	bind $win <Key-F1> $webref
+    }
+    pack [label $win.lbl -text $title] -side top -anchor center
+    pack [frame $win.ps] -side top -anchor w
+    pack [label $win.ps.lbl -text "Select phase: "] -side left
+    foreach num $expmap(phaselist) {
+	pack [button $win.ps.$num -text $num \
+		    -command "SetExportPhase $num $win"] -side left
+    }
+    # leave a place for format-specific items
+    pack [frame $win.special] -side top -fill both -expand yes
+    pack [frame $win.but] -side top -fill x -expand no
+    pack [button $win.but.1 -text Write -command "destroy $win"] -side left
+    SetExportPhase [lindex $expmap(phaselist) 0] $win
+    pack [button $win.but.2 -text Cancel \
+	    -command "set expgui(export_phase) 0;destroy $win"] -side left
+    pack [button $win.but.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui.html $bookmark"] \
+	    -side right
+}
+
+# set the phase in response to the button
+proc SetExportPhase {num win} {
+    global expmap expgui
+    foreach n $expmap(phaselist) { 
+	if {$n == $num} { 
+	    $win.ps.$n config -relief sunken; 
+	    set expgui(export_phase) $num 
+	} else { 
+	    $win.ps.$n config -relief raised 
+	}
+    }
+}
+
+# wait until idle
+proc afterawhile {} {
+    # cancel any other instances of this loop
+    after cancel afterawhile
+    after cancel whenidle 
+    after cancel whenidle 
+    after idle whenidle
+}
+
+# This is called every 2 seconds to check for changes to the .EXP file
+proc whenidle {} {
+    global expgui tcl_platform
+    if $expgui(titleunchanged) {
+	if {$expgui(changed) != 0} {
+	    wm title . "EXPGUI interface to GSAS: $expgui(expfile) (modified)"
+	    set expgui(titleunchanged) 0
+	}
+    }
+    if {$expgui(expModifiedLast) == 0} {
+	after 2000 afterawhile
+	return
+    }
+    if {![file exists $expgui(expfile)]} {
+	after 2000 afterawhile
+	return
+    }
+    if {[file mtime $expgui(expfile)] != $expgui(expModifiedLast)} {
+	# we are "locked". Note that whenidle loop will be restarted later
+	if {$tcl_platform(platform) == "windows" && [file exists expgui.lck]} {
+	    return
+	}
+	set ans [ReloadExpMsg [file tail $expgui(expfile)] $expgui(changed)]
+        # did a load already occur while we were waiting for an answer?
+        if {[file mtime $expgui(expfile)] == $expgui(expModifiedLast)} {
+            return
+        }
+	if {$ans == 0} {
+	    loadexp $expgui(expfile)
+	} elseif {$ans == 1} {
+	    # reset the time to the next version
+	    set expgui(expModifiedLast) [file mtime $expgui(expfile)]
+	} elseif {$ans == 2} {
+	    SaveAsFile 
+	}
+    }
+    after 2000 afterawhile
+}
+
+# place a message about changes over the main window
+proc ReloadExpMsg {file changes} {
+    global expgui tcl_platform
+    set msg "File $file has been modified by another program"
+    if {$changes == 1} {
+	append msg " and you have made a change to this version.\n"
+    } elseif {$changes > 0} {
+	append msg " and you have made $changes changes to this version.\n"
+    } else {
+	append msg ".\n"
+    }
+    append msg "Do you want to use the newer (modified) version or continue with the older (previous) version of the file?"
+
+    set w .ask
+    catch {destroy $w}
+    toplevel $w -class Dialog
+    wm title $w "Reload?"
+    wm iconname $w "Reload?"
+    wm protocol $w WM_DELETE_WINDOW { }
+    wm transient $w .
+    bind $w <Key-F1> "MakeWWWHelp expguierr.html Overwrite"
+    pack [button $w.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expguierr.html Overwrite"] \
+	    -side top -anchor e
+    frame $w.bot
+    pack $w.bot -side bottom
+    frame $w.top -class FixedFont
+    pack $w.top -side top -fill both -expand 1
+    label $w.top.msg -justify left \
+	    -wraplength 5i -font {Times 18} \
+	    -text $msg 
+    if {$tcl_platform(platform) == "windows"} {
+	$w.top.msg config -font {Times 14}
+    }
+    pack $w.top.msg  -side right -expand 1 -fill both -padx 3m -pady 3m
+    pack [button $w.bot.1 -text "Load new" \
+	    -default active -command "set expgui(dialogbutton) 0" \
+	    ] -side left -expand 1 -padx 3m -pady 2m
+    pack [button $w.bot.2 -text "Continue with old" \
+	    -command "set expgui(dialogbutton) 1"] \
+	    -side left -expand 1 -padx 3m -pady 2m
+    if {$changes > 0} {
+	pack [button $w.bot.3 -text "Save edited version" \
+	    -command "set expgui(dialogbutton) 2"] \
+	    -side left -expand 1 -padx 3m -pady 2m
+    }
+    # Create a binding for <Return> on the dialog
+    bind $w <Return> "$w.bot.1 invoke"
+    wm withdraw $w
+    update idletasks
+
+    # compute widths with a catch, since this has been showing an error
+    # at least for one Mac user
+    set askwid 40
+    catch {set askwid [winfo reqwidth $w]}
+    set askhgt 80
+    catch {set askhgt [winfo reqheight $w]}
+    catch {
+	# for now, always center the message over the main window
+	# center the new window in the middle of the parent
+	set x [expr [winfo x .] + [winfo width .]/2 - \
+		$askwid/2 - [winfo vrootx .]]
+	set y [expr [winfo y .] + [winfo height .]/2 - \
+		$askhgt/2 - [winfo vrooty .]]
+	wm geom $w +$x+$y
+    }
+    wm deiconify $w
+
+    # Grab the focus
+    set oldFocus [focus]
+    set oldGrab [grab current $w]
+    if {[string compare $oldGrab ""]} {
+	set grabStatus [grab status $oldGrab]
+    }
+    catch {grab $w}
+    focus $w.bot.1
+    # for windows rearrange window stacking 
+    # -- Removed since this will normally happen after the GSAS program 
+    # has finished
+    #if {$tcl_platform(platform) == "windows"} {
+	#lower .
+	#raise $w .
+    #}
+    update idletasks
+
+    tkwait variable expgui(dialogbutton)
+    catch {focus $oldFocus}
+    destroy $w
+    if {[string compare $oldGrab ""]} {
+	if {![string compare $grabStatus "global"]} {
+	    catch {grab -global $oldGrab}
+	} else {
+	    catch {grab $oldGrab}
+	}
+    }
+    # for windows rearrange window stacking
+    #if {$tcl_platform(platform) == "windows"} {
+	#raise .
+    #}
+    return $expgui(dialogbutton)
+}
+
+# --------  called to confirm before exiting
+proc catchQuit {} {
+    if {[confirmBeforeSave] == "Continue"} {
+	destroy .
+    }
+}
+# save the .EXP file before exiting?
+proc confirmBeforeSave {} {
+    global expgui
+    if !$expgui(changed) {
+	return "Continue"
+    }
+    set decision [tk_dialog .instrSaveData {Save .EXP changes} \
+	    {You have made changes to the Experiment, but the changes are not saved. Select an option:} \
+	    {} 0 "Save and Exit" "Exit without Save" "Cancel exit command"]
+    switch $decision {
+	0 { savearchiveexp;  return "Continue" }
+	1 {                  return "Continue" }
+	2 {                  return "Cancel"   }
+    }
+}
+
+# setup buttons for each phase on the phase page
+proc setphases {} {
+    global expgui expmap
+    eval destroy [winfo children $expgui(phaseFrame).top.ps]
+    pack [label $expgui(phaseFrame).top.ps.0 -text Phase:] -side left
+    foreach num $expmap(phaselist) {
+	pack [button $expgui(phaseFrame).top.ps.$num -text $num \
+		-command "SelectOnePhase $num" -padx 1.5m] -side left
+    }
+    if {[file executable $expgui(exptool)] && \
+	    [llength $expmap(phaselist)]} {
+	pack [button $expgui(phaseFrame).top.ps.10 \
+		-text "Replace" -command MakeReplacePhaseBox \
+		] -side left
+    }
+}
+
+# Procedure to respond to changes the phase.
+#  This loads the "phases" widgets with data corresponding to the selected phase.
+proc SelectOnePhase {num} {
+    global entryvar entrycmd entrybox expmap expgui
+    # if no phase has been selected, select the first one
+    if {$num == ""} {set num [lindex $expmap(phaselist) 0]}
+
+    set crsPhase {}
+    $expgui(atomxform) config -text "Modify Atoms" -state disabled
+    foreach n $expmap(phaselist) type $expmap(phasetype) {
+	if {$n == $num} {
+	    catch {$expgui(phaseFrame).top.ps.$num config -relief sunken}
+	    set crsPhase $num
+	    if {$type == 3} {
+		set expgui(phasetype) "Magnetic\nOnly"
+	    } elseif {$type == 2} {
+		set expgui(phasetype) "Magnetic\n& Nuclear"
+	    } elseif {$type == 4} {
+		set expgui(phasetype) "Macromolecular"
+	    } elseif {$type == 10} {
+		set expgui(phasetype) "Pawley"
+	    } else {
+		set expgui(phasetype) ""
+	    }
+	} else { 
+	    catch {$expgui(phaseFrame).top.ps.$n config -relief raised}
+	}
+    }
+    # no phase is selected
+    if {$crsPhase == "" || [llength $expmap(phaselist)] == 0} {
+	# disable traces on entryvar
+	set entrycmd(trace) 0
+	set entrycmd(phasename) ""
+	set entryvar(phasename) ""
+	foreach ent {a b c alpha beta gamma} {
+	    set entryvar($ent) ""
+	}
+	foreach ent {cellref celldamp} {
+	    set entrycmd($ent) ""
+	    set entryvar($ent) ""
+	}
+	set expgui(curPhase) {}
+	# enable traces on entryvar 
+	set entrycmd(trace) 1
+	$expgui(EditingAtoms) config -text ""
+	DisplayAtom 0 0
+	DisplayU 0 0
+	DisplayRefFlags 0 0
+	$expgui(atomlistbox) delete 0 end
+	$expgui(AddAtomBut)  config -state disabled
+	return
+    }
+
+    # don't reload the last displayed phase
+    if {$expgui(curPhase) == $crsPhase} {
+       DisplayAllAtoms $crsPhase
+       return
+    }
+
+    ##########################################################
+    # load and display a phase
+    ##########################################################
+    # disable traces on entryvar while loading
+    set entrycmd(trace) 0
+    # phase title
+    set entrycmd(phasename) "phaseinfo $crsPhase name"
+    set entryvar(phasename) [phaseinfo $crsPhase name]
+    # cell parameters & flags
+    foreach ent {a b c alpha beta gamma} {
+	set entryvar($ent) [phaseinfo $crsPhase $ent]
+    }
+    foreach ent {cellref celldamp} {
+	set entrycmd($ent) "phaseinfo $crsPhase $ent"
+	set entryvar($ent) [phaseinfo $crsPhase $ent]
+    }
+
+    # initialize atoms display & disable
+    DisplayAtom 0 0
+    DisplayU 0 0
+    DisplayRefFlags 0 0
+    $expgui(EditingAtoms) config -text ""
+    $expgui(AddAtomBut)  config -state normal
+
+    DisplayAllAtoms $crsPhase
+
+    # enable traces on entryvar now
+    set entrycmd(trace) 1
+}
+
+set expgui(noreenterDisplayAllAtoms) 0
+# Populate expgui(atomlistbox) (a ScrolledListBox) with atoms 
+# from the selected phase.
+proc DisplayAllAtoms {curPhase "mode reset"} {
+    global entryvar entrycmd expmap expgui
+    # make sure that atomlistboxcontents element exists
+    if {[catch {set expmap(atomlistboxcontents)}]} {
+	set expmap(atomlistboxcontents) {}
+    }
+    # if it does not show, we don't have a phase or we are already displaying 
+    # don't bother
+    if {$expgui(pagenow) != "phaseFrame"} return
+    if {$curPhase == ""} return
+    if $expgui(noreenterDisplayAllAtoms) return
+    # prevent reentry
+    set expgui(noreenterDisplayAllAtoms) 1
+    # set the current phase
+    set expgui(curPhase) $curPhase
+    if {$mode != "reset"} {
+	# save the scrolled position
+	set pos [lindex [$expgui(atomlistbox) yview] 0]
+    } else {
+	# for reset, do not keep the previously selected atoms
+	set expgui(selectedatomlist) {}
+    }
+    $expgui(atomlistbox) delete 0 end
+    # displaying a macromolecular phase?
+    if {[lindex $expmap(phasetype) [expr {$expgui(curPhase) - 1}]] == 4} {
+	set mm 1
+	$expgui(phaseFrame).top.ps.10 config -state disabled
+	$expgui(AddAtomBut)  config -state disabled
+	pleasewait "loading atoms..."
+    } else {
+	set mm 0
+	if {[file executable $expgui(exptool)]} {
+	    $expgui(phaseFrame).top.ps.10 config -state normal
+	    $expgui(AddAtomBut) config -state normal
+	}
+    }
+
+    # prepare header info
+    set maxline I
+    set phase $expgui(curPhase)
+    set atomlist {}
+    set typehead "type  "
+    set namehead "  name  "
+    set multhead "Mult"
+    set coordhead "   "
+    if {$mm} {
+	set cmd mmatominfo
+	set frachead "Occ."
+    } else {
+	set cmd atominfo
+	set frachead "Occupancy"
+    }
+    set reshead "res/grp/#"
+    # sort the atoms, as requested
+    if  {$expgui(asorttype) == "type"} {
+	# sort on atom type
+	set typehead "type* "
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom [$cmd $phase $atom type] $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -ascii -index 1 $atomlist]
+    } elseif {$expgui(asorttype) == "number"} {
+	# sort on atom number
+	set namehead "* name  "
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom $atom $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -integer -index 1 $atomlist]
+    } elseif {$expgui(asorttype) == "mult"} {
+	if {$mm} {
+	    set reshead "res*/grp/#"
+	    foreach atom $expmap(atomlist_$phase) {
+		lappend atomlist "$atom [mmatominfo $phase $atom residue] $phase"
+	    }
+	    set expmap(atomlistboxcontents) [lsort -ascii -index 1 $atomlist]
+	} else {
+	    # sort on atom number
+	    set multhead "Mlt*"
+	    foreach atom $expmap(atomlist_$phase) {
+		lappend atomlist "$atom [atominfo $phase $atom mult] $phase"
+	    }
+	    set expmap(atomlistboxcontents) [lsort -integer -decreasing -index 1 $atomlist]
+	}
+    } elseif {$expgui(asorttype) == "occupancy"} {
+	# sort on atom number
+	if {$mm} {
+	    set frachead "  Occ* "
+	} else {
+	    set frachead "  Occup* "
+	}
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom [$cmd $phase $atom frac] $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -real -decreasing -index 1 $atomlist]
+    } elseif {$expgui(asorttype) == "x"} {
+	# sort on x
+	set coordhead "(x*)"
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom [$cmd $phase $atom x] $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -real -index 1 $atomlist]
+    } elseif {$expgui(asorttype) == "y"} {
+	# sort on y
+	set coordhead "(y*)"
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom [$cmd $phase $atom y] $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -real -index 1 $atomlist]
+    } elseif {$expgui(asorttype) == "z"} {
+	# sort on z
+	set coordhead "(z*)"
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atomlist "$atom [$cmd $phase $atom z] $phase"
+	}
+	set expmap(atomlistboxcontents) [lsort -real -index 1 $atomlist]
+    } else {
+	error "Bad expgui(asorttype) = $expgui(asorttype)"
+    }
+
+    set expgui(atomlistboxline) {}
+    # loop over atoms
+    foreach tuple $expmap(atomlistboxcontents) {
+	set atom [lindex $tuple 0]
+	set phase [lindex $tuple 2]
+	lappend expgui(atomlistboxline) $atom
+	$expgui(atomlistbox) insert end \
+		[FormatAtomLine $atom $phase maxline]
+    }
+    $expgui(atomtitle) delete 0 end
+
+    # create the header
+    if {$mm} {
+	$expgui(atomtitle) insert end [format "%12s %9s  %6s %8s%29s %4s  %s" \
+		$namehead $reshead $typehead "ref/damp  " \
+		"fractional coordinates$coordhead" \
+		"$frachead" \
+		" Uiso"]
+	donewait
+    } elseif {$maxline == "A"} {
+	$expgui(atomtitle) insert end [format "%10s %6s %8s%29s %9s  %s" \
+		$namehead $typehead "ref/damp  " \
+		"fractional coordinates$coordhead" \
+		"$multhead $frachead" \
+		" Uiso/Uij                                            "]
+    } else {
+	$expgui(atomtitle) insert end [format "%10s %6s %8s%29s %9s  %s" \
+		$namehead $typehead "ref/damp  " \
+		"fractional coordinates$coordhead" \
+		"$multhead $frachead" \
+		" Uiso"]
+    }
+    if {$mode != "reset"} {
+	# restore the selected items
+	foreach i $expgui(selectedatomlist) {
+	    $expgui(atomlistbox) selection set $i
+	}
+	# restore the last scrolled position
+	$expgui(atomlistbox) yview moveto $pos
+    }
+    # clear the reentry flag
+    set expgui(noreenterDisplayAllAtoms) 0
+}
+
+proc FormatAtomLine {atom phase maxline_var} {
+    global expmap
+    if {[lindex $expmap(phasetype) [expr {$phase - 1}]] == 4} {
+	foreach type {x u f} {
+	    if {[mmatominfo $phase $atom ${type}ref]} {
+		append refflag "[string toupper $type][mmatominfo $phase $atom ${type}damp] "
+	    } else {
+		append refflag " [mmatominfo $phase $atom ${type}damp] "
+	    }
+	}
+	set line [format \
+		"%5d %-6s %-3s%-2s%4d  %-6s %8s %9.5f%9.5f%9.5f%8.4f %7.4f" \
+		$atom \
+		[mmatominfo $phase $atom label] \
+		[mmatominfo $phase $atom residue] \
+		[mmatominfo $phase $atom group] \
+		[mmatominfo $phase $atom resnum] \
+		[mmatominfo $phase $atom type] \
+		$refflag \
+		[mmatominfo $phase $atom x] \
+		[mmatominfo $phase $atom y] \
+		[mmatominfo $phase $atom z] \
+		[mmatominfo $phase $atom frac] \
+		[mmatominfo $phase $atom Uiso]
+	]
+    } elseif {[atominfo $phase $atom temptype] == "A"} {
+	foreach type {x u f} {
+	    if {[atominfo $phase $atom ${type}ref]} {
+		append refflag "[string toupper $type][atominfo $phase $atom ${type}damp] "
+	    } else {
+		append refflag " [atominfo $phase $atom ${type}damp] "
+	    }
+	}
+	# want to set maxline in parent
+	upvar $maxline_var maxline
+	set maxline A
+	# aniso
+        set fmt "%3d %-6s %-6s %8s %s%s%s%4d%9.4f"
+	set line [format $fmt \
+		$atom \
+		[atominfo $phase $atom label] \
+		[atominfo $phase $atom type] \
+		$refflag \
+		[ShowFixAtom $phase $atom x] \
+		[ShowFixAtom $phase $atom y] \
+		[ShowFixAtom $phase $atom z] \
+		[atominfo $phase $atom mult] \
+		[atominfo $phase $atom frac]
+	]
+	append line [format "  %9.5f%9.5f%9.5f%9.5f%9.5f%9.5f" \
+		[atominfo $phase $atom U11] \
+		[atominfo $phase $atom U22] \
+		[atominfo $phase $atom U33] \
+		[atominfo $phase $atom U12] \
+		[atominfo $phase $atom U23] \
+		[atominfo $phase $atom U13]
+	]
+    } else {
+	foreach type {x u f} {
+	    if {[atominfo $phase $atom ${type}ref]} {
+		append refflag "[string toupper $type][atominfo $phase $atom ${type}damp] "
+	    } else {
+		append refflag " [atominfo $phase $atom ${type}damp] "
+	    }
+	}
+	#set fmt "%3d %-6s %-6s %8s %10.6f%10.6f%10.6f%4d%9.4f  %9.5f"
+	set fmt "%3d %-6s %-6s %8s %s%s%s%4d%9.4f  %9.5f"
+	set line [format $fmt \
+		$atom \
+		[atominfo $phase $atom label] \
+		[atominfo $phase $atom type] \
+		$refflag \
+		[ShowFixAtom $phase $atom x] \
+		[ShowFixAtom $phase $atom y] \
+		[ShowFixAtom $phase $atom z] \
+		[atominfo $phase $atom mult] \
+		[atominfo $phase $atom frac] \
+		[atominfo $phase $atom Uiso]
+	]
+    }
+    return $line
+}
+
+# format a coordinate from a non-mm phase as 10 chars; mark fixed 
+# and Rigid body coordinates differently
+proc ShowFixAtom {phase atom var} {
+    # is this fixed?
+    set param [string toupper $var]
+    if {[atom_constraint_get $phase $atom $param]} {
+        return [format "%9.5ff" [atominfo $phase $atom $var]]
+    }
+    # is this atom in a rigid body?
+    if {[lsearch $::expmap(rbatoms_$phase) $atom] != -1} {
+        return [format "%9.5fr" [atominfo $phase $atom $var]]
+    }
+    return [format "%10.6f" [atominfo $phase $atom $var]]
+}
+
+# update the display of atom as they are changed
+proc UpdateAtomLine {atomlist phase} {
+    global expgui
+    # for lots of atoms, it is faster to repaint the listbox
+    if {[llength $atomlist] > 25} {
+	DisplayAllAtoms $expgui(curPhase) noreset
+	return
+    }
+    foreach atom $atomlist {
+	set linenum [lsearch -exact $expgui(atomlistboxline) $atom]
+	$expgui(atomlistbox) delete $linenum
+	$expgui(atomlistbox) insert $linenum \
+		[FormatAtomLine $atom $phase maxline]
+    }
+    # restore the selected items
+    foreach i $expgui(selectedatomlist) {
+	$expgui(atomlistbox) selection set $i
+    }
+}
+
+# Procedure to select all atoms in response to a right-click
+proc SelectAllAtoms {} {
+    global expgui 
+    $expgui(atomlistbox) selection set 0 end
+    # call editRecord in case trace was called before the selection was made
+    editRecord
+}
+
+# Procedure to respond to left mouse release in the atoms Pane
+proc editRecord { args } {
+    global entrycmd expgui
+    set expgui(selectedatomlist) [$expgui(atomlistbox) curselection]
+    # disable traces on entryvar for right now
+    set entrycmd(trace) 0
+
+    if {[llength $expgui(selectedatomlist)] == 0} {
+	if $expgui(debug) {error "Attempt display non-existent atoms"}
+    } elseif {[llength $expgui(selectedatomlist)] == 1} {
+	editOneRecord $expgui(selectedatomlist)
+    } else {
+	editMultipleRecords $expgui(selectedatomlist)
+    }
+    # reenable traces on entryvar
+    set entrycmd(trace) 1
+    # repaint the atoms box in case anything was changed
+    #    DisplayAllAtoms noreset
+}
+
+proc editOneRecord { AtomIndex } {
+    global expmap expgui
+    # make sure that atomlistboxcontents element exists
+    if {[catch {set expmap(atomlistboxcontents)}]} return
+
+    # get atom number & phase
+    set tuple [lindex $expmap(atomlistboxcontents) $AtomIndex]
+    set atomnum [lindex $tuple 0]
+    set p [lindex $tuple 2]
+    DisplayU $atomnum $p
+    DisplayAtom $atomnum $p
+    DisplayRefFlags $atomnum $p
+    $expgui(EditingAtoms) config -text "Editing atom #$atomnum -- [atominfo $p $atomnum label]"
+    $expgui(atomxform) config -text "Modify Atom" -state normal
+}
+
+# this will not work for a multi-phase list of atoms (yet)
+proc editMultipleRecords { AtomIndexList } {
+    global expmap expgui
+    # make sure that atomlistboxcontents element exists
+    if {[catch {set expmap(atomlistboxcontents)}]} return
+
+    set numberList {}
+    # current phase
+    set p $expgui(curPhase)
+    foreach AtomIndex $AtomIndexList {
+	# get atom number & phase
+	set tuple [lindex $expmap(atomlistboxcontents) $AtomIndex]
+	lappend numberList [lindex $tuple 0]
+#	set p [lindex $tuple 2]
+    }
+    # this needs to track by phase
+    $expgui(EditingAtoms) config -text \
+	    "Set refinement options: atoms [CompressList $numberList]"
+    DisplayU 0 0
+    DisplayAtom 0 0
+    # this needs to track by phase
+    DisplayRefFlags $numberList $p
+    $expgui(atomxform) config -text "Modify Atoms" -state normal
+}
+
+# format a string of numbers to save space, e.g. "1 2 3 4 6 7 19 13 14 15" 
+# becomes "1-4,6,7,13-15,19"
+proc CompressList {numberList "max 9999"} {
+    # format the number list to save space
+    set lastnum -99
+    set flist {}
+    set count 0
+    set length 0
+    if [catch {set sortlist [lsort -integer $numberList]}] {return $numberList}
+    foreach num $sortlist {
+	set next [expr $lastnum+1]
+	if {$num != $next} {
+	    if {$count == 0 && $flist != ""} {
+		if {[string length $flist] - $length > $max} {
+		    set length [string length $flist]
+		    append flist ",\n$num"
+		} else {
+		    append flist ",$num"
+		}
+	    } elseif {$count == 1 && $flist != ""} {
+		if {[string length $flist] - $length > $max} {
+		    set length [string length $flist]
+		    append flist ",$lastnum,\n$num"
+		} else {
+		    append flist ",$lastnum,$num"
+		}
+	    } elseif {$flist != ""} {
+		if {[string length $flist] - $length > $max} {
+		    set length [string length $flist]
+		    append flist "-$lastnum,\n$num"
+		} else {
+		    append flist "-$lastnum,$num"
+		}
+	    } else {
+		append flist "$num"
+	    }
+	    set lastnum $num
+	    set count 0
+	} else {
+	    incr count
+	    incr lastnum
+	}
+    }
+    if {$count == 1 && $flist != ""} {
+	append flist ",$lastnum"
+    } elseif {$flist != "" && $count > 1} {
+	append flist "-$lastnum"
+    }
+    return $flist
+}
+
+# Procedure to display Isotropic or Anisotropic temperature factors
+#  Changes the display to one entry widget for Isotropic motion OR
+#   6 entry widgets for Anisotropic motion in Frame3.
+#   or disables the widet entirly if atom = 0
+proc DisplayU { atomnum p} {
+    global expgui entryvar entrycmd expmap
+    set mm 0
+    if {$atomnum == 0} {
+	set iOrA disable
+    } elseif {[lindex $expmap(phasetype) 0] == 4} {
+	set mm 1
+	set iOrA I
+    } else {
+	set iOrA [atominfo $p $atomnum temptype]
+    }
+
+    set firstbox [lindex $expgui(anisolabels) 0]
+    if { $iOrA == "A" } {
+	$firstbox config -text "U11 "
+	foreach item $expgui(anisolabels) {
+	    $item config -fg black
+	}
+	foreach item $expgui(anisoentry) var {U11 U22 U33 U12 U13 U23} {
+	    set entrycmd($var) "atominfo $p $atomnum $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	    $item config -fg black -state normal  -bg white
+	}
+    } elseif { $iOrA == "I" || $iOrA == "disable"} {
+	foreach item $expgui(anisolabels) {
+	    $item config -fg $expgui(bkgcolor1)
+	}
+	foreach item [lrange $expgui(anisoentry) 1 end] \
+		var {U22 U33 U12 U13 U23} {
+	    set entrycmd($var) ""
+	    set entryvar($var) ""
+	    $item config -fg $expgui(bkgcolor1) -bg $expgui(bkgcolor1) \
+		    -state disabled
+	}
+	if { $iOrA == "disable"} {
+	    set entrycmd($var) ""
+	    set entryvar($var) ""
+	    [lindex $expgui(anisoentry) 0] config \
+		    -fg $expgui(bkgcolor1) -bg $expgui(bkgcolor1) \
+		    -state disabled
+	} elseif {$mm} {
+	    set entrycmd(U11) "mmatominfo $p $atomnum Uiso"
+	    set entryvar(U11) [eval $entrycmd(U11)]
+	    $firstbox config -text Uiso -fg black 
+	    [lindex $expgui(anisoentry) 0] config -fg black -bg white -state normal
+	} else {
+	    set entrycmd(U11) "atominfo $p $atomnum Uiso"
+	    set entryvar(U11) [eval $entrycmd(U11)]
+	    $firstbox config -text Uiso -fg black 
+	    [lindex $expgui(anisoentry) 0] config -fg black -bg white -state normal
+	}
+    }
+}
+
+# need to think about multiple phases
+
+# Procedure to display refinement flags
+proc DisplayRefFlags { atomnum p} {
+    global expgui entryvar entrycmd expmap
+    if {$atomnum == 0} {
+	foreach label $expgui(atomreflbl) {
+	    $label config -fg $expgui(bkgcolor1)
+	}
+	foreach entry $expgui(atomref) {
+	    $entry config -state disabled \
+		    -fg $expgui(bkgcolor1) -bg $expgui(bkgcolor1)
+	    # turn off checkbuttons
+	    catch {$entry deselect}
+
+	}
+	return
+    }
+    foreach label $expgui(atomreflbl) {
+	$label config -fg black
+    }
+    foreach entry $expgui(atomref) {
+	$entry config -state normal -fg black -bg $expgui(bkgcolor1)
+    }
+    if {[lindex $expmap(phasetype) 0] == 4} {
+	foreach var {xref uref fref xdamp udamp fdamp}  {
+	    set entrycmd($var) "mmatominfo $p [list $atomnum] $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+    } else {
+	foreach var {xref uref fref xdamp udamp fdamp}  {
+	    set entrycmd($var) "atominfo $p [list $atomnum] $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+    }
+}
+
+# Procedure to display an atom in the atom edit boxes
+proc DisplayAtom { atomnum p} {
+    global expgui entryvar entrycmd expmap
+    if {$atomnum == 0} {
+	foreach label $expgui(atomlabels) {
+	    $label config -fg $expgui(bkgcolor1)
+	}
+	foreach entry $expgui(atomentry) {
+	    $entry config -state disabled \
+		    -fg $expgui(bkgcolor1) -bg $expgui(bkgcolor1)
+	}
+	return
+    }
+    foreach label $expgui(atomlabels) {
+	$label config -fg black
+    }
+    foreach entry $expgui(atomentry) {
+	$entry config -state normal -fg black -bg white
+    }
+    if {[lindex $expmap(phasetype) 0] == 4} {
+	foreach var {x y z label frac } {
+	    set entrycmd($var) "mmatominfo $p $atomnum $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+    } else {
+	foreach var {x y z label frac } {
+	    set entrycmd($var) "atominfo $p $atomnum $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+    }
+}
+
+# make a histogram box; used in MakeHistPane, 
+proc MakeHistBox {frm} {
+    global expgui
+    grid [label $frm.mode -text "Select a Histogram" \
+	    -bg beige -anchor center -bd 2 -relief raised] \
+	    -row 0 -column 0 -columnspan 2 -sticky ew
+    bind $frm.mode <Button-1> {
+	set i [lsearch $expgui(AllowedHistSelectModes) $expgui(globalmode)]
+	set expgui(globalmode) [lindex \
+		"$expgui(AllowedHistSelectModes) \
+		$expgui(AllowedHistSelectModes)" [incr i]]
+	sethistlist
+    }
+    bind $frm.mode <Button-3> {set expgui(globalmode) 0; sethistlist}
+    grid [listbox $frm.title -height 1 -relief flat \
+	    -exportselection 0 ] -row 1 -column 0 -sticky ew
+    grid [listbox $frm.lbox -height 10 -width 25 \
+	    -exportselection 0 \
+	    -xscrollcommand "$frm.x set" \
+	    -yscrollcommand "$frm.y set" \
+	    ] -row 2 -column 0 -sticky news
+    if {[lsearch $expgui(HistSelectList) $frm] < 0} {
+        lappend expgui(HistSelectList) $frm
+    }
+    grid [scrollbar $frm.x -orient horizontal \
+	    -command "move2boxesX \" $frm.title $frm.lbox \" " 
+    ] -row 3 -column 0 -sticky ew
+    grid [scrollbar $frm.y \
+	    -command "$frm.lbox yview"] \
+	    -row 2 -column 1 -sticky ns
+    grid columnconfigure $frm 0 -weight 1
+    grid rowconfigure $frm 2 -weight 1
+}
+
+# update the histogram list 
+# to do: show histogram ref flags?
+proc sethistlist {} {
+    global expgui expmap
+    array set lbl {
+	1 "Select 1 or more\nTOF Histograms"
+	2 "Select 1 or more\nCW Neutron Histograms"
+	3 "Select 1 or more\nAlpha 1,2 X-ray Histograms"
+	4 "Select 1 or more\nmonochromatic X-ray Histograms"
+	5 "Select 1 or more Energy\nDispersive X-ray Histograms"
+	6 "Select 1 or more of\n any type Histograms"
+    }
+    foreach lbox $expgui(HistSelectList) {
+        if {! [winfo exists $lbox]} continue
+	$lbox.title delete 0 end
+	$lbox.lbox delete 0 end
+	if {$expgui(globalmode) != 0} {
+	    $lbox.lbox config -selectmode extended
+	    $lbox.mode config -text $lbl($expgui(globalmode)) -bg yellow
+	} else {
+	    $lbox.lbox config -selectmode browse
+	    $lbox.mode config -text "Select a histogram" -bg beige
+	}
+    }
+    StageTabUse
+    # # disable the unallowed pages in all mode
+    # if {$expgui(globalmode) == 6} {
+    # 	foreach pair $expgui(GlobalModeAllDisable) {
+    # 	    if {$expgui(pagenow) == [lindex $pair 0]} {
+    # 		RaisePage lsFrame
+    # 	    }
+    # 	    eval [lindex $pair 1] -state disabled
+    # 	}
+    # } else {
+    # 	foreach pair $expgui(GlobalModeAllDisable) {
+    # 	    eval [lindex $pair 1] -state normal
+    # 	}
+    # }
+    set histlist {}
+    if  {$expgui(hsorttype) == "type"} {
+	# sort on histogram type
+	foreach h [lsort -integer -increasing $expmap(powderlist)] {
+	    lappend histlist "$h [string range $expmap(htype_$h) 1 2]"
+	}
+	set expmap(histlistboxcontents) [lsort -ascii -index 1 $histlist]
+    } elseif {$expgui(hsorttype) == "number"} {
+	# sort on histogram number
+	foreach h [lsort -integer -increasing $expmap(powderlist)] {
+	    lappend histlist "$h $h"
+	}
+	set expmap(histlistboxcontents) [lsort -integer -index 1 $histlist]
+    } elseif {$expgui(hsorttype) == "bank"} {
+	# sort on original bank number
+	foreach h [lsort -integer -increasing $expmap(powderlist)] {
+	    lappend histlist "$h [histinfo $h bank]"
+	}
+	set expmap(histlistboxcontents) [lsort -integer -index 1 $histlist]
+    } elseif {$expgui(hsorttype) == "angle"} {
+	# sort on wavelength (CW) or angle (E disp.)
+	foreach h [lsort -integer -increasing $expmap(powderlist)] {
+	    if {[string range $expmap(htype_$h) 2 2] == "T"} {
+		set det [format %8.2f [histinfo $h tofangle]]
+	    } elseif {[string range $expmap(htype_$h) 2 2] == "C"} {
+		set det [format %8.5f [histinfo $h lam1]]
+	    } elseif {[string range $expmap(htype_$h) 2 2] == "E"} {
+		set det [format %8.2f [histinfo $h lam1]]
+	    } else {
+		set det {}
+	    }
+	    lappend histlist "$h $det"
+	}
+	set expmap(histlistboxcontents) [lsort -real -index 1 $histlist]
+    }
+
+    # title field needs to match longest title
+    foreach lbox $expgui(HistSelectList) {
+        if {! [winfo exists $lbox]} continue
+	$lbox.title insert end [format "%2s %s %4s %8s  %-67s" \
+		"h#" \
+		type \
+		bank \
+		"ang/wave" \
+		"    title" \
+		]
+    }
+    foreach tuple $expmap(histlistboxcontents) {
+	set h [lindex $tuple 0]
+
+	if {$expgui(globalmode) == 1} {
+	    if {[string range $expmap(htype_$h) 2 2] != "T"} continue
+	} elseif {$expgui(globalmode) == 2} {
+	    if {[string range $expmap(htype_$h) 1 2] != "NC"} continue
+	} elseif {$expgui(globalmode) == 3} {
+	    if {[string range $expmap(htype_$h) 1 2] != "XC" || \
+		    [histinfo $h lam2] == 0.0} continue
+	} elseif {$expgui(globalmode) == 4} {
+	    if {[string range $expmap(htype_$h) 1 2] != "XC" || \
+		    [histinfo $h lam2] != 0.0} continue
+	} elseif {$expgui(globalmode) == 5} {
+	    if {[string range $expmap(htype_$h) 1 2] != "XE"} continue
+	}
+
+	if {[string range $expmap(htype_$h) 2 2] == "T"} {
+	    set det [format %8.2f [histinfo $h tofangle]]
+	} elseif {[string range $expmap(htype_$h) 2 2] == "C"} {
+	    set det [format %8.5f [histinfo $h lam1]]
+	} elseif {[string range $expmap(htype_$h) 2 2] == "E"} {
+	    set det [format %8.2f [histinfo $h lam1]]
+	} else {
+	    set det {}
+	}
+	foreach lbox $expgui(HistSelectList) {
+            if {! [winfo exists $lbox]} continue
+	    $lbox.lbox insert end [format "%2d  %s %4d %8s  %-67s" \
+		    $h \
+		    [string range $expmap(htype_$h) 1 3] \
+		    [histinfo $h bank] \
+		    $det \
+		    [string range [histinfo $h title] 0 66] \
+		    ]
+	}
+    }
+    UpdateCurrentPage
+}
+
+proc UpdateCurrentPage {} {
+    global expgui
+    foreach set $expgui(frameactionlist) {
+	if {$expgui(pagenow) == [lindex $set 0]} {catch [lindex $set 1]}
+    }
+}
+
+#-----------------------------------------------------------------------
+# ----------- draw Histogram page
+#-----------------------------------------------------------------------
+proc DisplayHistogram {} {
+    global expgui entrycmd entryvar entrybox expmap
+
+    # trap if more than one histogram is selected unless global mode
+    if {$expgui(globalmode) == 0 && [llength $expgui(curhist)] > 1} {
+	set expgui(curhist) [lindex $expgui(curhist) 0]	
+    }
+
+    # disable the add histogram button if no phases are present
+    catch {
+	foreach c [winfo children $expgui(histFrame).bb] {
+	    if {[llength $expmap(phaselist)] == 0} {
+		$c configure -state disabled
+	    } else {
+		$c configure -state normal
+	    }
+	}
+    }
+
+    # display the selected histograms
+    $expgui(histFrame).hs.lbox selection clear 0 end
+    foreach h $expgui(curhist) {
+	$expgui(histFrame).hs.lbox selection set $h
+    }
+
+    # disable traces on entryvar for right now
+    set entrycmd(trace) 0
+
+    # get histogram list
+    set histlist {}
+    foreach item $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $item]
+    }
+    # must have at least one histogram selected here
+    if {[llength $histlist] == 0} {
+	set expgui(backtermlbl) ""
+	set expgui(backtypelbl) ""
+        set expgui(abstypelbl) ""
+	foreach var {bref bdamp absref absdamp} {
+	    set entrycmd($var) ""
+	    set entryvar($var) ""
+	}
+	$expgui(histFrame).top.txt config -text "No Selected Histograms"
+	grid $expgui(histFrame).top -column 1 -row 0 -sticky nsew
+	set expgui(bkglbl) ""
+	set expgui(abslbl) ""
+	eval destroy [winfo children $expgui(diffBox)]
+	set entrycmd(trace) 1
+	return
+    }
+
+    if {$expgui(globalmode) != 0} {
+	set expgui(backtermlbl) ""
+	set expgui(backtypelbl) ""
+        set expgui(abstypelbl) ""
+	foreach var {bref bdamp absref absdamp} {
+	    set entrycmd($var) "histinfo [list $histlist] $var"
+	    set entryvar($var) [histinfo [lindex $histlist 0] $var]
+	}
+	$expgui(histFrame).bb.anom config -state disabled
+    } else {
+	set hist $histlist
+	set terms [histinfo $hist backterms]
+	set expgui(backtermlbl) "($terms terms)"
+	# background type 3 & 9 have gone away
+	if {[histinfo $hist backtype] == 3 || [histinfo $hist backtype] == 9} {
+	    MyMessageBox -parent . -title "Background Change" \
+		-type ok -default ok \
+		-icon warning \
+		-message "Background function #[histinfo $hist backtype] is no longer supported -- the function will now be changed to type #1 & the values reset"
+	    histinfo $histlist backtype set 1
+	    RecordMacroEntry "histinfo [list $histlist] backtype set 1" 0
+	    incr expgui(changed)
+	    for {set num 1 } { $num <= $terms } { incr num } {
+		set var "bterm$num"
+		histinfo $histlist $var set 0
+		RecordMacroEntry "histinfo [list $histlist] $var set 0" 0
+		incr expgui(changed)
+	    }
+	    RecordMacroEntry "incr expgui(changed)" 0
+	}
+	set expgui(backtypelbl) "Function type [histinfo $hist backtype]"
+	foreach var {bref bdamp absref absdamp} {
+	    set entrycmd($var) "histinfo $hist $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+	set abstype [histinfo $hist abstype]
+	if {$abstype > 1} {
+	    set expgui(abstypelbl) "  Model #$abstype, values: [histinfo $hist abscor1], [histinfo $hist abscor2]"
+	} else {
+	    set expgui(abstypelbl) "  Model #$abstype, value: [histinfo $hist abscor1]"
+	}
+	$expgui(histFrame).bb.anom config -state normal
+    }
+    # Top box
+    catch {destroy $expgui(histFrame).pflag}
+    if {$expgui(globalmode) != 0} {
+	$expgui(histFrame).top.txt config \
+		-text "Selected Histograms: [CompressList $histlist]"
+	grid $expgui(histFrame).top -column 1 -row 0 -sticky nsew	
+	set expgui(bkglbl) "Globally Edit Background"
+	set expgui(abslbl) "Globally Edit Absorption"
+    } else {
+	grid forget $expgui(histFrame).top
+	set expgui(bkglbl) "Edit Background"
+	set expgui(abslbl) "Edit Abs./Refl."
+	if {[llength $expmap(phaselist)] > 1} {
+	    TitleFrame $expgui(histFrame).pflag  \
+		    -borderwidth 4 -side left -relief groove \
+		    -text "Phase Flags"
+	    set expgui(pflag) [$expgui(histFrame).pflag getframe]
+	    grid $expgui(histFrame).pflag -column 1 -row 1 -sticky nsew
+	    grid rowconfigure $expgui(histFrame) 2 -minsize 35
+	    foreach p $expmap(phaselist) {
+		pack [checkbutton $expgui(pflag).$p \
+			-command "GetPhaseFlags $hist" \
+			-variable expgui(pflag$p) -text $p] -side left
+		if {[lsearch $expmap(phaselist_$hist) $p] == -1} {
+		    set expgui(pflag$p) 0
+		} else {
+		    set expgui(pflag$p) 1
+		}
+	    }
+	}
+    }
+
+    # diffractometer constants
+    foreach var {lam1 lam2 kratio pola ipola ddamp zero \
+	    wref pref dcref daref ratref ttref zref } {
+	set entrycmd($var) "histinfo [list $histlist] $var"
+	set entryvar($var) [histinfo [lindex $histlist 0] $var]
+    }
+
+    eval destroy [winfo children $expgui(diffBox)]
+    if {$expgui(globalmode) == 0} {
+	if {[string range $expmap(htype_$hist) 2 2] == "T"} {
+	#------
+	# TOF |
+	#------
+	    grid [ label $expgui(diffBox).lDCrc -text "Refine DIFC" ] \
+		    -column 1 -row 1
+	    grid [ checkbutton $expgui(diffBox).rfDCrc -variable entryvar(dcref) ] \
+		    -column 2 -row 1
+	    grid [ label $expgui(diffBox).lDCdifc -text DIFC ] \
+		    -column 3 -row 1 -sticky w
+	    grid [ entry $expgui(diffBox).eDCdifc -textvariable entryvar(lam1) \
+		    -width 15 ] -column 4 -row 1
+	    set entrybox(lam1) $expgui(diffBox).eDCdifc
+	    #
+	    grid [ label $expgui(diffBox).lDCra -text "Refine DIFA" ] \
+		    -column 1 -row 2
+	    grid [ checkbutton $expgui(diffBox).rfDCra -variable entryvar(daref) ] \
+		    -column 2 -row 2
+	    grid [ label $expgui(diffBox).lDCdifa -text DIFA ] \
+		    -column 3 -row 2
+	    grid [ entry $expgui(diffBox).eDCdifa -textvariable entryvar(lam2) \
+		    -width 15 ] -column 4 -row 2
+	    set entrybox(lam2) $expgui(diffBox).eDCdifa
+	    #
+	    grid [ label $expgui(diffBox).lDCzero -text "Zero"] \
+		    -column 3 -row 3
+	    grid [ entry $expgui(diffBox).eDCzero -textvariable entryvar(zero) \
+		    -width 15 ] -column 4 -row 3
+	    set entrybox(zero) $expgui(diffBox).eDCzero
+	    grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		    -column 1 -row 3 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCzref \
+		    -variable entryvar(zref) ] -column 2 -row 3
+	} elseif {[string range $expmap(htype_$hist) 1 2] == "NC"} { 
+	#---------------
+	# CW - neutron |
+	#---------------
+	    grid [ label $expgui(diffBox).lDC1 -text "Refine wave" ] \
+		    -column 1 -row 1
+	    grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(wref) ] \
+		    -column 2 -row 1
+	    grid [ label $expgui(diffBox).lDCdifc -text wave ] \
+		    -column 3 -row 1 -sticky w
+	    grid [ entry $expgui(diffBox).eDCdifc -textvariable entryvar(lam1) \
+		    -width 15 ] -column 4 -row 1
+	    set entrybox(lam1) $expgui(diffBox).eDCdifc
+	    #
+	    grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		    -column 1 -row 3 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCzref \
+		    -variable entryvar(zref) ] -column 2 -row 3
+	    grid [ label $expgui(diffBox).lDCzero -text "Zero"] \
+		    -column 3 -row 3
+	    grid [ entry $expgui(diffBox).eDCzero -textvariable entryvar(zero) \
+		    -width 15 ] -column 4 -row 3
+	    set entrybox(zero) $expgui(diffBox).eDCzero
+	} elseif {[string range $expmap(htype_$hist) 1 2] == "XC" && \
+		[histinfo $hist lam2] == 0.0} {
+	#--------------------------
+	# CW - x-ray 1 wavelength |
+	#--------------------------
+	    grid [ label $expgui(diffBox).lDC1 -text "Refine wave" ] \
+		    -column 1 -row 1
+	    grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(wref) ] \
+		    -column 2 -row 1
+	    grid [ label $expgui(diffBox).lDCdifc -text wave ] \
+		    -column 3 -row 1 -sticky w
+	    grid [ entry $expgui(diffBox).eDCdifc -textvariable entryvar(lam1) \
+		    -width 15 ] -column 4 -row 1
+	    set entrybox(lam1) $expgui(diffBox).eDCdifc
+	    #
+	    grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		    -column 1 -row 3 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCzref \
+		    -variable entryvar(zref) ] -column 2 -row 3
+	    grid [ label $expgui(diffBox).lDCzero -text "Zero"] \
+		    -column 3 -row 3
+	    grid [ entry $expgui(diffBox).eDCzero -textvariable entryvar(zero) \
+		    -width 15 ] -column 4 -row 3
+	    set entrybox(zero) $expgui(diffBox).eDCzero
+	    #
+	    grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		    -column 1 -row 4 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCpref \
+		    -variable entryvar(pref) ] -column 2 -row 4
+	    grid [ label $expgui(diffBox).lDCpola -text POLA ] \
+		    -column 3 -row 4
+	    grid [ entry $expgui(diffBox).eDCpola \
+		    -textvariable entryvar(pola) -width 15 ] -column 4 -row 4
+	    set entrybox(pola) $expgui(diffBox).eDCpola
+	    grid [ label $expgui(diffBox).lDCipola -text "IPOLA" ] \
+		    -column 5 -row 4
+	    grid [ entry $expgui(diffBox).eDCipola -width 2 \
+		    -textvariable entryvar(ipola)] -column 6 -row 4
+	    set entrybox(ipola) $expgui(diffBox).eDCipola
+	} elseif {[string range $expmap(htype_$hist) 1 2] == "XC"} {
+	#---------------------------
+	# CW - x-ray 2 wavelengths |
+	#---------------------------
+	    grid [ label $expgui(diffBox).lDCdifc -text wavelengths ] \
+		    -column 3 -row 1 -sticky w
+	    grid [ entry $expgui(diffBox).eDCdifc -textvariable entryvar(lam1) \
+		    -width 15 ] -column 4 -row 1
+	    set entrybox(lam1) $expgui(diffBox).eDCdifc
+	    grid [ entry $expgui(diffBox).eDCdifa -textvariable entryvar(lam2) \
+		    -width 15 ] -column 5 -row 1
+	    set entrybox(lam2) $expgui(diffBox).eDCdifa
+	    #
+	    grid [ label $expgui(diffBox).lDCrref -text "Refine ratio" ] \
+		    -column 1 -row 2 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCrref \
+		    -variable entryvar(ratref) ] -column 2 -row 2
+	    grid [ label $expgui(diffBox).lDCratio -text Ratio ] \
+		    -column 3 -row 2
+	    grid [ entry $expgui(diffBox).eDCkratio \
+		    -textvariable entryvar(kratio) \
+		    -width 15 ] -column 4 -row 2
+	    set entrybox(kratio) $expgui(diffBox).eDCkratio
+	    #
+	    grid [ label $expgui(diffBox).lDCzero -text "Zero"] \
+		    -column 3 -row 3
+	    grid [ entry $expgui(diffBox).eDCzero -textvariable entryvar(zero) \
+		    -width 15 ] -column 4 -row 3
+	    grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		    -column 1 -row 3 -sticky w
+	    set entrybox(zero) $expgui(diffBox).eDCzero
+	    grid [ checkbutton $expgui(diffBox).rfDCzref \
+		    -variable entryvar(zref) ] -column 2 -row 3
+	    grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		    -column 1 -row 4 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCpref \
+		    -variable entryvar(pref) ] -column 2 -row 4
+	    grid [ label $expgui(diffBox).lDCpola -text POLA ] \
+		    -column 3 -row 4
+	    grid [ entry $expgui(diffBox).eDCpola \
+		    -textvariable entryvar(pola) -width 15 ] -column 4 -row 4
+	    set entrybox(pola) $expgui(diffBox).eDCpola
+	    grid [ label $expgui(diffBox).lDCipola -text "IPOLA" ] \
+		    -column 5 -row 4
+	    grid [ entry $expgui(diffBox).eDCipola -width 2 \
+		    -textvariable entryvar(ipola)] -column 6 -row 4
+	    set entrybox(ipola) $expgui(diffBox).eDCipola
+	} elseif {[string range $expmap(htype_$hist) 1 2] == "XE"} {
+	#-------------
+	# ED - x-ray |
+	#-------------
+	    grid [ label $expgui(diffBox).lDC1 -text "Refine 2theta" ] \
+		    -column 1 -row 1
+	    grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(ttref) ] \
+		    -column 2 -row 1
+	    grid [ label $expgui(diffBox).lDCdifc -text 2Theta ] \
+		    -column 3 -row 1 -sticky w
+	    grid [ entry $expgui(diffBox).eDCdifc -textvariable entryvar(lam1) \
+		    -width 15 ] -column 4 -row 1
+	    set entrybox(lam1) $expgui(diffBox).eDCdifc
+	    #
+	    grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		    -column 1 -row 4 -sticky w
+	    grid [ checkbutton $expgui(diffBox).rfDCpref \
+		    -variable entryvar(pref) ] -column 2 -row 4
+	    grid [ label $expgui(diffBox).lDCpola -text POLA ] \
+		    -column 3 -row 4
+	    grid [ entry $expgui(diffBox).eDCpola \
+		    -textvariable entryvar(pola) -width 15 ] -column 4 -row 4
+	    set entrybox(pola) $expgui(diffBox).eDCpola
+	    grid [ label $expgui(diffBox).lDCipola -text "IPOLA" ] \
+		    -column 5 -row 4
+	    grid [ entry $expgui(diffBox).eDCipola -width 2 \
+		    -textvariable entryvar(ipola)] -column 6 -row 4
+	    set entrybox(ipola) $expgui(diffBox).eDCipola
+	}
+    } elseif {$expgui(globalmode) == 1} {
+	#-------------
+	# Global TOF |
+	#-------------
+	grid [ label $expgui(diffBox).lDCrc -text "Refine DIFC" ] \
+		-column 1 -row 1
+	grid [ checkbutton $expgui(diffBox).rfDCrc -variable entryvar(dcref) ] \
+		-column 2 -row 1
+	grid [button $expgui(diffBox).bDCdifc -text "Set DIFC Globally" \
+		-command "editglobalparm histinfo difc {DIFC}"] -column 3 -row 1
+	#
+	grid [ label $expgui(diffBox).lDCra -text "Refine DIFA" ] \
+		-column 1 -row 2
+	grid [ checkbutton $expgui(diffBox).rfDCra -variable entryvar(daref) ] \
+		-column 2 -row 2
+	grid [ button $expgui(diffBox).bDCdifa -text "Set DIFA Globally" \
+		-command "editglobalparm histinfo difa {DIFA}"] -column 3 -row 2
+	#
+	grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		-column 1 -row 3 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCzref \
+		-variable entryvar(zref) ] -column 2 -row 3
+	grid [ button $expgui(diffBox).bDCzero -text "Set ZERO Globally" \
+		-command "editglobalparm histinfo zero {Zero}"] -column 3 -row 3
+    } elseif {$expgui(globalmode) == 2} {
+	#--------------------
+	# Global CW neutron |
+	#--------------------
+	grid [ label $expgui(diffBox).lDC1 -text "Refine wave" ] \
+		-column 1 -row 1
+	grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(wref) ] \
+		-column 2 -row 1
+	grid [button $expgui(diffBox).bDCdifc -text "Set Wave Globally" \
+		-command "editglobalparm histinfo lam1 Wavelength"] \
+		-column 3 -row 1
+	#
+	grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		-column 1 -row 3 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCzref \
+		-variable entryvar(zref) ] -column 2 -row 3
+	grid [button $expgui(diffBox).bDCzero -text "Set Zero Globally" \
+		-command "editglobalparm histinfo zero Zero"] -column 3 -row 3
+    } elseif {$expgui(globalmode) == 4} {
+	#----------------------
+	# Global CW mono xray |
+	#----------------------
+	grid [ label $expgui(diffBox).lDC1 -text "Refine wave" ] \
+		-column 1 -row 1
+	grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(wref) ] \
+		-column 2 -row 1
+	grid [button $expgui(diffBox).bDCdifc -text "Set Wave Globally" \
+		-command "editglobalparm histinfo lam1 Wavelength"] \
+		-column 3 -row 1
+	#
+	grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		-column 1 -row 3 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCzref \
+		-variable entryvar(zref) ] -column 2 -row 3
+	grid [button $expgui(diffBox).bDCzero -text "Set Zero Globally" \
+		-command "editglobalparm histinfo zero Zero"] -column 3 -row 3
+	#
+	grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		-column 1 -row 4 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCpref \
+		-variable entryvar(pref) ] -column 2 -row 4
+	grid [button $expgui(diffBox).bDCpola -text "Set POLA Globally" \
+		-command "editglobalparm histinfo pola POLA"] -column 3 -row 4
+	grid [button $expgui(diffBox).bDCipola -text "Set IPOLA Globally" \
+		-command "editglobalparm histinfo ipola IPOLA"] -column 4 -row 4
+    } elseif {$expgui(globalmode) == 3} {
+	#------------------------
+	# Global alpha 1,2 xray |
+	#------------------------
+	grid [button $expgui(diffBox).bDCl1 -text "Set Wave1 Globally" \
+		-command "editglobalparm histinfo lam1 {Wavelength 1}"] \
+		-column 3 -row 1
+	grid [button $expgui(diffBox).bDCl2 -text "Set Wave2 Globally" \
+		-command "editglobalparm histinfo lam2 {Wavelength 2}"] \
+		-column 4 -row 1
+	#
+	grid [ label $expgui(diffBox).lDCratref -text "Refine Ratio" ] \
+		-column 1 -row 2 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCratref \
+		-variable entryvar(ratref) ] -column 2 -row 2
+	grid [button $expgui(diffBox).bDCrrat -text "Set Ratio Globally" \
+		-command "editglobalparm histinfo ratio {Wavelength Ratio}"] \
+		-column 3 -row 2
+	#
+	grid [ label $expgui(diffBox).lDCzref -text "Refine zero" ] \
+		-column 1 -row 3 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCzref \
+		-variable entryvar(zref) ] -column 2 -row 3
+	grid [button $expgui(diffBox).bDCzero -text "Set Zero Globally" \
+		-command "editglobalparm histinfo zero Zero"] -column 3 -row 3
+	#
+	grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		-column 1 -row 4 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCpref \
+		-variable entryvar(pref) ] -column 2 -row 4
+	grid [button $expgui(diffBox).bDCpola -text "Set POLA Globally" \
+		-command "editglobalparm histinfo pola POLA"] -column 3 -row 4
+	grid [button $expgui(diffBox).bDCipola -text "Set IPOLA Globally" \
+		-command "editglobalparm histinfo ipola IPOLA"] -column 4 -row 4
+    } elseif {$expgui(globalmode) == 5} {
+	#-----------------
+	# Global ED xray |
+	#-----------------
+	grid [ label $expgui(diffBox).lDC1 -text "Refine 2theta" ] \
+		-column 1 -row 1
+	grid [ checkbutton $expgui(diffBox).rfDC1 -variable entryvar(ttref) ] \
+		-column 2 -row 1
+	grid [button $expgui(diffBox).bDCdifc -text "Set 2Theta Globally" \
+		-command "editglobalparm histinfo ratio {Fixed 2Theta}"] \
+		-column 3 -row 1
+	#
+	grid [ label $expgui(diffBox).lDCpref -text "Refine POLA" ] \
+		-column 1 -row 4 -sticky w
+	grid [ checkbutton $expgui(diffBox).rfDCpref \
+		-variable entryvar(pref) ] -column 2 -row 4
+	grid [button $expgui(diffBox).bDCpola -text "Set POLA Globally" \
+		-command "editglobalparm histinfo pola POLA"] -column 3 -row 4
+	grid [button $expgui(diffBox).bDCipola -text "Set IPOLA Globally" \
+		-command "editglobalparm histinfo ipola IPOLA"] -column 4 -row 4
+    }
+    if {$expgui(globalmode) == 0} {
+	grid [frame $expgui(diffBox).d] -column 5 -row 1 -rowspan 3 \
+		-columnspan 2 -sticky e
+    } else {
+	grid [frame $expgui(diffBox).d] -column 4 -row 2 -rowspan 2 \
+		-columnspan 2 -sticky e
+    }
+    grid [label $expgui(diffBox).d.lDamp -text "Damping  "] \
+	    -column 1 -row 1 
+    tk_optionMenu $expgui(diffBox).d.om entryvar(ddamp) 0 1 2 3 4 5 6 7 8 9
+    grid $expgui(diffBox).d.om -column 2 -row 1 
+    grid columnconfigure $expgui(diffBox) 9  -weight 1
+    grid columnconfigure $expgui(diffBox) 0  -weight 1
+    update idletasks
+    # enable traces on entryvar now
+    set entrycmd(trace) 1
+}
+
+# this gets the phase flags as set in the expgui(pflag*) elements 
+# (linked to phase flag checkbuttons) and the sets the "HST xx NPHAS" flags
+# accordingly using SetPhaseFlag
+proc GetPhaseFlags {hist} {
+    global expmap expgui
+    set plist {}
+    foreach p $expmap(phaselist) {
+	if {$expgui(pflag$p)} {lappend plist $p}
+    }
+    SetPhaseFlag $hist $plist
+    RecordMacroEntry "SetPhaseFlag [list $hist] [list $plist]" 0
+    incr expgui(changed)
+    RecordMacroEntry "incr expgui(changed)" 0
+    # set the powpref warning (1 = suggested)
+    set expgui(needpowpref) 2
+    set msg "Phase flags" 
+    if {[string first $msg $expgui(needpowpref_why)] == -1} {
+	append expgui(needpowpref_why) "\t$msg were changed\n"
+    }
+    mapexp
+    # reset the phase selection
+    set expgui(curPhase) {}
+}
+
+#-----------------------------------------------------------------------
+# populate the Scaling page
+#-----------------------------------------------------------------------
+proc DisplayFrac {} {
+    global expgui entrycmd entryvar entrybox expmap
+
+    # trap if more than one histogram is selected unless global mode
+    if {$expgui(globalmode) == 0 && [llength $expgui(curhist)] > 1} {
+	set expgui(curhist) [lindex $expgui(curhist) 0]	
+    }
+
+    # display the selected histograms
+    $expgui(fracFrame).hs.lbox selection clear 0 end
+    foreach h $expgui(curhist) {
+	$expgui(fracFrame).hs.lbox selection set $h
+    }
+
+    # disable traces on entryvar
+    set entrycmd(trace) 0
+
+    # get histogram list
+    set histlist {}
+    foreach item $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $item]
+    }
+
+    # must have at least one histogram selected here
+    if {[llength $histlist] == 0} {
+	foreach var {scale sref sdamp} {
+	    set entrycmd($var) ""
+	    set entryvar($var) ""
+	}
+	set parm [grid info $expgui(scaleBox).but1]
+	if {$parm != ""} {
+	    grid forget  $expgui(scaleBox).but1
+	    eval grid $expgui(scaleBox).ent1 $parm
+	}
+	# destroy the contents of the frame
+	set phaseFractf1 $expgui(FracBox).f
+	eval destroy [winfo children $phaseFractf1]
+	# reenable traces on entryvar
+	set entrycmd(trace) 1
+	return
+    }
+
+    #--------------
+    # Scale factor
+    #--------------
+    if {$expgui(globalmode) != 0} {
+	foreach var {scale sref sdamp} {
+	    set entrycmd($var) "histinfo [list $histlist] $var"
+	    set entryvar($var) [histinfo [lindex $histlist 0] $var]
+	}
+	# reset scale to black
+	catch {$entrybox(scale) config -fg black}
+	set parm [grid info $expgui(scaleBox).ent1]
+	if {$parm != ""} {
+	    grid forget  $expgui(scaleBox).ent1
+	    eval grid $expgui(scaleBox).but1 $parm
+	}
+    } else {
+	set hist $histlist
+	foreach var {scale sref sdamp} {
+	    set entrycmd($var) "histinfo $hist $var"
+	    set entryvar($var) [eval $entrycmd($var)]
+	}
+	# reset scale to black
+	catch {$entrybox(scale) config -fg black}
+	set parm [grid info $expgui(scaleBox).but1]
+	if {$parm != ""} {
+	    grid forget  $expgui(scaleBox).but1
+	    eval grid $expgui(scaleBox).ent1 $parm
+	}
+    }
+
+    #----------------
+    # Phase Fractions
+    #----------------
+    set phaseFractf1 $expgui(FracBox).f
+    # destroy the contents of the frame
+    eval destroy [winfo children $phaseFractf1]
+    if {$expgui(globalmode) != 0} {
+	set txt "Phase Fractions for Histograms: [CompressList $histlist]"
+    } else {
+	set txt "Phase Fractions"
+    }
+    $expgui(fracFrame).f1.phaseFrac configure -text $txt
+    # Create the frame inside the canvas, One frame for each Phase.
+    foreach i {1 2 3 4 5 6 7 8 9} {set phasehistlist($i) ""}
+    foreach hist $histlist {
+	foreach i $expmap(phaselist_$hist) {
+	    lappend phasehistlist($i) $hist
+	}
+    }
+    foreach i {1 2 3 4 5 6 7 8 9} {
+	if {[llength $phasehistlist($i)] == 0} continue
+	set framePF [frame $phaseFractf1.pF$i -relief groove  -bd 4]
+	grid $framePF -column 0 -row $i -sticky ew
+	# Label Heading for each phase.
+	if {$expgui(globalmode) != 0} {
+	    grid [label $framePF.l1 \
+		    -text "Phase $i Hist: [CompressList $phasehistlist($i)]"] \
+		    -column 0 -row 0 -sticky nws 
+	    grid [button $framePF.but1 -text "Set Globally" \
+		    -command "editglobalparm hapinfo frac \"Phase $i Fraction\" \
+		    [list $phasehistlist($i)] $i" \
+		    ] -column 1 -row 0
+	    set entrycmd(frref$i) "hapinfo [list $histlist] $i frref"
+	    set entryvar(frref$i) [hapinfo $hist $i frref]
+	    set entrycmd(frdamp$i) "hapinfo [list $histlist] $i frdamp"
+	} else {
+	    grid [label $framePF.l1  -text "Phase $i"] \
+		    -column 0 -row 0 -sticky nws 
+	    grid [entry $framePF.ent -textvariable entryvar(frac$i) -width 15]\
+		    -column 1 -row 0
+	    set entrybox(frac$i) $framePF.ent
+	    set entrycmd(frref$i) "hapinfo $hist $i frref"
+	    set entryvar(frref$i) [hapinfo $hist $i frref]
+	    set entrycmd(frdamp$i) "hapinfo $hist $i frdamp"
+	}
+	set entrycmd(frac$i) "hapinfo $hist $i frac"
+	set entryvar(frac$i) [hapinfo $hist $i frac]
+	grid [label $framePF.l2  -text "  Refine"] \
+		-column 2 -row 0 -sticky nws 
+	grid [checkbutton $framePF.cb -variable entryvar(frref$i)] \
+		-column 3 -row 0 -sticky nws 
+	grid [label $framePF.l3  -text "  Damping"] \
+		-column 4 -row 0 -sticky nws 
+	tk_optionMenu $framePF.tkOptDamp entryvar(frdamp$i) \
+		0 1 2 3 4 5 6 7 8 9	
+	set entryvar(frdamp$i) [hapinfo $hist $i frdamp]
+	grid $framePF.tkOptDamp -row 0 -sticky nsw -column 5
+    }
+    # resize the scroll window to match the actual
+    update idletasks
+    $expgui(FracBox) config -scrollregion [grid bbox $expgui(FracBox).f]
+    $expgui(FracBox) config -width [lindex [grid bbox $expgui(FracBox).f] 2]
+    update idletasks
+    # enable traces on entryvar now
+    set entrycmd(trace) 1
+}
+
+#-----------------------------------------------------------------------
+# display the profile page
+#-----------------------------------------------------------------------
+proc DisplayProfile {} {
+    global expgui entrycmd entryvar entrybox expmap
+
+    # trap if more than one histogram is selected unless global mode
+    if {$expgui(globalmode) == 0 && [llength $expgui(curhist)] > 1} {
+	set expgui(curhist) [lindex $expgui(curhist) 0]	
+    }
+    # display the selected histograms
+    $expgui(profFrame).hs.lbox selection clear 0 end
+    foreach h $expgui(curhist) {
+	$expgui(profFrame).hs.lbox selection set $h
+    }
+
+    # destroy the contents of the frame
+    eval destroy [winfo children $expgui(ProfileBox).f]
+    # since the next steps can take a while, do a screen update
+    update idletasks
+
+    if {$expgui(globalmode) == 0} {
+	# must have at least one histogram selected here
+	if {[llength $expgui(curhist)] == 0} return
+	# disable traces on entryvar for right now
+	set entrycmd(trace) 0
+	set hist [lindex $expmap(powderlist) $expgui(curhist)]
+	# no defined histograms?
+	if {$hist == ""} return
+	# Create one frame for each Phase.
+	set ind -1
+	set htype [string range $expmap(htype_$hist) 2 2]
+	set zflag 0
+	if {$htype == "C"} {
+	    set zflag [histinfo $hist zref]
+	}
+	foreach i $expmap(phaselist_$hist) {
+	    incr ind
+	    # Label Heading for each phase.
+	    set ptype [string trim [hapinfo $hist $i proftype]]
+	    grid [TitleFrame $expgui(ProfileBox).f.$i \
+		      -text "Hist $hist -- Phase $i (type $ptype)" \
+		      -relief groove -bd 2] \
+		-column 0 -row $ind -sticky ew
+	    set ProfileFrame [$expgui(ProfileBox).f.$i getframe]
+	    grid [frame $ProfileFrame.1] \
+		-column 0 -row 0 -columnspan 10
+	    pack [label $ProfileFrame.1.l  \
+		      -text Damping]\
+		-side left
+	    tk_optionMenu $ProfileFrame.1.tkOptDamp entryvar(pdamp_$i) \
+		    0 1 2 3 4 5 6 7 8 9
+	    set entrycmd(pdamp_$i) "hapinfo $hist $i pdamp"
+	    set entryvar(pdamp_$i) [hapinfo $hist $i pdamp]
+	    pack $ProfileFrame.1.tkOptDamp -side left
+	    pack [label $ProfileFrame.1.l1 \
+		    -text "  Peak cutoff"]\
+		    -side left
+	    pack [entry $ProfileFrame.1.e1  \
+		    -width 10 -textvariable entryvar(pcut_$i)]\
+		    -side left
+	    set entrybox(pcut_$i) $ProfileFrame.1.e1
+	    set entrycmd(pcut_$i) "hapinfo $hist $i pcut"
+	    set entryvar(pcut_$i) [hapinfo $hist $i pcut]
+
+	    pack [button $ProfileFrame.1.b1  \
+		    -text "Change Type" \
+		    -command "ChangeProfileType $hist $i"]\
+		    -side left
+	    
+	    set col -1
+	    set row 1
+	    set nterms [hapinfo $hist $i profterms]
+	    set lbls "dummy [GetProfileTerms $i $hist [expr abs($ptype)]]"
+	    for { set num 1 } { $num <= $nterms } { incr num } {
+		set term {}
+		catch {set term [lindex $lbls $num]}
+		if {$term == ""} {set term $num}
+		incr col
+		grid [label $ProfileFrame.l${num}_${i} -text "$term"] \
+			-row $row -column $col
+		incr col
+		grid [checkbutton $ProfileFrame.ref${num}_${i} \
+			-variable entryvar(pref${num}_$i)] -row $row -column $col
+		set entrycmd(pref${num}_$i) "hapinfo $hist $i pref$num"
+		set entryvar(pref${num}_$i) [hapinfo $hist $i pref$num]
+		incr col
+		grid [entry $ProfileFrame.ent${num}_${i} \
+			-textvariable entryvar(pterm${num}_$i)\
+			-width 12] -row $row -column $col
+		set entrybox(pterm${num}_$i) $ProfileFrame.ent${num}_${i}
+		set entrycmd(pterm${num}_$i) "hapinfo $hist $i pterm$num"
+		set entryvar(pterm${num}_$i) [hapinfo $hist $i pterm$num]
+		# disable trns & shft when zero is refined
+		if {$zflag && ($term == "trns" || $term == "shft")} {
+		    if {$entryvar(pref${num}_$i)} {
+			incr expgui(changed)
+			set entryvar(pref${num}_$i) 0
+		    }
+		    $ProfileFrame.l${num}_${i} config -fg gray
+		    $ProfileFrame.ref${num}_${i} config -state disabled
+		    $ProfileFrame.ent${num}_${i} config -fg gray
+		}
+		if {$col > 6} {set col -1; incr row}
+	    }
+	}
+	grid columnconfigure $expgui(ProfileBox).f 0 -weight 1
+    } else {
+	# get histogram list
+	set histlist {}
+	foreach item $expgui(curhist) {
+	    lappend histlist [lindex $expmap(powderlist) $item]
+	}
+	# must have at least one histogram selected here
+	if {[llength $histlist] == 0} return
+	# disable traces on entryvar for right now
+	set entrycmd(trace) 0
+	# loop through histograms & phases, set up an array by phase & profile type
+	catch {unset prtyparray histarray phasearray}
+	foreach hist $histlist {
+	    foreach phase $expmap(phaselist_$hist) {
+		set prtyp [string trim [hapinfo $hist $phase proftype]]
+		set key ${prtyp}_$phase
+		lappend prtyparray($key) $hist
+		lappend histarray($key) $hist
+		lappend phasearray($key) $phase
+	    }
+	}
+	
+	set ptype ""
+	set i -1
+	# loop over all combined phases and profile types, sorted 1st by profile number
+	foreach key [lsort [array names prtyparray]] {
+	    # split key
+	    scan $key %d_%d prftyp p
+
+	    if {$ptype != $prftyp || !$expgui(globalphasemode)} {
+		set ptype $prftyp
+		set curhistlist $histarray($key)
+		set curphaslist $phasearray($key)
+		
+		set hist1 [lindex $curhistlist 0]
+		set phase1 [lindex $curphaslist 0]
+		set nterms [hapinfo $hist1 $phase1 profterms]
+		set htype [string range $expmap(htype_$hist1) 2 2]
+		set lbls "dummy [GetProfileTerms $phase1 $hist1 [expr abs($ptype)]]"
+		# Create a frame for this type
+		incr i
+		set boxtitle "Phase $p, hist [CompressList $histarray($key)]"
+		grid [TitleFrame $expgui(ProfileBox).f.$i \
+			  -text "(type $ptype)" \
+			  -relief groove -bd 2] \
+		    -column 0 -row $i -sticky ew
+		set ProfileFrame [$expgui(ProfileBox).f.$i getframe]
+		grid [frame $ProfileFrame.0] \
+		    -column 0 -row 0 -columnspan 20 -sticky ew
+		grid [label $ProfileFrame.0.1  \
+			-anchor w] -row 0 -column 1
+		grid [frame $ProfileFrame.1] \
+			-column 0 -row 1 -columnspan 20 -sticky ew
+		grid [label $ProfileFrame.1.2  \
+			-text "Damping"] -row 0 -column 2
+		tk_optionMenu $ProfileFrame.1.tkOptDamp \
+			entryvar(pdamp_$i) 0 1 2 3 4 5 6 7 8 9
+		grid $ProfileFrame.1.tkOptDamp -row 0 -column 3
+		grid [button $ProfileFrame.1.edit \
+			-text "Global Edit"] -row 0 -column 4 -sticky w
+		set entryvar(pdamp_$i) [hapinfo $hist $phase pdamp]
+		grid [button $ProfileFrame.1.b1 -text "Change Type"] \
+			-row 0 -column 5 -sticky w
+		set col -1
+		set row 2
+		for { set num 1 } { $num <= $nterms } { incr num } {
+		    set term {}
+		    catch {set term [lindex $lbls $num]}
+		    if {$term == ""} {set term $num}
+		    incr col
+		    grid [label $ProfileFrame.l${num}_${i} \
+			    -text "$term"] -row $row -column $col
+		    incr col
+		    grid [checkbutton $ProfileFrame.ref${num}_${i} \
+			    -variable entryvar(pref${num}_$i)] \
+			    -row $row -column $col
+		    set entryvar(pref${num}_$i) [hapinfo $hist $phase pref$num]
+		    if {$col > 10} {set col -1; incr row}
+		}
+		grid columnconfigure $expgui(ProfileBox).f 0 -weight 1
+	    } else {
+		# add to the current entry
+		eval lappend curhistlist $histarray($key)
+		eval lappend curphaslist $phasearray($key)
+		append boxtitle "\nPhase $p, hist [CompressList $histarray($key)]"
+	    }
+	    $ProfileFrame.0.1 config -text $boxtitle
+	    $ProfileFrame.1.edit config -command "\
+		    EditProfile \"\n$boxtitle\" \
+		    [list $curhistlist] \
+		    [list $curphaslist]"
+	    $ProfileFrame.1.b1 config -command "ChangeProfileType \
+		    [list $curhistlist] [list $curphaslist]" 
+	    set entrycmd(pdamp_$i) "hapinfo \
+		    [list $curhistlist] \
+		    [list $curphaslist] pdamp"
+	    for { set num 1 } { $num <= $nterms } { incr num } {
+		set entrycmd(pref${num}_$i) "hapinfo \
+			[list $curhistlist] \
+			[list $curphaslist] pref$num"
+	    }
+	}
+    }
+    
+    # resize the scroll window to match the actual
+    update idletasks
+    $expgui(ProfileBox) config -scrollregion [grid bbox $expgui(ProfileBox).f]
+    $expgui(ProfileBox) config -width [lindex [grid bbox $expgui(ProfileBox).f] 2]
+    update idletasks
+    ResizeNotebook
+    # enable traces on entryvar now
+    set entrycmd(trace) 1
+}
+
+# process the bit settings in the print options
+#   bitnum -- the number of the bit to be tested/set starting at 0 for the LSBit
+proc printsetting {bitnum "action get" "value {}"} {
+    global entryvar expgui
+    if {$action == "get"} {
+	return [expr ([expinfo print] & int(pow(2,$bitnum))) != 0]
+    } elseif $value {
+	set newval [expr ([expinfo print] | int(pow(2,$bitnum)))]
+    } else {
+	set newval [expr ([expinfo print] & ~int(pow(2,$bitnum)))]
+    }
+    expinfo print set $newval
+    RecordMacroEntry "incr expgui(changed); expinfo print set $newval" 1
+    set expgui(printopt) "Print Options ([expinfo print])"
+}
+
+# need to respond to mouse presses -- control variable associated with extract Fobs
+# and set the LeBail extraction flags
+proc SetupExtractHist {} {
+    global expgui entrycmd entryvar expmap
+
+    # display the selected histograms
+    $expgui(lsFrame).hs.lbox selection clear 0 end
+    foreach h $expgui(curhist) {
+	$expgui(lsFrame).hs.lbox selection set $h
+    }
+
+    # get histogram list
+    set histlist {}
+    foreach item $expgui(curhist) {
+	set hist [lindex $expmap(powderlist) $item]
+	if {$hist != ""} {lappend histlist $hist}
+    }
+    set entrycmd(fobsextract) "histinfo [list $histlist] foextract"
+    if {[llength $histlist] == 0 || [string trim $histlist] == ""} {
+	set entrycmd(LBdamp) ""
+	foreach phase {1 2 3 4 5 6 7 8 9} {
+	    $expgui(FobsExtractFrame).l$phase config -fg grey
+	    set expgui(Fextract$phase) {}
+	    foreach item $expgui(ExtractSettingsRadiobuttons) {
+		${item}$phase config -state disabled -bd 1
+	    }
+	}
+    } elseif {[llength $histlist] == 1} {
+	# disable traces on entryvar
+	set entrycmd(trace) 0
+	set entryvar(fobsextract) [histinfo $histlist foextract]
+	set entrycmd(LBdamp) "histinfo $histlist LBdamp"
+	set entryvar(LBdamp) [histinfo $histlist LBdamp]
+	foreach phase {1 2 3 4 5 6 7 8 9} {
+	    # is the phase present?
+	    if {[lsearch -exact $expmap(phaselist_$histlist) $phase] == -1} {
+		$expgui(FobsExtractFrame).l$phase config -fg grey
+		set expgui(Fextract$phase) {}
+		foreach item $expgui(ExtractSettingsRadiobuttons) {
+		    ${item}$phase config -state disabled -bd 1
+		}
+	    } else {
+		$expgui(FobsExtractFrame).l$phase config -fg black
+		foreach item $expgui(ExtractSettingsRadiobuttons) {
+		    ${item}$phase config -state normal -bd 2
+		}
+		set expgui(Fextract$phase) [hapinfo $histlist $phase extmeth]
+	    }
+	}
+    } elseif {[llength $histlist] > 1} {
+	# disable traces on entryvar
+	set entrycmd(LBdamp) "histinfo [list $histlist] LBdamp"
+	set entryvar(LBdamp) [histinfo [lindex $histlist 0] LBdamp]
+	set entrycmd(trace) 0
+	# multiple histograms need phases in any histogram
+	foreach phase {1 2 3 4 5 6 7 8 9} {
+	    set gotphase($phase) 0
+	}	    
+	foreach hist $histlist {
+	    foreach phase $expmap(phaselist_$hist) {
+		set gotphase($phase) 1
+	    }
+	}
+	foreach phase {1 2 3 4 5 6 7 8 9} {
+	    set expgui(Fextract$phase) {}
+	    if $gotphase($phase) {
+		$expgui(FobsExtractFrame).l$phase config -fg black
+		foreach item $expgui(ExtractSettingsRadiobuttons) {
+		    ${item}$phase config -state normal -bd 2
+		}
+	    } else {
+		$expgui(FobsExtractFrame).l$phase config -fg grey
+		foreach item $expgui(ExtractSettingsRadiobuttons) {
+		    ${item}$phase config -state disabled -bd 1
+		}
+	    }
+	}
+    }
+    # reenable traces
+    set entrycmd(trace) 1
+}
+# respond to a change in the fobs extraction method for a phase
+# force the main extraction flag on, if fobs extraction is selected for any phase
+proc HistExtractSet {phase} {
+    global expgui entryvar expmap
+    foreach item $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $item]
+    }
+    hapinfo $histlist $phase extmeth set $expgui(Fextract$phase)
+    RecordMacroEntry "incr expgui(changed); hapinfo [list $histlist] $phase extmeth set $expgui(Fextract$phase)" 1
+    incr expgui(changed)
+    if {$expgui(Fextract$phase) != 0} {set entryvar(fobsextract) 1}
+}
+#---------------------------- Global Edit Functions ------------------------
+proc editbackground {} {
+    global expgui expmap entrycmd
+    set histlist {}
+    foreach n $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $n]
+    }
+    if {[llength $histlist] == 0} return
+
+    set w .back
+    catch {destroy $w}
+    toplevel $w -bg beige
+    if {$expgui(globalmode) != 0} {
+	wm title $w "Global Edit Background" 
+    } else {
+	wm title $w "Edit Background" 
+    }
+    
+    pack [frame $w.0 -bd 6 -relief groove  -bg beige \
+	    ] -side top -expand yes -fill both
+    if {[llength $histlist] > 1} {
+	grid [label $w.0.a \
+	    -text "Setting background terms for histograms [CompressList $histlist]" \
+	    -bg beige] -row 0 -column 0 -columnspan 10
+    } else {
+	grid [label $w.0.a \
+	    -text "Setting background terms for histogram $histlist" \
+	    -bg beige] -row 0 -column 0 -columnspan 4
+	grid [button $w.0.bkg -text "Fit Background\nGraphically" \
+		-command "QuitEditBackground $w; bkgedit $histlist"] \
+		-row 0 -column 4 -rowspan 2
+	grid columnconfig $w.0 0 -weight 1
+	grid columnconfig $w.0 4 -weight 1
+    }
+    set hist [lindex $histlist 0]
+    grid [label $w.0.b -text "Function type" -bg beige]  -row 1 -column 0 -sticky e
+
+    # disable traces on  expgui(backtype) & expgui(backterms) now
+    set entrycmd(trace) 0
+
+    # number of terms
+    set expgui(backtype) [histinfo $hist backtype]
+    set expgui(orig_backtype) $expgui(backtype)
+    set expgui(prev_backtype) $expgui(backtype)
+    set typemenu [tk_optionMenu $w.0.type expgui(backtype) null]
+    $typemenu delete 0 end
+    foreach item {
+	"1 - Shifted Chebyschev"
+	"2 - Cosine Fourier series"
+	"4 - Power series in Q**2n/n!"
+	"5 - Power series in n!/Q**2n"
+	"6 - Power series in Q**2n/n! and n!/Q**2n"
+	"7 - Linear interpolation function"
+	"8 - Reciprocal interpolation function"
+    } {
+	set val [lindex $item 0]
+	$typemenu insert end radiobutton -variable expgui(backtype) \
+		-label $item -value $val
+    }
+# removed
+#	"3 - Radial distribution peaks"
+
+    grid $w.0.type   -row 1 -column 1
+    grid [label $w.0.c -text "  Number of terms"  -bg beige] -row 1 -column 2
+
+    # function type
+    set expgui(backterms) [histinfo $hist backterms]
+    set expgui(orig_backterms) $expgui(backterms) 
+    set list {}; for {set i 1} {$i <= 36} {incr i} {lappend list $i}
+    eval tk_optionMenu $w.0.terms expgui(backterms) $list
+    grid $w.0.terms   -row 1 -column 3 
+    # enable traces on  expgui(backtype) & expgui(backterms) now
+    set entrycmd(trace) 1
+
+    #set background terms
+    for {set num 1 } { $num <= 36 } { incr num } {
+	set var "bterm$num"
+	set expgui($var) {}
+	set expgui(orig_$var) {}
+    }
+    if {[llength $histlist] == 1} {
+	for {set num 1 } { $num <= $expgui(backterms) } { incr num } {
+	    set var "bterm$num"
+	    set expgui($var) [histinfo $histlist $var]
+	    set expgui(orig_$var) $expgui($var)
+	}
+    }
+
+    pack [frame $w.1 -bd 6 -relief groove  -bg beige] -side top \
+	    -expand yes -fill both
+    ShowBackTerms $w.1
+
+    set expgui(temp) {}
+    pack [frame $w.b -bg beige] -fill x -expand yes -side top
+    grid [button $w.b.2 -text Continue -command "destroy $w"] -row 0 -column 1
+    grid [button $w.b.3 -text Cancel \
+	    -command "QuitEditBackground $w"] -row 0 -column 2
+    grid [button $w.b.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui3.html EditBackground"] \
+	    -row 0 -column 4
+    grid columnconfig $w.b 0 -weight 1
+    grid columnconfig $w.b 3 -weight 1
+    bind $w <Key-F1> "MakeWWWHelp expgui3.html EditBackground"
+    bind $w <Return> "destroy $w"
+
+    # force the window to stay on top
+    putontop $w
+
+    focus $w.b.2
+    tkwait window $w
+    afterputontop
+
+    if {$expgui(temp) != ""} return
+
+    if {$expgui(orig_backtype) != $expgui(backtype)} {
+	histinfo $histlist backtype set $expgui(backtype)
+	RecordMacroEntry "histinfo [list $histlist] backtype set $expgui(backtype)" 0
+	incr expgui(changed)
+    }
+    if {$expgui(orig_backterms) != $expgui(backterms)} {
+	histinfo $histlist backterms set $expgui(backterms)
+	RecordMacroEntry "histinfo [list $histlist] backterms set $expgui(backterms)" 0
+	incr expgui(changed)
+    }
+    for {set num 1 } { $num <= $expgui(backterms) } { incr num } {
+	set var "bterm$num"
+	if {$expgui(orig_$var) != $expgui($var)} {
+	    histinfo $histlist $var set $expgui($var)
+	    RecordMacroEntry "histinfo [list $histlist] $var set $expgui($var)" 0
+	    incr expgui(changed)
+	}
+    }
+    RecordMacroEntry "incr expgui(changed)" 0
+
+    if {$expgui(globalmode) == 0} {
+	set expgui(backtypelbl) "Function type [histinfo $hist backtype]"
+	set expgui(backtermlbl) "([histinfo $hist backterms] terms)"
+    }
+}
+
+trace variable expgui(backterms) w ChangeBackTerms
+proc ChangeBackTerms {a b c} {
+    global entrycmd expgui
+    if !$entrycmd(trace) return
+    ShowBackTerms .back.1
+}
+
+trace variable expgui(backtype) w ChangeBackType
+# reset the terms to 1, 0, 0... when the number of terms increase
+proc ChangeBackType {a b c} {
+    global entrycmd expgui
+    if !$entrycmd(trace) return
+    if {$expgui(prev_backtype) == $expgui(backtype)} return
+    set expgui(prev_backtype) $expgui(backtype)
+    for {set num 1 } { $num <= $expgui(backterms) } { incr num } {
+	set var "bterm$num"
+	if {$num == 1} {
+	    set expgui($var) 1.0
+	} else {
+	    set expgui($var) 0.0
+	}
+    }
+}
+
+proc ShowBackTerms {w } {
+    global expgui expmap
+    # destroy the contents of the frame
+    eval destroy [winfo children $w]
+    set histlist {}
+    foreach n $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $n]
+    }
+    set widgetsPerRow 4
+    for {set rows 2; set num 1 } { $num <= $expgui(backterms) } { incr rows } {
+	for {set cols 0} { (2*$widgetsPerRow > $cols) && ($num <= $expgui(backterms)) }  { incr num }  {
+	    set var "bterm$num"
+	    grid [label $w.l$num -text $num -bg beige]  \
+		    -row $rows -column $cols -sticky nes
+	    incr cols
+	    grid [entry $w.e$num -width 15 -textvariable expgui($var) \
+		    ] -row $rows  -column $cols  -sticky news
+	    incr cols
+	}
+    }
+}
+
+proc QuitEditBackground {w} {
+    global expgui
+    # lets find out if anything changed
+    set changed 0
+    if {$expgui(orig_backtype) != $expgui(backtype)} {
+	set changed 1
+    }
+    if {$expgui(orig_backterms) != $expgui(backterms)} {
+	set changed 1
+    }
+    for {set num 1 } { $num <= $expgui(backterms) } { incr num } {
+	set var "bterm$num"
+	if {$expgui(orig_$var) != $expgui($var)} {
+	    set changed 1
+	    break
+	}
+    }
+    if $changed {
+	set decision [tk_dialog .changes "Abandon Changes" \
+		"You have made changes to the background. Ok to abandon changes?" \
+		warning 0 Abandon Keep]
+	if !$decision {
+	    set expgui(temp) "Quit"
+	    destroy $w
+	}
+    } else {
+	set expgui(temp) "Quit"
+	destroy $w
+    }
+}
+
+# this probably needs work
+proc editglobalparm {cmd variable title "histlist {}" "phase {}"} {
+    global expgui expmap
+    set w .global
+    catch {destroy $w}
+    toplevel $w -bg beige
+    wm title $w "Edit Global Parameter"
+    set expgui(temp) {}
+    if {[llength $histlist] == 0} {
+	set hist {}
+	foreach n $expgui(curhist) {
+	    lappend hist [lindex $expmap(powderlist) $n]
+	}
+    } else {
+	set hist $histlist
+    }
+    pack [frame $w.0 -bd 6 -relief groove -bg beige] \
+	    -side top -expand yes -fill both
+    grid [label $w.0.a -text "Setting $title for histograms [CompressList $hist]"\
+	    -bg beige] \
+	    -row 0 -column 0 -columnspan 10
+    grid [entry $w.0.b -textvariable expgui(temp)] \
+	    -row 1 -column 0 
+
+
+    pack [frame $w.b -bg beige] -fill x -expand yes -side top
+    pack [button $w.b.2 -text Continue -command "destroy $w"] -side left
+    pack [button $w.b.3 -text Cancel -command "set expgui(temp) {}; destroy $w"] -side left
+    pack [button $w.b.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui3.html EditParm"] -side right
+    bind $w <Key-F1> "MakeWWWHelp expgui3.html EditParm"
+    bind $w <Return> "destroy $w"
+
+    # force the window to stay on top
+    putontop $w
+    focus $w.b.2
+    tkwait window $w
+    afterputontop
+
+    if {$expgui(temp) != ""} {
+	foreach h $hist {
+	    if {$cmd == "histinfo"} {
+		histinfo $h $variable set $expgui(temp)
+		RecordMacroEntry "histinfo $h $variable set $expgui(temp)" 1
+		incr expgui(changed)
+		if $expgui(debug) {
+		    puts "histinfo $h $variable set $expgui(temp)"
+		}
+	    } elseif {$cmd == "hapinfo"} {
+		hapinfo $h $phase $variable set $expgui(temp)
+		RecordMacroEntry "hapinfo $h [list $phase] $variable set $expgui(temp)" 1
+		incr expgui(changed)
+		if $expgui(debug) {
+		    puts "hapinfo $h $phase $variable set $expgui(temp)"
+		}
+	    } else {
+		error "$cmd unimplemented"
+	    }
+	}
+	RecordMacroEntry "incr expgui(changed)" 0
+    }
+}
+
+proc EditProfile {title histlist phaselist} {
+    global expgui expmap entrycmd
+    set w .back
+    catch {destroy $w}
+    toplevel $w -bg beige
+    wm title $w "Global Edit Profile"
+    set hist [lindex $histlist 0]
+    set phase [lindex $phaselist 0]
+    set ptype [string trim [hapinfo $hist $phase proftype]]
+    set htype [string range $expmap(htype_$hist) 2 2]
+    set nterms [hapinfo $hist $phase profterms]
+    
+    pack [frame $w.0 -bd 6 -relief groove  -bg beige \
+	    ] -side top -expand yes -fill both
+    grid [label $w.0.a \
+	    -text "Setting profile terms: $title" \
+	    -bg beige] -row 0 -column 0 -columnspan 10
+    grid [label $w.0.b -text "Function type $ptype"  -bg beige]  -row 1 -column 0
+    grid [label $w.0.c -text "  Peak cutoff" -bg beige] -row 1 -column 3 
+    grid [entry $w.0.d -width 10 ]  -row 1 -column 4
+    set entrylist {}
+    lappend entrylist "pcut $w.0.d"
+
+    set col -1
+    set row 1
+    set lbls "dummy [GetProfileTerms $phase $hist [expr abs($ptype)]]"
+    pack [frame $w.1 -bd 6 -relief groove  -bg beige \
+	    ] -side top -expand yes -fill both
+    for { set num 1 } { $num <= $nterms } { incr num } {
+	set term {}
+	catch {set term [lindex $lbls $num]}
+	if {$term == ""} {set term $num}
+	incr col
+	grid [label $w.1.l${num} -text "$term" -bg beige] \
+		-row $row -column $col
+	incr col
+	grid [entry $w.1.ent${num} \
+		-width 14] -row $row -column $col
+	lappend entrylist "pterm$num $w.1.ent${num}"	
+	if {$col > 6} {set col -1; incr row}
+    }
+    pack [frame $w.b -bg beige] -fill x -expand yes -side top
+    grid [button $w.b.2 -text Continue \
+	    -command "SetEditProfile [list $entrylist] [list $phaselist] \
+	    [list $histlist] $w"] -row 0 -column 1
+    grid [button $w.b.3 -text Cancel \
+	    -command "QuitEditProfile $w [list $entrylist]"] -row 0 -column 2
+    grid [button $w.b.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui5.html GlobalEdit"] \
+	    -row 0 -column 4
+    grid columnconfig $w.b 0 -weight 1
+    grid columnconfig $w.b 3 -weight 1
+    bind $w <Key-F1> "MakeWWWHelp expgui5.html GlobalEdit"
+    bind $w <Return> "QuitEditProfile $w [list $entrylist]"
+
+    # force the window to stay on top
+    putontop $w
+    focus $w.b.2
+    tkwait window $w
+    afterputontop
+}
+
+proc SetEditProfile {entrylist phaselist histlist w} {
+    global expgui
+    foreach item $entrylist {
+	set value [ [lindex $item 1] get ]
+	if {$value != ""} {
+	    hapinfo $histlist $phaselist [lindex $item 0] set $value
+	    RecordMacroEntry "hapinfo [list $histlist] [list $phaselist] [lindex $item 0] set $value" 1
+	    incr expgui(changed)
+	    RecordMacroEntry "incr expgui(changed)" 0
+	    if $expgui(debug) {
+		puts "hapinfo [list $phaselist] [list $histlist] [lindex $item 0] set $value"
+	    }
+	}
+    }
+    destroy $w
+}
+
+proc QuitEditProfile {w entrylist} {
+    global expgui
+    # lets find out if anything changed
+    set changed 0
+    foreach item $entrylist {
+	if {[ [lindex $item 1] get ] != ""} {set changed 1; break}
+    }
+    if $changed {
+	set decision [tk_dialog .changes "Abandon Changes" \
+		"You have made changes to the Profile. Ok to abandon changes?" \
+		warning 0 Abandon Keep]
+	if !$decision {destroy $w}
+    } else {
+	destroy $w
+    }
+}
+
+# this is called to change the absorption correction mode and to
+# change the absorption correction model.
+proc editabsorption {} {
+    global expgui expmap 
+    set histlist {}
+    foreach n $expgui(curhist) {
+	lappend histlist [lindex $expmap(powderlist) $n]
+    }
+    if {[llength $histlist] == 0} return
+
+    set w .abs
+    catch {destroy $w}
+    toplevel $w -bg beige
+    if {$expgui(globalmode) != 0} {
+	wm title $w "Global Edit Absorption/Reflectivity" 
+    } else {
+	wm title $w "Edit Absorption/Reflectivity"
+    }
+    
+    pack [frame $w.0 -bd 6 -relief groove  -bg beige \
+	    ] -side top -expand yes -fill both
+    if {[llength $histlist] > 1} {
+	grid [label $w.0.a \
+	    -text "Changing settings for histograms [CompressList $histlist]" \
+	    -bg beige] -row 0 -column 0 -columnspan 10
+    } else {
+	grid [label $w.0.a \
+	    -text "Changing settings for histogram $histlist" \
+	    -bg beige] -row 0 -column 0 -columnspan 4
+	#grid columnconfig $w.0 4 -weight 1
+    }
+    grid rowconfig $w.0 1 -min 10
+    set hist [lindex $histlist 0]
+
+    grid [label $w.0.lb1 -text "Absorption Coefficient(s)" -bg beige] \
+	    -row 2 -column 1  -columnspan 2
+    grid [label $w.0.lb1a -text "1" -bg beige] -row 3 -column 1
+    set expgui(abs2box1) $w.0.lb2a
+    grid [label $w.0.lb2a -text "2" -bg beige] -row 3 -column 2
+    grid [label $w.0.lb3 -text Absorption\nFunction -bg beige] \
+	    -row 2 -column 6 -rowspan 2 -columnspan 2
+    grid [entry $w.0.ent1 -textvariable expgui(abscor1) -width 15] \
+	    -row 4 -column 1
+    set expgui(abs2box2) $w.0.ent2
+    grid [entry $w.0.ent2 -textvariable expgui(abscor2) -width 15] \
+	    -row 4 -column 2 
+    trace vdelete expgui(abstype) w AbsSetoptmsg
+    eval tk_optionMenu $w.0.m1 expgui(abstype) 0 1 2 3 4
+    trace variable expgui(abstype) w AbsSetoptmsg
+    grid $w.0.m1 -row 4 -column 6 -columnspan 2
+    grid [label $w.0.lb8 -textvariable expgui(opttxt) -bg beige \
+	  -wrap 300 -justify left] -row 5 -column 1  -sticky ne -columnspan 7
+    grid rowconfig $w.0 5 -min 100
+    # set the values, note the trace on abstype
+    foreach var {abscor1 abscor2 abstype} {
+	set expgui($var) [histinfo $hist $var]
+    }
+
+    pack [frame $w.b -bg beige] -fill x -expand yes -side top
+    grid [button $w.b.2 -text Continue -command "AbsSaveEdit $w [list $histlist]"] \
+	    -row 0 -column 1
+    grid [button $w.b.3 -text Cancel \
+	    -command "destroy $w"] -row 0 -column 2
+    grid [button $w.b.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui3.html EditAbsorption"] \
+	    -row 0 -column 4
+    grid columnconfig $w.b 0 -weight 1
+    grid columnconfig $w.b 3 -weight 1
+    bind $w <Key-F1> "MakeWWWHelp expgui3.html EditAbsorption"
+    bind $w <Return> "destroy $w"
+
+    # force the window to stay on top
+    putontop $w
+
+    focus $w.b.2
+    tkwait window $w
+    afterputontop
+}
+
+proc AbsSetoptmsg {args} {
+    global expgui
+    array set opttxt {
+	0 "Correction for cylindrical samples [Lobanov & Alte da Veiga]. OK for all data types, but not for Bragg-Brentano flat-plate geometry. Set term 1 to mu*R/lambda (TOF: mu*R for lambda=1). For CW x-ray/neutron, do not refine!"
+	1 "Wavelength-dependent correction for container penetration. Use with TOF & Energy Disp x-ray only."
+	2 "Surface roughness correction [Pitschke, Hermann & Muttern]. Use with flat-plate reflection geometry (usually Bragg-Brentano) only."
+	3 "Surface roughness correction, [Suortti]. Use with flat-plate reflection geometry (usually Bragg-Brentano) only."
+	4 "Flat plate samples in transmission mode. OK for all data types, but not Bragg-Brentano geometry. Term 2 is angle w/r to beam (usually 0). For CW, do not refine."
+    }
+    set expgui(opttxt) ""
+    catch {set expgui(opttxt) [set opttxt($expgui(abstype))]}
+    switch $expgui(abstype) {
+	0 -
+	1 {
+	    $expgui(abs2box1) config -fg gray
+	    $expgui(abs2box2) config -state disabled -fg gray
+	} 
+	2 -
+	3 -
+	4 {
+	    $expgui(abs2box1) config -fg black
+	    $expgui(abs2box2) config -state normal -fg black
+	}
+	default {
+	    set expgui(opttxt) "Please select an absorption function"
+	}
+    }
+}
+proc AbsSaveEdit {top histlist} {
+    global expgui expmap
+    # sanity check: look at the histogram type
+    set h [lindex $histlist 0]
+    if {[string range $expmap(htype_$h) 2 2] == "T"} {set flag 1}
+    if {[string range $expmap(htype_$h) 1 2] == "NC"} {set flag 2}
+    if {[string range $expmap(htype_$h) 1 2] == "XC" && \
+	    [histinfo $h lam2] != 0.0} {set flag 3}
+    if {[string range $expmap(htype_$h) 1 2] == "XC" && \
+	    [histinfo $h lam2] == 0.0} {set flag 4}
+    if {[string range $expmap(htype_$h) 1 2] == "XE"} {set flag 5}
+
+    set msg {}
+    if {$expgui(abstype) == 0 && ($flag == 3 || $flag == 4)} {
+	set msg "Mode 0 is appropriate for cylindrical (Debye-Scherrer) geometry only"
+    } elseif {$expgui(abstype) == 1 && ($flag != 1 && $flag != 5)} {
+	set msg "Mode 1 is appropriate for wavelength-dispersive (TOF/E.D. X-ray) data only"
+    } elseif {($expgui(abstype) == 2 || $expgui(abstype) == 3) \
+	    && $flag != 3 && $flag != 4} {
+	set msg "Mode 1 is appropriate for reflection geometry flat-plate (typically Bragg-Brentano) data only"
+    } elseif {$expgui(abstype) == 4 && $flag <= 3} {
+	set msg "Mode 4 is appropriate for flat-plate samples in transmission"
+    }
+    if {$msg != ""} {
+	set result [\
+		MyMessageBox -parent $top -title "Sanity check" \
+		-type okcancel -default cancel \
+		-icon warning -helplink "expgui3.html AbsorptionSanity" \
+		-message "$msg  -- are you sure you want to do this?"]
+	if {$result == "cancel"} return
+    }
+
+    # validate abscor1 & abscor2 (if needed)
+    set msg {}
+    if {![validreal expgui(abscor1) 15 8]} {
+	set msg "Term 1 is invalid"
+    }
+    if {$expgui(abstype) > 1} {
+	if {![validreal expgui(abscor2) 15 8]} {
+	    if {$msg != ""} {append msg "\n"}
+	    append msg "Term 2 is invalid"
+	}
+    }
+    if {$msg != ""} {
+	MyMessageBox -parent $top -title "Entry error" \
+		-type ok -default ok \
+		-icon warning -helplink "" \
+		-message "Invalid data entered. Please correct.\n$msg"
+	return
+    }
+    
+    histinfo $histlist abstype set $expgui(abstype)
+    RecordMacroEntry "histinfo [list $histlist] abstype set $expgui(abstype)" 0
+    histinfo $histlist abscor1 set $expgui(abscor1)
+    RecordMacroEntry "histinfo [list $histlist] abscor1 set $expgui(abscor1)" 0
+    if {$expgui(abstype) > 1} {
+	histinfo $histlist abscor2 set $expgui(abscor2)
+	RecordMacroEntry "histinfo [list $histlist] abscor2 set $expgui(abscor2)" 0
+    } else {
+	histinfo $histlist abscor2 set 0.
+	RecordMacroEntry "histinfo [list $histlist] abscor2 set 0." 0
+    }
+    # turn off refinement, just in case they didn't read
+    if {($expgui(abstype) == 0 || $expgui(abstype) == 1 || $expgui(abstype) == 4) \
+	    && ($flag != 1 && $flag != 5)} {
+	histinfo $histlist absref set 0
+	RecordMacroEntry "histinfo [list $histlist] absref set 0" 0
+    }
+    incr expgui(changed)
+    RecordMacroEntry "incr expgui(changed)" 0
+    destroy $top
+    DisplayHistogram
+}
+
+##############################################################################
+##                               #############################################
+## END OF THE PROCEDURES SECTION #############################################
+##                               #############################################
+##############################################################################
+
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<                          <<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   BEGIN:  GUI SECTION    >>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>                          >>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# A frame for menu items at top of display
+set expgui(fm) [frame .fm -relief raised -borderwidth 2 -width 150 -height 40]
+# Pack the menu frame.
+pack $expgui(fm) -fill x -side top -anchor n
+
+# create a button bar
+pack [frame .bar -relief raised -bd 2 -bg beige] -fill x -side top -anchor n
+
+# Creating the notebook and panes
+
+# create an array element describing each notebook page
+# element 0 -- pane name
+#         1 -- Label on frame
+#         2 -- initialization command
+#         3 -- update command
+#         4 -- 0/1 Use 1 if pane should be disabled in when all histograms 
+#                are selected in global mode, 0 otherwise
+#         5 -- Web page for pane
+#         6 -- name anchor on Web page for pane
+set expgui(notebookpagelist) {
+    {lsFrame     "LS Controls" \
+	    "" \
+	    SetupExtractHist \
+	    0  expgui1.html ""}
+    {phaseFrame   Phase        \
+	    "" \
+	    {SelectOnePhase $expgui(curPhase)} \
+	    0  expgui2.html ""}
+    {histFrame    Powder \
+	    MakeHistPane \
+	    DisplayHistogram \
+	    1  expgui3.html ""}
+    {fracFrame    Scaling \
+	    MakeScalingPane \
+	    DisplayFrac \
+	    0  expgui4.html ""}
+    {profFrame    Profile \
+	    MakeProfilePane \
+	    DisplayProfile \
+	    1  expgui5.html ""}
+    {consFrame    "Constraints" \
+	    "source [file join $expgui(scriptdir) atomcons.tcl]; MakeConstraintsPane" \
+	    DisplayConstraintsPane \
+	    0  expgui6.html ""}
+    {restrFrame    "Restraints" \
+	    "source [file join $expgui(scriptdir) atomcons.tcl]; MakeRestraintsPane" \
+	    DisplayRestraintsPane \
+	    0  expgui6R.html ""}
+    {rbFrame   "Rigid Body" \
+	    "source  [file join $expgui(scriptdir) rigid.tcl]; MakeRBPane" \
+	    DisplayRB \
+	    1  expgui6A.html ""}
+    {orientFrame  "MD Pref Orient" \
+	    MakeOrientPane \
+	    DisplayOrient \
+	    0  expgui7.html MD}
+    {odfFrame  "SH Pref Orient" \
+	    "source [file join $expgui(scriptdir) odf.tcl]; MakeODFPane" \
+	    DisplayODFPane \
+	    0  expgui7.html ODF}
+}
+
+# future expansion: single crystal panel goes here -- if present
+catch {
+   source  [file join $expgui(scriptdir) single.tcl]
+   set expgui(notebookpagelist) [linsert $expgui(notebookpagelist) 3 \
+       {singFrame   Single \
+       "MakeSinglePane" \
+       DisplaySingle \
+       1  expguiSing.html ""}]
+} err
+
+
+pack [NoteBook .n -bd 2] -expand yes -fill both
+# this should not be needed, but for some reason NoteBook is not 
+# using the optionDB
+catch {.n configure -font [option get .n font Canvas]}
+foreach item $expgui(notebookpagelist) {
+    set frm [lindex $item 0]
+    set expgui($frm) [\
+	    .n insert end $frm -text [lindex $item 1] \
+	    -createcmd "set expgui(pagenow) $frm; [lindex $item 2]" \
+	    -raisecmd "set expgui(pagenow) $frm; [lindex $item 3]"]
+
+    # at this time expgui(frameactionlist) is generated 
+    # from expgui(notebookpagelist), but in the future it might 
+    # make sense to use expgui(notebookpagelist) directly
+    lappend expgui(frameactionlist) "$frm [list [lindex $item 3]]"
+    
+    # panes to disable in global "all" mode
+    if {[lindex $item 4]} {
+	lappend expgui(GlobalModeAllDisable) "$frm \{.n itemconfigure $frm\}"
+    }
+}
+
+set expgui(startpanel) 2
+# procedure to disable tabs when phases or histograms are not defined
+proc StageTabUse {args} {
+    global expgui
+    set expgui(startpanel) 2
+    # reset everything
+    foreach item [lrange $::expgui(notebookpagelist) 0 end] {
+	set frm [lindex $item 0]
+	.n itemconfigure $frm -state normal
+    }
+    # disable the unallowed pages in all mode
+    if {$expgui(globalmode) == 6} {
+	foreach pair $expgui(GlobalModeAllDisable) {
+	    if {$expgui(pagenow) == [lindex $pair 0]} {
+		RaisePage lsFrame
+	    }
+	    eval [lindex $pair 1] -state disabled
+	}
+    } else {
+	foreach pair $expgui(GlobalModeAllDisable) {
+	    eval [lindex $pair 1] -state normal
+	}
+    }
+    # no phases are present, one must add a phase 1st
+    if {[llength $::expmap(phaselist)] == 0} {
+	foreach item [lrange $::expgui(notebookpagelist) 2 end] {
+	    set frm [lindex $item 0]
+	    .n itemconfigure $frm -state disabled
+	}
+	set expgui(startpanel) 0
+	return
+    }
+    # do any of the phases have atoms?
+    set flag 1
+    foreach phase $::expmap(phaselist) {
+	if {[array names ::expmap atomlist_$phase] != ""} {
+	    if {[llength $::expmap(atomlist_$phase)] > 0} {
+		set flag 0
+		break
+	    }
+	}
+    }
+    # no atoms are present, one must add at least one before continuing 
+    if $flag {
+	foreach item [lrange $::expgui(notebookpagelist) 2 end] {
+	    set frm [lindex $item 0]
+	    .n itemconfigure $frm -state disabled
+	}
+	set expgui(startpanel) 0
+	return
+    }
+
+    # no data is present, one must add a histogram next
+    if {[llength $::expmap(nhst)] == 0} {
+	foreach item [lrange $::expgui(notebookpagelist) 4 end] {
+	    set frm [lindex $item 0]
+	    .n itemconfigure $frm -state disabled
+	}
+	set expgui(startpanel) 1
+	return
+    }
+}
+# expgui(mapstat) is set by mapexp when it is called
+# mapexp will be called when the .EXP file is changed (addition of phases, atoms or histograms)
+trace variable expgui(mapstat) w StageTabUse
+
+# this is used to bring up the selected frame
+proc RaisePage {nextpage} {
+    global expgui
+    set expgui(pagenow) $nextpage
+    .n see $nextpage
+    .n raise $nextpage
+}
+
+proc SetStartPanel {} {
+    global expgui
+    if {$expgui(startpanel) == 0} {
+	RaisePage phaseFrame
+    } elseif {$expgui(startpanel) == 1} {
+	RaisePage histFrame
+    } else {
+	RaisePage lsFrame
+    }
+}
+
+# resize the notebook to fit all the tabs and the largest page
+proc ResizeNotebook {} {
+    global expgui
+    .n compute_size
+}
+
+#----------------------------------------------------------------------------
+proc MakePhasePane {} {
+    #\/ \/ \/ \/ \/ \/ \/ BEGINNING OF PHASE PANE CODE \/ \/ \/ \/ \/ \/ \/
+    global expgui entryvar entrybox entrycmd
+    frame $expgui(phaseFrame).top
+    set frameLatt [frame $expgui(phaseFrame).frameLatt]
+    #  This is a big frame in the Phase notebook pane to hold atomic data.
+    set fbig [frame $expgui(phaseFrame).fbig -width 180 \
+	    -relief raised -borderwidth 4 -class Coord]
+    #  This is a frame just below the big frame: for edits
+    set frame3 [frame $expgui(phaseFrame).frame3 -width 100 \
+	    -relief raised -borderwidth 4 -bg $expgui(bkgcolor1)]
+
+    grid $expgui(phaseFrame).top -sticky news -row 0 -column 0 
+    grid $frameLatt -sticky news -row 2 -column 0 
+    grid $fbig -sticky news -row 3 -column 0 
+    # give extra space to the atoms box
+    grid columnconfigure $expgui(phaseFrame) 0 -weight 1
+    grid rowconfigure $expgui(phaseFrame) 3 -weight 1
+    grid $frame3 -sticky news -row 4 -column 0 
+    grid columnconfigure $expgui(phaseFrame) 0 -weight 1
+    grid rowconfigure $expgui(phaseFrame) 3 -weight 1
+    grid [frame  $expgui(phaseFrame).top.ps] -column 0 -row 0 -sticky w
+    # this is where the buttons will go
+    pack [label $expgui(phaseFrame).top.ps.0 -text "No Phases"] -side left
+    
+    grid [label $expgui(phaseFrame).top.lA -text title: \
+	    -fg blue ] -column 1 -row 0 -sticky e
+    grid [entry $expgui(phaseFrame).top.lB -textvariable entryvar(phasename) \
+	    -fg blue -width 45] -column 2 -row 0 -sticky e
+    grid columnconfigure $expgui(phaseFrame).top 1 -weight 1
+    # ------------- Lattice Parameter Box ------------------
+    set row 0
+    foreach col {2 4 6} var {a b c} lbl {a b c} {
+	grid [label $frameLatt.l$var -text $lbl] \
+		-column $col -row $row -padx 5 -sticky e
+	incr col
+	grid [label $frameLatt.e$var -textvariable entryvar($var) \
+		-relief groove -bd 2 -width 10] \
+		-column $col -row $row -padx 5
+#	grid [entry $frameLatt.e$var -textvariable entryvar($var) -width 10] \
+#	    -column $col -row $row -padx 5
+#	set entrybox($var) $frameLatt.e$var 
+    }
+    incr row
+    foreach col {2 4 6} var {alpha beta gamma} lbl {a b g} {
+	grid [label $frameLatt.l$var -text $lbl] \
+		-column $col -row $row -padx 5 -sticky e
+	set font [$frameLatt.l$var cget -font]
+	$frameLatt.l$var config -font "Symbol [lrange $font 1 end]"
+
+	incr col
+	grid [label $frameLatt.e$var -textvariable entryvar($var)\
+		-relief groove -bd 2 -width 10] \
+	    -column $col -row $row -padx 5
+#	grid [entry $frameLatt.e$var -textvariable entryvar($var) -width 10] \
+#	    -column $col -row $row -padx 5
+#	set entrybox($var) $frameLatt.e$var 
+    }
+    
+    grid [button $frameLatt.edit -text "Edit\nCell" -command EditCellConstants] \
+	    -column 8 -row 0 -rowspan 2 -padx 5 -sticky e
+    grid [label $frameLatt.lr -text "Refine Cell"] -column 9 -row 0 -padx 5 -sticky e
+    grid [label $frameLatt.ld -text "Cell damping"] -column 9 -row 1 -padx 5 -sticky e
+    set cFlag [checkbutton $frameLatt.c -text "" -variable entryvar(cellref)]
+    grid $cFlag -column 10 -row 0 -padx 5 -sticky e
+    tk_optionMenu $frameLatt.om entryvar(celldamp) 0 1 2 3 4 5 6 7 8 9
+    grid $frameLatt.om -column 10 -row 1 -padx 5 -sticky e
+    grid [label $frameLatt.phasetype -textvariable expgui(phasetype) -fg blue] \
+	    -column 1 -row 0 -rowspan 2
+    if [file executable $expgui(exptool)] {
+	grid [button $expgui(phaseFrame).frameLatt.newp \
+		-text "Add\nPhase" -padx 1.5m -command MakeAddPhaseBox \
+		] -column 0 -row 0 -rowspan 2 -sticky w
+    }
+    grid columnconfig $frameLatt  1 -weight 1
+    grid columnconfig $frameLatt  0 -weight 1
+    #-------------- Begin Atom Coordinates Box  ------------------------------
+    grid [listbox  $fbig.title -height 1 -relief flat \
+	    -exportselection 0 -bg lightgrey -fg black \
+	    -selectforeground black -selectbackground lightgrey] \
+	    -row 0 -column 0 -sticky ew
+    set expgui(atomtitle) $fbig.title
+    bind $expgui(atomtitle) <Button-1> {
+	set i [lsearch {number type mult x y z occupancy} $expgui(asorttype)]
+	incr i
+	set expgui(asorttype) [lindex {number type mult x y z occupancy number} $i]
+	DisplayAllAtoms $expgui(curPhase)
+    }
+    bind $expgui(atomtitle) <Button-3> {set expgui(asorttype) number; DisplayAllAtoms $expgui(curPhase)}
+
+    $expgui(atomtitle) configure -selectmode extended 
+    grid [listbox   $fbig.lbox -height 10 \
+	    -exportselection 0 \
+	    -xscrollcommand " $fbig.bscr set"\
+	    -yscrollcommand " $fbig.rscr set"\
+	    ] -row 1 -column 0 -sticky news
+    set expgui(atomlistbox) $fbig.lbox 
+    $expgui(atomlistbox) configure -selectmode extended 
+    grid [scrollbar $fbig.bscr -orient horizontal \
+	    -command "move2boxesX \" $fbig.title $fbig.lbox \" " \
+	    ] -row 2 -column 0 -sticky ew
+    grid [scrollbar $fbig.rscr  -command "$fbig.lbox yview" \
+	    ] -row 1 -column 1 -sticky ns
+    # give extra space to the atoms box
+    grid columnconfigure $fbig 0 -weight 1
+    grid rowconfigure $fbig 1 -weight 1
+    
+    #   BIND mouse in editbox
+    bind $expgui(atomlistbox) <ButtonRelease-1>   editRecord
+    bind $expgui(atomlistbox) <Button-3>   SelectAllAtoms
+    
+    #-------------- End Atoms Section  ---------------------------------
+
+    # --------------------------- Begin Edit Box ------------------------
+    grid [set expgui(EditingAtoms) [label $frame3.top -bg $expgui(bkgcolor1) -fg blue]] \
+	    -column 0 -row 0 -padx 2 -pady 3 -columnspan 10 -sticky w
+    if [file executable $expgui(exptool)] {
+	button $frame3.newa -text "Add New Atoms" \
+		-bg $expgui(bkgcolor1) -highlightthickness 0 \
+		-command {MakeAddAtomsBox $expgui(curPhase)}
+	grid $frame3.newa -column 11 -row 0
+	set expgui(AddAtomBut) $frame3.newa
+    }
+    button [set expgui(atomxform) $frame3.xa] \
+	    -bg $expgui(bkgcolor1) -highlightthickness 0 \
+	    -command {MakeXformAtomsBox $expgui(curPhase)}
+    grid $expgui(atomxform) -column 11 -row 1 -sticky ew
+
+    set f3l1 [label $frame3.l1 -text "Refinement Flags:" -bg $expgui(bkgcolor1)]
+    grid $f3l1 -column 0 -row 1 -padx 2 -sticky nsw -pady 3
+    foreach lbl {X U F} var {xref uref fref} col {1 2 3} {
+	grid [checkbutton $frame3.cf$col \
+		-text $lbl -variable entryvar($var) \
+		-bg $expgui(bkgcolor1) -highlightthickness 0 \
+		-activebackground $expgui(bkgcolor1)] \
+		-column $col -row 1 -padx 4 -pady 3 -sticky w
+    }
+    set f3l4 [label $frame3.l4 -text "  Damping:" -bg $expgui(bkgcolor1)]
+    grid $f3l4 -column 4 -row 1 -padx 2 -sticky nsw -pady 3
+    
+    set col 4
+    foreach var {xdamp udamp fdamp} num {2 3 4} lbl {X U F} {
+	grid [label $frame3.lom$num -text $lbl \
+		-bg $expgui(bkgcolor1)] \
+		-column [incr col] -row 1 -padx 2 -pady 3 -sticky w
+	tk_optionMenu $frame3.om$num entryvar($var) 0 1 2 3 4 5 6 7 8 9
+	$frame3.om$num config -highlightthickness 0
+	grid $frame3.om$num -column [incr col] -row 1 -padx 2 -pady 3 -sticky w
+    }
+    set expgui(atomreflbl) "$frame3.l1 $frame3.l4 $frame3.lom2 $frame3.lom3 $frame3.lom4 "
+    set expgui(atomref) "$frame3.cf1 $frame3.cf2 $frame3.cf3 $frame3.om2 $frame3.om3 $frame3.om4"
+    
+    set coords [frame $frame3.coords  -width 100 -borderwidth 0  -bg $expgui(bkgcolor1)]
+    grid $coords -column 0 -row 6 -columnspan 12 -sticky nsew
+    
+    set f3l1 [label $frame3.coords.l1 -text "Label" -bg $expgui(bkgcolor1)]
+    grid $f3l1 -column 0 -row 4 -padx 2 -sticky nsw -pady 3
+    set expgui(atomlabels) $f3l1
+
+    set f3e1 [entry  $frame3.coords.e1 -textvariable entryvar(label) -width 6]
+    grid $f3e1 -column 1 -row 4 -padx 2 -sticky nsw -pady 3
+    set expgui(atomentry) $f3e1
+
+    set f3l8 [label $frame3.coords.l8 -text "Coordinates" -bg $expgui(bkgcolor1)]
+    grid $f3l8 -column 2 -row 4 -padx 2 -sticky nsw -pady 3
+    lappend expgui(atomlabels) $f3l8
+    set f3l11 [label $frame3.coords.l11 -text "Occupancy" -bg $expgui(bkgcolor1)]
+    grid $f3l11 -column 6 -row 4 -padx 2 -sticky nsw -pady 3
+    lappend expgui(atomlabels) $f3l11
+
+    foreach var {x y z frac} col {3 4 5 7} {
+	set entrybox($var) [entry $frame3.coords.e$var \
+		-textvariable entryvar($var) -width 10]
+	grid $entrybox($var) -column $col -row 4 -padx 2 -sticky nsw -pady 3
+	lappend expgui(atomentry) $entrybox($var)
+    }
+
+
+    set f3f31 [frame $frame3.f3f31  -width 100 -borderwidth 0 -bg $expgui(bkgcolor1)]
+    grid $f3f31 -column 0 -row 7 -columnspan 12
+    set expgui(anisolabels) {}
+    foreach lbl {13 14 15 16 17 18} txt {Uiso U22 U33 U12 U13 U23} {
+	lappend expgui(anisolabels)  [\
+		label $f3f31.l$lbl -text $txt -bg $expgui(bkgcolor1)
+	]
+    }
+    set expgui(anisoentry) {}
+    foreach i {e13 e14 e15 e16 e17 e18} var {U11 U22 U33 U12 U13 U23} { 
+	lappend expgui(anisoentry) [\
+		entry $f3f31.$i -textvariable entryvar($var) \
+		-width 10]
+	set entrybox($var) $f3f31.$i
+    }
+    
+    set col 0
+    foreach item1 $expgui(anisolabels) item2 $expgui(anisoentry) {
+	grid $item1 -column $col -row 0 -sticky nsw -pady 3
+	incr col 
+	grid $item2 -column $col -row 0 -sticky nsw -pady 3
+	incr col 
+    }
+    # --------------------------- End Edit Box -------------------------
+    
+    #/\ /\ /\ /\ /\ /\ /\ END OF PHASE PANE CODE /\ /\ /\ /\ /\ /\ /\ /\ /
+    # resize in case the pane needs more space
+    ResizeNotebook
+}
+
+# called to create a window for editing unit cell constants
+proc EditCellConstants {} {
+    global expgui entrybox
+    set spg [phaseinfo $expgui(curPhase) spacegroup]
+    set laueaxis [GetLaue $spg]
+    set vary ""
+    set equivL ""
+    set equivA ""
+    switch -exact $laueaxis {
+	1bar {set vary "a b c alpha beta gamma"}
+	2/ma {set vary "a b c alpha"}
+	2/mb {set vary "a b c beta"}
+	2/mc {set vary "a b c gamma"}
+	mmm  {set vary "a b c"}
+	4/m  -
+	4/mmm {set vary "a c"; set equivL "a b"} 
+	3barR     -
+	"3bar mR" {
+	    set vary "a alpha"
+	    set equivL "a b c"
+	    set equivA "alpha beta gamma"
+	}
+	3bar    -
+	3barm1  -
+	3bar1m  -
+	6/m     -
+	6/mmm  {set vary "a c";set equivL "a b"}
+	"m 3"  -
+	m3m    {set vary a;set equivL "a b c"}
+	default {
+	    MyMessageBox -parent . -title "Laue problem" \
+		    -message "Error processing Laue code: $laueaxis\nError in space group \"$spg\"?\nUnable to edit cell. Fix or use EXPEDT." \
+		    -icon warning -type OK -default ok \
+		    -helplink "expguierr.html BadLaue"
+	}
+    }
+    set row 0
+    set w .cell
+    toplevel $w -bg beige
+    wm title $w "Edit Cell Parameters" 
+#    bind $w <Key-F1> "MakeWWWHelp expgui3.html EditBackground"
+    bind $w <Return> "set expgui(temp) 1; destroy $w"
+    pack [label $w.l1 -bg yellow -anchor center -justify center \
+	    -text "Edit unit cell parameters for phase #$expgui(curPhase)" \
+	    ] -side top -expand yes -fill both
+    pack [label $w.l2 -bg beige -justify left \
+	    -text "title: [phaseinfo $expgui(curPhase) name]\nSpace group: $spg\nLaue class: $laueaxis" \
+	    ] -side top -expand yes -fill both
+    pack [frame $w.0 -bd 6 -relief groove  -bg beige \
+	    ] -side top -expand yes -fill both
+    pack [frame $w.b -bg beige] -fill x -expand yes -side top
+    grid [button $w.b.2 -text Continue -command "set expgui(temp) 1; destroy $w"] -row 0 -column 1
+    grid [button $w.b.3 -text Cancel \
+	    -command "set expgui(temp) 0; destroy $w"] -row 0 -column 2
+#    grid [button $w.b.help -text Help -bg yellow \
+#	    -command "MakeWWWHelp expgui3.html EditBackground"] \
+#	    -row 0 -column 4
+
+    global tmpvar
+    trace variable tmpvar w TestCellEdit
+    foreach ent {a b c alpha beta gamma} {
+	set tmpvar($ent) [phaseinfo $expgui(curPhase) $ent]
+    }
+
+    set frameLatt $w.0
+    foreach col {2 4 6} var {a b c} lbl {a b c} {
+	grid [label $frameLatt.l$var -text $lbl -bg beige] \
+		-column $col -row $row -padx 5 -sticky e
+	incr col
+	if {[lsearch $equivL $var] == -1} {
+	    set v $var
+	} else {
+	    set v [lindex $equivL 0]
+	}
+	if {[lsearch $vary $var] == -1} {
+	    grid [label $frameLatt.e$var -textvariable tmpvar($v) \
+		    -width 10 -bg beige] \
+		    -column $col -row $row -padx 5
+	} else {
+	    grid [entry $frameLatt.e$var -textvariable tmpvar($v) \
+		    -width 10] -column $col -row $row -padx 5
+	    set entrybox($var) $frameLatt.e$var 
+	}
+    }
+    incr row
+    foreach col {2 4 6} var {alpha beta gamma} lbl {a b g} {
+	grid [label $frameLatt.l$var -text $lbl -bg beige] \
+		-column $col -row $row -padx 5 -sticky e
+	set font [$frameLatt.l$var cget -font]
+	$frameLatt.l$var config -font "Symbol [lrange $font 1 end]"
+
+	incr col
+	if {[lsearch $equivA $var] == -1} {
+	    set v $var
+	} else {
+	    set v [lindex $equivA 0]
+	}
+	if {[lsearch $vary $var] == -1} {
+	    grid [label $frameLatt.e$var -textvariable tmpvar($v)\
+		    -width 10 -bg beige] \
+		    -column $col -row $row -padx 5
+	} else {
+	    grid [entry $frameLatt.e$var -textvariable tmpvar($v) \
+	    -width 10] -column $col -row $row -padx 5
+	    set entrybox($var) $frameLatt.e$var 
+	}
+    }
+    putontop $w
+    tkwait window $w
+    afterputontop
+    global entryvar
+    set change 0
+    if {$expgui(temp)} {
+	foreach var {a b c} {
+	    if {[lsearch $equivL $var] == -1} {
+		set v $var
+	    } else {
+		set v [lindex $equivL 0]
+	    }
+	    catch {
+		expr [set val $tmpvar($v)]
+		if {[phaseinfo $expgui(curPhase) $var] != $val} {
+		    phaseinfo $expgui(curPhase) $var set $val
+		    RecordMacroEntry "phaseinfo $expgui(curPhase) $var set $val" 0
+		    set entryvar($var) $val
+		    incr expgui(changed)		    
+		    set change 1
+		}
+	    }
+	}
+	foreach var {alpha beta gamma} {
+	    if {[lsearch $equivA $var] == -1} {
+		set v $var
+	    } else {
+		set v [lindex $equivA 0]
+	    }
+	    catch {
+		expr [set val $tmpvar($v)]
+		if {[phaseinfo $expgui(curPhase) $var] != $val} {
+		    phaseinfo $expgui(curPhase) $var set $val
+		    RecordMacroEntry "phaseinfo $expgui(curPhase) $var set $val" 0
+		    set entryvar($var) $val
+		    incr expgui(changed)		    
+		    set change 1
+		}
+	    }
+	}
+	RecordMacroEntry "incr expgui(changed)" 0
+	if {$change} {
+	    # set the powpref warning (1 = suggested)
+	    if {$expgui(needpowpref) == 0} {set expgui(needpowpref) 1}
+	    append expgui(needpowpref_why) "\tCell parameters were changed\n"
+	}
+    }
+    unset tmpvar
+}
+
+# highlight errors in unit cell constants
+proc TestCellEdit {var elem mode} {
+    global tmpvar entrybox 
+    if {[catch {expr $tmpvar($elem)} errmsg]} {
+	catch {$entrybox($elem) config -fg red}
+    } else {
+	catch {$entrybox($elem) config -fg black}
+    }
+}
+
+#-----------------------------------------------------------------------------
+proc MakeHistPane {} {
+    #v v v v v v v v v v  BEGINNING OF HISTOGRAM PANE CODE v v v v v v v v v v
+    global expgui
+    
+    grid columnconfigure $expgui(histFrame) 0 -weight 1
+    grid rowconfigure $expgui(histFrame) 1 -weight 1
+    grid rowconfigure $expgui(histFrame) 2 -weight 1
+    grid rowconfigure $expgui(histFrame) 3 -weight 1
+
+    grid [frame $expgui(histFrame).hs -class HistList] \
+	    -column 0 -row 0 -rowspan 10 -sticky nsew
+    MakeHistBox $expgui(histFrame).hs
+    bind $expgui(histFrame).hs.lbox <ButtonRelease-1>  {
+	set expgui(curhist) [$expgui(histFrame).hs.lbox curselection]
+	DisplayHistogram
+    }
+    bind $expgui(histFrame).hs.lbox <Button-3>  {
+	if $expgui(globalmode) {
+	    $expgui(histFrame).hs.lbox selection set 0 end
+	    set expgui(curhist) [$expgui(histFrame).hs.lbox curselection]
+	    DisplayHistogram
+	}
+    }
+    
+    frame $expgui(histFrame).top -borderwidth 4 -relief groove
+    grid [label $expgui(histFrame).top.txt] -row 0 -column 0
+    foreach item {backBox diffBox absBox} num {2 3 4} title {Background "Diffractometer Constants" "Absorption/Reflectivity Correction"} {
+	TitleFrame $expgui(histFrame).$item  \
+	    -borderwidth 4 -side left -relief groove -text $title
+	set expgui($item) [$expgui(histFrame).$item getframe]
+	grid $expgui(histFrame).$item -column 1 -row $num -sticky nsew
+	grid rowconfigure $expgui(histFrame) $num -minsize 100
+    }
+    grid [frame $expgui(histFrame).bb] -column 1 -row 6
+    if [file executable $expgui(exptool)] {
+	button $expgui(histFrame).bb.newh -text "Add New\nHistogram" \
+		-command MakeAddHistBox
+	grid $expgui(histFrame).bb.newh -column 0 -row 1
+    }
+    button $expgui(histFrame).bb.excl \
+	    -text "Set Data Limits &\nExcluded Regions" -command excledit
+    grid $expgui(histFrame).bb.excl -column 1 -row 1
+
+    button $expgui(histFrame).bb.use -text "Set Histogram\nUse Flags" \
+	    -command SetHistUseFlags
+    grid $expgui(histFrame).bb.use -column 2 -row 1
+    button $expgui(histFrame).bb.anom -text "Edit\n\u0394f' and \u0394f\""\
+            -command Edit_Anomalous
+    grid $expgui(histFrame).bb.anom -column 3 -row 1
+
+    # BACKGROUND information.
+    # <<<<<<<<<<<<<<<<<<<<<<<<< BACKGROUND  <<<<<<<<<<<<<<<<<<<<<
+    grid [frame $expgui(backBox).frm1 ] -row 0 -column 0  -columnspan 11
+    grid [label $expgui(backBox).frm1.lBGType \
+	    -textvariable expgui(backtypelbl)] \
+	    -row 1 -column 0 -sticky nws  -padx 2 -pady 3
+    grid [label $expgui(backBox).frm1.lBGTerms \
+	    -textvariable expgui(backtermlbl)] \
+	    -row 1 -column 1 -sticky nws  -padx 2 -pady 3
+    grid [button $expgui(backBox).frm1.edit -textvariable expgui(bkglbl) \
+	    -command editbackground] \
+	    -row 1 -column 2 -columnspan 3 -sticky w -padx 2 -pady 3
+    grid [frame $expgui(backBox).frm2 ] \
+	    -row 1 -column 0 -columnspan 11 -sticky e
+    grid [label $expgui(backBox).frm2.lfBG -text "  Refine background" ] \
+	    -row 2 -column 1 -sticky news -padx 4 -pady 3
+    grid [checkbutton $expgui(backBox).frm2.rfBG -text "" \
+	    -variable  entryvar(bref) ] \
+	    -row 2 -column 2 -sticky news -padx 4 -pady 3
+    grid [label $expgui(backBox).frm2.lBGDamp -text Damping ] \
+	    -row 2 -column 3 -sticky w    -padx 2 -pady 3
+    tk_optionMenu $expgui(backBox).frm2.om  entryvar(bdamp) 0 1 2 3 4 5 6 7 8 9
+    grid $expgui(backBox).frm2.om \
+	    -row 2 -column 4 -sticky news -padx 4 -pady 3 -sticky e
+    # Absorption information.
+    set expgui(abstypelbl) ""
+    grid [label $expgui(absBox).lbl1 \
+	      -textvariable expgui(abstypelbl)] \
+	    -row 1 -column 1 -columnspan 5 -sticky nws
+    grid [label $expgui(absBox).rf1 -text "  Refine Abs./Refl." ] \
+	    -row 2 -column 1 -sticky news -padx 2 -pady 3
+    grid [checkbutton $expgui(absBox).rf2 -text "" \
+	    -variable  entryvar(absref) ] \
+	    -row 2 -column 2 -sticky news -padx 4 -pady 3
+    grid [label $expgui(absBox).d1 -text Damping ] \
+	    -row 2 -column 3 -sticky w    -padx 2 -pady 3
+    tk_optionMenu $expgui(absBox).d2  entryvar(absdamp) 0 1 2 3 4 5 6 7 8 9
+    grid $expgui(absBox).d2 \
+	-row 2 -column 4 -sticky news -padx 4 -pady 3 -sticky e
+    grid [button $expgui(absBox).edit -textvariable expgui(abslbl) \
+	      -command editabsorption] \
+	-row 2 -column 5 -sticky nsw -padx 2 -pady 3
+
+    #^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^END OF HISTOGRAM PANE CODE ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+    # insert the histograms & resize in case the pane needs more space    
+    sethistlist
+    ResizeNotebook
+}
+###############################################################################
+proc MakeScalingPane {} {
+    #v v v v v v v v v v  BEGINNING OF SCALING PANE CODE v v v v v v v v v v
+    global expgui entryvar entrybox
+
+    pack [frame $expgui(fracFrame).hs -class HistList] \
+	    -side left -expand y -fill both
+    MakeHistBox $expgui(fracFrame).hs
+    bind $expgui(fracFrame).hs.lbox <ButtonRelease-1> {
+	set expgui(curhist) [$expgui(fracFrame).hs.lbox curselection]
+	DisplayFrac
+    }
+    bind $expgui(fracFrame).hs.lbox <Button-3>  {
+	if $expgui(globalmode) {
+	    $expgui(fracFrame).hs.lbox selection set 0 end
+	    set expgui(curhist) [$expgui(fracFrame).hs.lbox curselection]
+	    DisplayFrac
+	}
+    }
+
+    pack [frame $expgui(fracFrame).f1] -fill both -expand true
+    # Create a large canvas area containing a frame for each phase in the data set.
+    # The canvas and vertical scrollbar are inside a frame called f1
+    TitleFrame $expgui(fracFrame).f1.scaleBox \
+	-borderwidth 4 -text "Scale Factor"
+    #	    -borderwidth 4 -width 600 -height 100 -label "Scale Factor"
+    grid $expgui(fracFrame).f1.scaleBox -column 0 -row 0 -sticky nsew -columnspan 2
+    set expgui(scaleBox)  [$expgui(fracFrame).f1.scaleBox getframe]
+    grid [label $expgui(scaleBox).histSFLabel -text Scale] \
+	-row 1 -column 0 -sticky nws  -padx 2 -pady 3
+    grid [entry $expgui(scaleBox).ent1 -textvariable entryvar(scale) -width 15] \
+	    -row 1 -column 1 -sticky ew -padx 4 -pady 3
+    set entrybox(scale) $expgui(scaleBox).ent1
+
+    button $expgui(scaleBox).but1 -text "Set Globally" \
+	    -command "editglobalparm histinfo scale {Scale Factor}"
+
+    grid [label $expgui(scaleBox).histSFRLabel -text " Refine"] \
+	    -row 1 -column 2 -sticky nws  -padx 2 -pady 3
+    grid [checkbutton $expgui(scaleBox).rf -variable entryvar(sref)] \
+	    -row 1 -column 3 -sticky news -padx 4 -pady 3
+    grid [label $expgui(scaleBox).lD1 -text "Damping"] \
+	    -row 1 -column 4 -sticky w    -padx 2 -pady 3
+    tk_optionMenu $expgui(scaleBox).om entryvar(sdamp) 0 1 2 3 4 5 6 7 8 9
+    grid $expgui(scaleBox).om \
+	    -row 1 -column 5 -sticky news -padx 4 -pady 3
+    grid columnconfigure $expgui(scaleBox) 6  -weight 1
+    
+    grid [TitleFrame $expgui(fracFrame).f1.phaseFrac -bd 4 \
+	      -text "Phase Fractions" -relief groove] \
+	-sticky news -row 1 -column 0 -columnspan 2
+    set PhaseFractBox [$expgui(fracFrame).f1.phaseFrac getframe]
+    grid columnconfigure $expgui(fracFrame).f1 0 -weight 1
+    grid rowconfigure $expgui(fracFrame).f1 1 -weight 1
+    
+    grid [set expgui(FracBox) [canvas $PhaseFractBox.fracBox \
+	    -scrollregion {0 0 5000 500} \
+	    -yscrollcommand "$PhaseFractBox.yscroll set" \
+	    -width 500 -height 350 -bg lightgrey]] \
+	    -sticky  news -row 1 -column 0
+    grid [scrollbar $PhaseFractBox.yscroll \
+	    -command "$expgui(FracBox) yview" \
+	    -orient vertical] \
+	    -sticky ns -row 1 -column 1
+    frame $expgui(FracBox).f -bd 0
+    $expgui(FracBox) create window 0 0 -anchor nw  -window $expgui(FracBox).f
+
+    # the rest of the page is created in DisplayFrac
+
+    # insert the histograms & resize in case the pane needs more space
+    sethistlist
+    ResizeNotebook
+    # ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ END OF SCALING PANE CODE ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+}
+###############################################################################
+proc MakeProfilePane {} {
+    global expgui
+    # v v v v v v v v v v BEGINNING OF PROFILE PANE CODE v v v v v v v v v v v
+    pack [frame $expgui(profFrame).hs -class HistList] \
+	    -side left -expand y -fill both
+    MakeHistBox $expgui(profFrame).hs
+    bind $expgui(profFrame).hs.lbox <ButtonRelease-1> {
+	set expgui(curhist) [$expgui(profFrame).hs.lbox curselection]
+	DisplayProfile
+    }
+    bind $expgui(profFrame).hs.lbox <Button-3>  {
+	if $expgui(globalmode) {
+	    $expgui(profFrame).hs.lbox selection set 0 end
+	    set expgui(curhist) [$expgui(profFrame).hs.lbox curselection]
+	    DisplayProfile
+	}
+    }
+
+    # Create a large canvas area containing a frame for each phase in the data set.
+    # The canvas and vertical scrollbar are inside a frame called f1
+    pack [frame $expgui(profFrame).f1] -fill both -expand true
+    grid [set expgui(ProfileBox) [canvas $expgui(profFrame).f1.profileBox \
+	    -scrollregion {0 0 5000 500} -width 500 -height 350 -bg lightgrey]] \
+	    -sticky  news -row 0 -column 0
+    grid [scrollbar $expgui(profFrame).f1.yscroll -orient vertical] \
+	    -sticky ns -row 0 -column 1
+    
+    $expgui(ProfileBox) config -yscrollcommand "$expgui(profFrame).f1.yscroll set"
+    $expgui(profFrame).f1.yscroll config -command { $expgui(ProfileBox) yview }
+    
+    grid columnconfigure $expgui(profFrame).f1 1 -weight 1
+    grid rowconfigure $expgui(profFrame).f1 0 -weight 1
+    frame $expgui(ProfileBox).f -bd 0
+    $expgui(ProfileBox) create window 0 0 -anchor nw  -window $expgui(ProfileBox).f
+    
+    # insert the histograms & resize in case the pane needs more space
+    sethistlist
+    ResizeNotebook
+    # ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ END OF PROFILE PANE CODE ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+}
+
+##############################################################################
+# v v v v v v v v v v BEGINNING OF LS PANE CODE v v v v v v v v v v v v v 
+array set printopts {
+    0 "Print the reciprocal metric tensor changes"
+    1 "Print the correlation matrix"
+    2 "Print the Least-Squares matrices and vectors"
+    4 "Print the linear constraint matrices"
+    5 "Print the applied  shifts and shift factors"
+    6 "Print the reciprocal metric tensor Var-Covar terms"
+    7 "Print all parameters for each cycle"
+    8 "Print summary shift/esd data after last cycle"
+    9 "Print zero/unit pole figure constraint terms"
+    10 "Output parameter name, value & esd to file"
+}
+pack [frame $expgui(lsFrame).hs -class HistList] \
+	-side left -expand y -fill both
+MakeHistBox $expgui(lsFrame).hs
+bind $expgui(lsFrame).hs.lbox <ButtonRelease-1> {
+    set expgui(curhist) [$expgui(lsFrame).hs.lbox curselection]
+    SetupExtractHist
+}
+bind $expgui(lsFrame).hs.lbox <Button-3>  {
+    if $expgui(globalmode) {
+	$expgui(lsFrame).hs.lbox selection set 0 end
+	set expgui(curhist) [$expgui(lsFrame).hs.lbox curselection]
+	SetupExtractHist
+    }
+}
+
+pack [frame $expgui(lsFrame).f1] -fill both -expand true
+set row 0
+grid [label $expgui(lsFrame).f1.his1 -pady 6 -text "Last History:"] -row $row -column 0
+grid [label $expgui(lsFrame).f1.his2 -relief groove -bd 2 -pady 6 \
+	-textvariable expgui(last_History)] \
+	-row $row -column 1 -columnspan 5 -sticky w
+incr row
+grid [label $expgui(lsFrame).f1.tit1 -pady 6 -text "Title:"] -row $row -column 0
+grid [entry $expgui(lsFrame).f1.tit2 \
+	-textvariable entryvar(title) -width 48] \
+	-row $row -column 1 -columnspan 5 -sticky w
+set entrycmd(title) "expinfo title"
+
+incr row
+grid rowconfigure $expgui(lsFrame).f1 $row -weight 1
+incr row
+grid [frame $expgui(lsFrame).f1.b -bd 4 -relief groove] \
+	-row $row -column 0 -columnspan 2 -pady 3  -sticky s
+grid [label $expgui(lsFrame).f1.b.lcyc -text "Number of Cycles"] -row 0 -column 0
+grid [entry $expgui(lsFrame).f1.b.ecyc -width 3 \
+	-textvariable entryvar(cycles)] -row 0 -column 1
+set entrybox(cycles) $expgui(lsFrame).f1.b.ecyc
+
+grid [frame $expgui(lsFrame).f1.cv -bd 4 -relief groove] \
+	-row $row -column 2 -sticky ew
+grid [label $expgui(lsFrame).f1.cv.l -text "Convergence Criterion"] \
+	-row 0 -column 0 -columnspan 2
+grid [label $expgui(lsFrame).f1.cv.v -textvariable expgui(convlbl)] -row 1 -column 0
+grid [scale $expgui(lsFrame).f1.cv.s -orient horizontal \
+	-from -200 -to 200 -showvalue 0 -command SetConv -resolution 10 \
+	-variable expgui(convg)] -row 1 -column 1
+
+incr row
+grid [menubutton $expgui(lsFrame).f1.lprint -textvariable expgui(printopt) \
+	-menu $expgui(lsFrame).f1.lprint.menu -bd 4 -relief raised \
+	] -row $row -column 0 -columnspan 2 
+menu $expgui(lsFrame).f1.lprint.menu
+foreach num [lsort -integer [array names printopts]] {
+    $expgui(lsFrame).f1.lprint.menu add checkbutton \
+	-label "$printopts($num) ([expr int(pow(2,$num))])"\
+	-variable entryvar(printopt$num)
+}
+
+grid [frame $expgui(lsFrame).f1.marq -bd 4 -relief groove] \
+	-row $row -column 2 -sticky ew
+grid [label $expgui(lsFrame).f1.marq.l -text "Marquardt Damping"] \
+	-row 0 -column 0 -columnspan 2
+grid [label $expgui(lsFrame).f1.marq.v -textvariable expgui(marq)] \
+	-row 1 -column 0
+grid [scale $expgui(lsFrame).f1.marq.s -orient horizontal \
+	-from 1.0 -to 9.99 -showvalue 0 -command SetMarq -resolution 0.01 \
+	-variable expgui(marq)] -row 1 -column 1
+
+incr row
+grid [frame $expgui(lsFrame).f1.d -bd 4 -relief groove] \
+	-row $row -column 2 -sticky ew
+grid [label $expgui(lsFrame).f1.d.lmbw -text "LS matrix bandwidth"] -row 0 -column 0
+grid [entry $expgui(lsFrame).f1.d.embw -width 4 \
+	-textvariable entryvar(mbw)] -row 0 -column 1
+set entrybox(mbw) $expgui(lsFrame).f1.d.embw
+
+incr row
+grid rowconfigure $expgui(lsFrame).f1 $row -weight 1
+
+incr row
+grid [TitleFrame $expgui(lsFrame).f1.a -bd 4 -relief groove \
+	  -text "Reflection Intensity Extraction" \
+	 ] -row $row -column 0 -columnspan 6
+set expgui(FobsExtractFrame) [$expgui(lsFrame).f1.a getframe]
+
+grid [frame $expgui(FobsExtractFrame).c -bd 4 -relief groove] \
+	-row 0 -column 8 -columnspan 3 -sticky ens
+grid [label $expgui(FobsExtractFrame).c.fol -text "Extract Fobs"] \
+	-row 0 -column 2
+grid [checkbutton $expgui(FobsExtractFrame).c.foc \
+	-variable entryvar(fobsextract)] -row 0 -column 3
+
+grid [frame $expgui(FobsExtractFrame).d -bd 4 -relief groove] \
+	-row 0 -column 3 -columnspan 5 -sticky ens
+grid [label $expgui(FobsExtractFrame).d.fol -text "LeBail damping"] \
+	-row 0 -column 2
+tk_optionMenu $expgui(FobsExtractFrame).d.d entryvar(LBdamp) \
+	0 1 2 3 4 5 6 7 8 9
+grid $expgui(FobsExtractFrame).d.d -row 0 -column 3
+incr row
+grid rowconfigure $expgui(lsFrame).f1 $row -weight 1
+
+
+foreach num {1 2 3 4 5 6 7 8 9} {
+    grid [label $expgui(FobsExtractFrame).l$num -text $num] -row 1 -column $num
+    grid [radiobutton $expgui(FobsExtractFrame).cc$num \
+	    -command "HistExtractSet $num" \
+	    -variable expgui(Fextract$num) -value 0] \
+	    -row 2 -column $num
+    grid [radiobutton $expgui(FobsExtractFrame).ca$num \
+	    -command "HistExtractSet $num" \
+	    -variable expgui(Fextract$num) -value 1] \
+	    -row 3 -column $num
+    grid [radiobutton $expgui(FobsExtractFrame).cb$num \
+	    -command "HistExtractSet $num" \
+	    -variable expgui(Fextract$num) -value 2] \
+	    -row 4 -column $num
+}
+set expgui(ExtractSettingsRadiobuttons) $expgui(FobsExtractFrame).cc 
+lappend expgui(ExtractSettingsRadiobuttons) $expgui(FobsExtractFrame).ca
+lappend expgui(ExtractSettingsRadiobuttons) $expgui(FobsExtractFrame).cb
+
+grid [label $expgui(FobsExtractFrame).t \
+	-text "Extraction\nMethod" -anchor c] \
+	-column 0 -row 0 -sticky n
+grid [label $expgui(FobsExtractFrame).t0 -text "(Phase #)" -anchor c] \
+	-column 10 -row 1 -sticky w
+grid [label $expgui(FobsExtractFrame).t1 -text "Rietveld" -anchor c] -column 0 -row 2
+grid [label $expgui(FobsExtractFrame).t2 -text "F(calc) Weighted" -anchor c] -column 0 -row 3
+grid [label $expgui(FobsExtractFrame).t3 -text "Equally Weighted" -anchor c] -column 0 -row 4
+grid [label $expgui(FobsExtractFrame).t2a -text "(Model biased)" -anchor c] -column 10 -row 3
+grid [label $expgui(FobsExtractFrame).t3a -text "(Le Bail method)" -anchor c] -column 10 -row 4
+
+proc InitLSvars {} {
+    global expgui
+    set expgui(convg) [set expgui(convinit) [expinfo convg]]
+    set expgui(convlbl) [format %5.2f [expr pow(10,$expgui(convg)/100.)]]
+    set expgui(marq) [set expgui(marqinit) [expinfo marq]]
+    set expgui(mbw) [set expgui(mbwinit) [expinfo mbw]]
+}
+proc SetConv {x} {
+    global expgui
+    if {$x != $expgui(convinit) && $expgui(changed) <= 0} {
+	incr expgui(changed)
+	RecordMacroEntry "incr expgui(changed)" 0
+    }
+    if {$expgui(changed)} {
+	expinfo convg set $x
+	RecordMacroEntry "expinfo convg set $x" 0
+    }
+    set expgui(convlbl) [format %5.2f [expr {pow(10,$x/100.)}]]
+}
+proc SetMarq {x} {
+    global expgui
+    if {$x != $expgui(marqinit) && $expgui(changed) <= 0} {
+	incr expgui(changed)
+	RecordMacroEntry "incr expgui(changed)" 0
+    }
+    if {$expgui(changed)} {
+	expinfo marq set $x
+	RecordMacroEntry "expinfo marq set $x" 0
+    }
+}
+# ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ END OF LS PANE CODE ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------
+#vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv THE MENU BAR vvvvvvvvvvvvvvvvvvvvvv
+#---- file menu button
+menubutton $expgui(fm).file -text File -menu $expgui(fm).file.menu
+menu $expgui(fm).file.menu
+if $expgui(debug) {
+    $expgui(fm).file.menu add command -label "Reset" -command "reset"
+}
+if {$expgui(shell)} {
+    $expgui(fm).file.menu add command -label "Open" -command readnewexp
+    $expgui(fm).file.menu add command -label "expnam" -command readnewexp
+}
+$expgui(fm).file.menu add command -label "Save" -underline 0 \
+	-command savearchiveexp
+foreach c {s S} {bind . <Alt-$c> [list savearchiveexp]}
+$expgui(fm).file.menu add command -label "Save As" \
+	-command "SaveAsFile"
+$expgui(fm).file.menu add command -label "Reread .EXP file" \
+	-command {rereadexp $expgui(expfile)}
+
+#---- help menu button
+menubutton $expgui(fm).help -text Help -menu $expgui(fm).help.menu
+menu $expgui(fm).help.menu
+$expgui(fm).help.menu add command -command showhelp -underline 0 \
+	-label "Help Summary"
+$expgui(fm).help.menu add command -command MakeWWWHelp  \
+	-label "Help on current pane"
+$expgui(fm).help.menu add command -command "MakeWWWHelp menu" \
+	-label "Help on menu"
+if {$tcl_platform(platform) == "windows"} {
+    $expgui(fm).help.menu add command -label "Open console" \
+	-command {console show}
+}
+if {![catch {package require tkcon} errmsg]} {
+    $expgui(fm).help.menu add command -label "Open tkcon console" \
+	-command {tkcon show}
+} elseif {[file exists [file join $expgui(scriptdir) tkcon tkcon.tcl]]} {
+    $expgui(fm).help.menu add command -label "Open tkcon console" \
+	-command {source [file join $expgui(scriptdir) tkcon tkcon.tcl]}
+} else {
+    $expgui(fm).help.menu add command -label "Turn on debug puts" \
+	-command {set expgui(debug) 1}
+}
+# add update commands to menu
+if {[file exists [file join  $expgui(gsasdir) .svn]]} {
+    $expgui(fm).file.menu add command -command CheckAndDoUpdate -label "Update GSAS/EXPGUI"
+} else {
+    $expgui(fm).file.menu add command  -state disabled -label "Self-updating not installed"
+}
+foreach c {h H} {bind . <Alt-$c> [list showhelp]}
+# define help actions
+bind . <Key-F1> MakeWWWHelp
+$expgui(fm).help.menu add command -label "About..." -command About
+$expgui(fm).help.menu add command -label "Cite..." -command Cite
+
+#---- options menu button
+menubutton $expgui(fm).option -text Options \
+	-menu $expgui(fm).option.menu
+menu $expgui(fm).option.menu
+
+if {$expgui(shell)} {
+    $expgui(fm).option.menu add checkbutton  -label "Archive EXP" \
+	    -variable expgui(archive)
+    $expgui(fm).option.menu add checkbutton  -label "Use DISAGL window" \
+	    -variable expgui(disaglSeparateBox)
+    $expgui(fm).option.menu  add checkbutton -label "Autoload EXP" \
+	    -variable expgui(autoexpload)
+    $expgui(fm).option.menu  add checkbutton -label "Prompt after GSAS run" \
+	    -variable expgui(execprompt)
+    if {$tcl_platform(platform) == "windows" && \
+	    $tcl_platform(osVersion) == 6.1} {
+        set expgui(autoiconify) 0
+        $expgui(fm).option.menu  add checkbutton -label "Iconify during GSAS" \
+	    -variable expgui(autoiconify) -state disabled
+    } else {
+        $expgui(fm).option.menu  add checkbutton -label "Iconify during GSAS" \
+	    -variable expgui(autoiconify)
+    }
+    if {$tcl_platform(platform) == "windows" && \
+	    $tcl_platform(os) == "Windows 95"} {
+	$expgui(fm).option.menu  add checkbutton -label "Autostart GRWND" \
+		-variable expgui(autoGRWND)
+    }
+}
+$expgui(fm).option.menu add cascade -menu  $expgui(fm).option.menu.asort \
+	-label "Sort atoms by"
+
+set expgui(asorttype) number
+menu $expgui(fm).option.menu.asort
+foreach opt {number type mult x y z occupancy} {
+    $expgui(fm).option.menu.asort add radiobutton -command {DisplayAllAtoms $expgui(curPhase)}\
+	    -label $opt -value $opt -variable expgui(asorttype) 
+}
+
+$expgui(fm).option.menu add cascade -menu  $expgui(fm).option.menu.hsort \
+	-label "Sort histograms by"
+
+set expgui(hsorttype) number
+menu $expgui(fm).option.menu.hsort
+$expgui(fm).option.menu.hsort add radiobutton -command sethistlist \
+	-label number -value number -variable expgui(hsorttype) 
+$expgui(fm).option.menu.hsort add radiobutton -command sethistlist \
+	-label "Histogram type" -value type -variable expgui(hsorttype) 
+$expgui(fm).option.menu.hsort add radiobutton -command sethistlist \
+	-label "Bank #" -value bank -variable expgui(hsorttype) 
+$expgui(fm).option.menu.hsort add radiobutton -command sethistlist \
+	-label "Angle/Wavelength" -value angle -variable expgui(hsorttype) 
+
+#---- Global mode menu button
+$expgui(fm).option.menu add cascade -menu $expgui(fm).option.menu.editmode \
+	-label "Multiple hist. selection"
+menu $expgui(fm).option.menu.editmode
+$expgui(fm).option.menu.editmode add radiobutton  -label "Off" \
+	-variable expgui(globalmode) -value 0 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "All" \
+	-variable expgui(globalmode) -value 6 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "TOF" \
+	-variable expgui(globalmode) -value 1 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "CW Neutron" \
+	-variable expgui(globalmode) -value 2  \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "Alpha12 Xray" \
+	-variable expgui(globalmode) -value 3 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "Monochromatic Xray" \
+	-variable expgui(globalmode) -value 4 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add radiobutton  -label "Energy Disp Xray" \
+	-variable expgui(globalmode) -value 5 \
+	-command sethistlist
+$expgui(fm).option.menu.editmode add separator
+$expgui(fm).option.menu.editmode add checkbutton \
+	-label "Group phases together" \
+	-variable expgui(globalphasemode) \
+	-command sethistlist
+
+set expgui(globalmode) 0
+set expgui(globalphasemode) 1
+
+if {$tcl_platform(platform) == "unix"} {
+    $expgui(fm).option.menu  add checkbutton -label "Override backspace" \
+	    -variable env(GSASBACKSPACE)
+}
+
+$expgui(fm).option.menu add cascade -menu  $expgui(fm).option.menu.font \
+	-label "Screen font"
+menu $expgui(fm).option.menu.font
+foreach f {10 11 12 13 14 16 18 20 22} {
+    $expgui(fm).option.menu.font add radiobutton \
+	    -command {SetTkDefaultOptions $expgui(font); ResizeFont .; ResizeNotebook} \
+	-label $f -value $f -variable expgui(font) -font "Helvetica -$f"
+}
+
+$expgui(fm).option.menu  add checkbutton -label "Show EXPTOOL output" \
+	-variable expgui(showexptool)
+$expgui(fm).option.menu add command -label "Save Options" \
+	-command "SaveOptions"
+$expgui(fm).option.menu add command -label "Save Position" \
+	-command "SavePosition"
+pack $expgui(fm).file $expgui(fm).option -side left  -in $expgui(fm)
+
+if {$expgui(shell)} {
+    foreach menu $expgui(menunames) {
+	set m [string tolower $menu]
+	pack [menubutton $expgui(fm).$m -text $menu \
+		-menu $expgui(fm).$m.menu] -side left
+	menu $expgui(fm).$m.menu
+    }
+}
+pack $expgui(fm).help  -side right -in $expgui(fm)
+
+if {$expgui(shell)} {
+    # add an export command to the last menu that gets filled in later
+    $expgui(fm).$m.menu add  cascade -label "Coord Export" \
+	    -menu $expgui(fm).$m.menu.coordexp
+    menu $expgui(fm).$m.menu.coordexp \
+	    -postcommand "BuildCoordExpMenu $expgui(fm).$m.menu.coordexp"
+    $expgui(fm).$m.menu.coordexp add command -label "Building menu" \
+	    -state disabled
+    $expgui(fm).$m.menu.coordexp add command -label "Please wait..." \
+	    -state disabled
+
+    $expgui(fm).$m.menu add  cascade -label "CIF Export" \
+	    -menu $expgui(fm).$m.menu.cifexp
+    menu $expgui(fm).$m.menu.cifexp
+    $expgui(fm).$m.menu.cifexp add command -label gsas2cif \
+	    -command "runGSASwEXP gsas2cif"
+    $expgui(fm).$m.menu.cifexp add command -label FillTemplate \
+	    -command "exec $wishshell [file join $expgui(scriptdir) fillcif.tcl] \[file root \[file tail \$expgui(expfile)]]"
+    $expgui(fm).$m.menu.cifexp add command -label CIFselect \
+	    -command {
+	if {[info procs CIFselect] == ""} {
+	    source [file join $expgui(scriptdir) cifselect.tcl]
+	}
+	CIFselect $expgui(expfile)
+    }
+    $expgui(fm).graphs.menu add cascade \
+        -menu  $expgui(fm).graphs.menu.fourier \
+	-label "Fourier"
+    menu $expgui(fm).graphs.menu.fourier
+    foreach num {1 2 3 4 5 6 7 8 9} {
+        $expgui(fm).graphs.menu.fourier add command -label "Setup phase $num" \
+            -command "EditFourier $num"
+    }
+    $expgui(fm).graphs.menu.fourier add command -label "run fourier prog" \
+        -command {runGSASwEXP fourier}
+
+    # add the commands in expgui_menulist 
+    foreach menu [array names expgui_menulist ] {
+	foreach cmd $expgui_menulist($menu) {
+	    set action {}
+	    set opt {}
+	    catch {set action [lindex $expgui_cmdlist($cmd) 0]}
+	    catch {set opt [lindex $expgui_cmdlist($cmd) 2]}
+	    if {$expgui(debug) && $action == ""} {puts "blank command for $cmd"}
+	    if {$action != "" && $action != "-"} {
+		eval $expgui(fm).$menu.menu add command \
+			-label $cmd $opt -command [list [subst $action]]
+		if {[lindex $opt 0] == "-underline"} {
+		    catch {
+			set num [lindex $opt 1]
+			set key [string range $cmd $num $num]
+			bind . <Alt-[string tolower $key]> [subst $action]
+			bind . <Alt-[string toupper $key]> [subst $action]
+		    }
+		}
+	    }
+	}
+    }
+}
+$expgui(fm).powder.menu add command -label "New InstParm file" -command {EditInstFile (new)}
+
+# Macro menu
+$expgui(fm).macro.menu add checkbutton  -label "Record EXPGUI macro" \
+    -variable expgui(RecordMacro)
+$expgui(fm).macro.menu add command -label "Add comment to macro" \
+    -command AddCommentMacroFile
+$expgui(fm).macro.menu add command -label "Replay macro line-at-a-time" \
+    -command {ReplayMacroFile 1}
+$expgui(fm).macro.menu add command -label "Replay macro all at once" \
+    -command {ReplayMacroFile 0}
+$expgui(fm).macro.menu add checkbutton  -label "Show GSAS output in window" \
+    -variable expgui(ShowGENLES)
+bind . <Control-m> {set expgui(RecordMacro) [expr ! $expgui(RecordMacro)]}
+set expgui(RecordMacro) 0
+set expgui(MacroRunning) 0
+set expgui(MacroStatus) "?"
+set expgui(ShowGENLES) 1
+trace variable expgui(RecordMacro) w SetRecordMacroOnOff
+
+# setup command help
+foreach cmd [array names expgui_cmdlist] {
+    set help {}
+    catch {set help [lindex $expgui_cmdlist($cmd) 1]}
+    if {$help == ""} {
+	if {$expgui(debug)} {puts "no help for $cmd"}
+    } else {
+	# remove 
+	regsub -all \x09 $help " " help
+	# preserve blank lines
+	regsub -all \x0A\x0A $help "AAA1234567890AAA" help
+	regsub -all \x0A $help " " help
+	regsub -all "AAA1234567890AAA" $help \x0A\x0A help
+	regsub -all " +" $help " " help
+	set expgui_helplist($cmd) [string trim $help]
+    }
+}
+if {$expgui(shell)} {
+    # set up button bar
+    foreach cmd $expgui(buttonlist) {
+	set action {}
+	catch {set action [lindex $expgui_cmdlist($cmd) 0]}
+	if {$expgui(debug) && $action == ""} {puts "blank command for $cmd"}
+	if {$action != ""} {
+	    pack [eval button .bar.$cmd -bg beige -activebackground yellow \
+		    -padx 2m -pady 0 \
+		    -text $cmd -command [list [subst $action]]] -side left
+	}
+    }
+}
+
+if {$tcl_platform(os) == "Darwin"} {
+#    $expgui(fm).file.menu add command -label "Create AppleScript" -command MakeAppleScript
+    $expgui(fm).option.menu add checkbutton -label "Assign app to .EXP files" \
+	-variable expgui(MacAssignApp)
+}
+$expgui(fm).file.menu add command -label "Exit"  -underline 1 -command catchQuit
+foreach c {X x} {bind . <Alt-$c> [list catchQuit]}
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ END OF MENU DEFINITION ^^^^^^^^^^^^^^^^^^^
+
+# make the phase pane -- this must be done before setphases 
+# can be called (in loadexp)
+MakePhasePane
+
+# handle indirect exits
+wm protocol . WM_DELETE_WINDOW catchQuit
+if {$tcl_platform(platform) != "windows"} {bind . <Control-c> catchQuit}
+
+set expgui(pagenow) ""
+set expgui(curhist) {}
+set expgui(selectedatomlist) {}
+
+loadexp $expgui(expfile)
+
+# reset the phase selection
+set expgui(curPhase) {}
+# select the first histogram in the list by default (if there are any)
+if {[llength $expmap(histlistboxcontents)] > 0} {
+    set expgui(curhist) 0
+} else {
+    set expgui(curhist) {}
+}
+
+# execute any local commands for final initialization
+eval $expgui(initstring)
+
+# resize the notebook to fit all the tabs and the largest page
+ResizeNotebook
+if {$expgui(resize)} {
+    # this appears to be needed by OSX
+    update
+    #wm geom . [winfo reqwidth .]x[winfo reqheight .]
+    wm geom . {}
+}
+# place the EXPGUI window
+set xpos 50
+catch {set xpos $expgui(xpos)}
+set ypos 50
+catch {set ypos $expgui(ypos)}
+set poscntr "nsew"
+catch {set poscntr $expgui(poscenter)}
+LocateWindow "." $xpos $ypos $poscntr
+update
+SetStartPanel
+#if {[CountHistory] > 200} {
+#    DeleteHistoryRecords "This .EXP file has [CountHistory] history records\nErasing most will speed EXPGUI"
+#}

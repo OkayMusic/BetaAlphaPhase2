@@ -1,0 +1,54 @@
+# 2034 
+set UVWP(31KeV) { 0.217416E+01   0.443326E-01   0.139655E-01 0}
+set XY(31KeV) { 0.270874E+00   0.169908E+01}
+set wave(31KeV) 0.401744
+set lblarr(31KeV) "Si 11-BM 30.9KeV"
+set ttrange(31KeV) "7 45"
+lappend datalist 31KeV 
+
+# nov07 
+set UVWP(30KeV) {  5.655E-01 -2.104E-01  4.478E-02 0}
+set XY(30KeV) { 6.383E-01  1.445E+00}
+set wave(30KeV) 0.40225
+set lblarr(30KeV) "Si 11-BM 30KeV"
+set ttrange(30KeV) "7 45"
+lappend datalist 30KeV 
+set UVWP(A30KeV) {  5.192E-01 -1.452E-01  5.330E-02 0}
+set XY(A30KeV) { 2.634E-01  1.611E+00}
+set wave(A30KeV) 0.40225
+set lblarr(A30KeV) "Alumina 11-BM 30KeV"
+set ttrange(A30KeV) "7 55"
+lappend datalist A30KeV 
+
+
+#3026
+set UVWP(39KeV) {0.397009E+01  -0.222488E+00   0.207875E-01 0}
+set XY(39KeV) { 0.229269E+00   0.152784E+01 }
+set wave(39KeV) 0.314975
+set lblarr(39KeV) "Si 11-BM 39.4KeV"
+set ttrange(39KeV) "5 40"
+lappend datalist 39KeV 
+
+# 3062
+set UVWP(10KeV) {0.401030E+00  -0.151893E+01   0.276481E+01 0}
+set XY(10KeV) { 0.117738E+01   0.112275E+01 }
+set wave(10KeV) 1.2275
+set lblarr(10KeV) "Si 11-BM 10.1KeV"
+set ttrange(10KeV) "20 105"
+lappend datalist 10KeV 
+
+# 3089
+set UVWP(20KeV) { 0.137783E+01   0.235513E+00   0.671830E-01  0}
+set XY(20KeV) { 0.506393E+00   0.134248E+01}
+set wave(20KeV) 0.60843
+set lblarr(20KeV) "Si 11-BM 20.4KeV"
+set ttrange(20KeV) "10 70"
+lappend datalist 20KeV 
+
+#1609
+set UVWP(31aKeV) { 0.415072E+01   -0.112037   0.275987E-01 0}
+set XY(31aKeV) { 0.243251   0.23729}
+set wave(31aKeV) 0.4023223
+set lblarr(31aKeV) "LaB6 11-BM 30.9KeV"
+set ttrange(31aKeV) "7 45"
+lappend datalist 31aKeV 

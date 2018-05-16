@@ -1,0 +1,878 @@
+# $Revision$ $Date$
+# initial constraint sort mode
+set expcons(sortmode) num
+# size of constraint box
+set expcons(height) 300
+
+# this is used once to create the constraint page
+proc MakeConstraintsPane {} {
+    global expgui expcons expmap
+    # create the notebook
+    grid [NoteBook $expgui(consFrame).n -bd 2 -side bottom] -sticky news
+    source [file join $expgui(scriptdir) profcons.tcl]
+}
+
+# this is used to update the contents of the constraint page when displayed
+proc DisplayConstraintsPane {} {
+    global expgui expcons expmap
+    # create pages for each of the constraint "subpages"
+    catch {$expgui(consFrame).n delete atomic}
+    catch {$expgui(consFrame).n delete macro}
+    catch {$expgui(consFrame).n delete profile}
+    set atom normal
+    set mm disabled
+    if {[llength $expmap(phasetype)] == 0} {
+	set atom disabled
+    } elseif {[lindex $expmap(phasetype) 0] == 4} {
+	set mm normal
+	if {[llength $expmap(phasetype)] == 1} {
+	    set atom disabled
+	}
+    }
+    set expcons(atommaster) [\
+	    $expgui(consFrame).n insert end atomic -text "Atom Constraints" \
+	    -state $atom \
+	    -createcmd "MakeAtomsConstraintsPane" \
+	    -raisecmd "DisplayAtomConstraints"]
+    set expcons(mmatommaster) [\
+	    $expgui(consFrame).n insert end macro -text Macromol \
+	    -state $mm \
+	    -createcmd "MakeAtomsConstraintsPane mm" \
+	    -raisecmd "DisplayAtomConstraints mm"]
+    # profile constraints page
+    set expcons(profilemaster) [\
+	    $expgui(consFrame).n  insert end profile -text "Profile Constraints" \
+	    -createcmd "MakeProfileConstraintsPane" \
+	    -raisecmd "DisplayProfileConstraints"]    
+
+    set page [$expgui(consFrame).n raise]
+    # open the atom constraints page if no page is open
+    if {$page == ""} {
+	foreach page [$expgui(consFrame).n pages] {
+	    # loop to the first non-disabled page
+	    if {[$expgui(consFrame).n itemcget $page -state] == "normal"} {
+		$expgui(consFrame).n raise $page
+		return
+	    }
+	}
+    } else {
+	set pageupdate [$expgui(consFrame).n itemcget $page -raisecmd]
+	catch $pageupdate
+    }
+}
+
+# fill the atom/mm constraints pane
+proc MakeAtomsConstraintsPane {"mode {}"} {
+    global expgui expcons
+    if {$mode == "mm"} {
+	set frm mmatommaster
+    } else {
+	set frm atommaster
+    }
+
+    grid [button $expcons($frm).new -text "New Constraint" \
+	    -command "EditAtomConstraint new [list $mode]"] \
+	    -column 0 -sticky sw -row 1
+    grid [button $expcons($frm).del -text "Delete" \
+	    -command "DeleteAtomConstraints [list $mode]"] \
+	    -column 1 -sticky se -row 1
+    grid [canvas $expcons($frm).canvas \
+	    -scrollregion {0 0 5000 500} -width 0 -height 250 \
+	    -yscrollcommand "$expcons($frm).scroll set"] \
+	    -column 0 -row 0 -columnspan 2 -sticky nsew
+    grid columnconfigure $expcons($frm) 0 -weight 1
+    grid rowconfigure $expcons($frm) 0 -weight 1
+    grid rowconfigure $expcons($frm) 1 -pad 5
+    scrollbar $expcons($frm).scroll \
+	    -command "$expcons($frm).canvas yview"
+}
+
+
+# this is called to display the constraints on atomic/mm parameters
+proc DisplayAtomConstraints {"mode {}"} {
+    global expgui expcons expmap
+    if {$mode == "mm"} {
+	set frm mmatommaster
+    } else {
+	set frm atommaster
+    }
+    catch {destroy $expcons($frm).canvas.fr}
+    set top [frame $expcons($frm).canvas.fr]
+    $expcons($frm).canvas create window 0 0 -anchor nw -window $top
+
+    # get a list of constraints
+    set expcons(lastconstr) 0
+    set expcons(clist) {}
+    set i 0
+    catch {unset varlist}
+    while {[set clist [constrinfo atom get [incr i]]] != -1} {
+	set clist [lsort -index 1 $clist]
+	if {$expcons(sortmode) == "num"} {
+	    set sortvar $i
+	} elseif {$expcons(sortmode) == "var"} {
+	    set sortvar [lindex [lindex $clist 0] 2]
+	} elseif {$expcons(sortmode) == "atom"} {
+	    set sortvar [lindex [lindex $clist 0] 1]
+	    if {$sortvar == "ALL"} {set sortvar 0}
+	} elseif {$expcons(sortmode) == "phase"} {
+	    set sortvar [lindex [lindex $clist 0] 0]
+	}
+	# tabulate a list where each phase-atom-var is referenced
+	foreach item $clist {
+	    set phase [lindex $item 0]
+	    set atom [lindex $item 1]
+	    if {$atom == "ALL"} {set atom $expmap(atomlist_$phase)}
+	    foreach a $atom {
+		set key [lindex $item 2]_${phase}_${a}
+		lappend varlist($key) $i
+	    }
+	}
+	lappend expcons(clist) [list $sortvar $i $clist]
+    }
+    # were any variables referenced more than once?
+    
+    set problems {}
+    foreach key [array names varlist] {
+	if {[llength $varlist($key)] > 1} {
+	    append problems " $varlist($key)"
+	}
+    }
+    # column headings
+    set row 0
+    set col -1
+    if {$mode == "mm"} {
+	set head {# "" "" \
+		"" Atom(s) Variable Multiplier \
+		"" Atom(s) Variable Multiplier \
+		"" Delete}
+    } else {
+	set head {# "" Phase \
+		"" Atom(s) Variable Multiplier \
+		"" Atom(s) Variable Multiplier \
+		"" Delete}
+    }
+    foreach lbl $head {
+	incr col
+	if {$lbl != ""} {
+	    grid [label $top.t$col -text $lbl] -column $col -row $row
+	}
+    }
+    # make some column headings into buttons
+    foreach col {0 2 4 5} val {num phase atom var} {
+	catch {
+	    $top.t$col config -relief raised -bd 2
+	    bind $top.t$col <1> \
+		    "set expcons(sortmode) $val; DisplayAtomConstraints [list $mode]"
+	}
+    }
+    # extra column spacing
+    foreach col {1 2 4 5 6 8 9 10} { 
+	grid columnconfig $top $col -pad 6
+    }
+    set i 0
+    if {$expcons(sortmode) == "var"} {
+	set sortlist [lsort -index 0 -ascii $expcons(clist)]
+    } else {
+	set sortlist [lsort -index 0 -integer $expcons(clist)]
+    }
+    foreach item $sortlist {
+	set clist [lindex $item 2]
+	set num [lindex $item 1]
+	incr i
+	# row separator
+	grid [frame $top.sp$row -bd 8 -bg white] \
+		-columnspan 20 -column 0 -row [incr row] -sticky nsew
+	grid rowconfig $top $row -minsize 2 -pad 2
+	set startrow [incr row]
+	catch {unset atomlist}
+	# make a list of unique phase #, variables & multipliers
+	foreach item $clist {
+	    set key [lindex $item 0]_[lindex $item 2]_[lindex $item 3]
+	    lappend atomlist($key) [lindex $item 1]
+	}
+	set phprev 0
+	incr row -1
+	set col 1
+	foreach key [lsort [array names atomlist]] {
+	    regexp {(.*)_(.*)_(.*)} $key dummy phase var mult
+	    if {$phase != $phprev} {
+		set col 1
+		if {$phprev!= 0} {
+		    grid [frame $top.sp$row -bg white] \
+			    -columnspan 14 -column 2 \
+			    -row [incr row] -sticky nsew
+		    grid rowconfig $top $row -minsize 1
+		}
+		if {$mode == "mm"} {
+		    incr col
+		    incr row
+		} else {
+		    grid [label $top.c${col}$row -text $phase] \
+			    -column [incr col] -row [incr row]
+		}
+		set phprev $phase
+	    }
+	    incr col
+	    if {$col > 8} {
+		incr row
+		set col 3
+	    }
+	    grid [label $top.c${col}$row \
+		    -justify left \
+		    -text [CompressList $atomlist($key) 20]] \
+		    -column [incr col] -row $row -sticky w
+	    grid [label $top.c${col}$row -text $var] \
+		    -column [incr col] -row $row
+	    set vallbl $top.c${col}$row
+	    grid [label $vallbl -text "x $mult"] \
+			-column [incr col] -row $row
+	    if {$mult < 0} {
+		$vallbl config -bg beige
+	    }
+	}
+	grid [button $top.but$row -text "edit" \
+		-command "EditAtomConstraint $num [list $mode]"] \
+		-column 1 -row $startrow \
+		-rowspan [expr 1 + $row - $startrow]
+	set expcons(delete$num) 0
+	grid [checkbutton $top.del$row  \
+		-variable expcons(delete$num)] \
+		-column 12 -row $startrow \
+		-rowspan [expr 1 + $row - $startrow]
+	if {[lsearch $problems $num] == -1} {
+	    grid [label $top.l$i -text $num] \
+		    -column 0 -row $startrow \
+		    -rowspan [expr 1 + $row - $startrow]
+	} else {
+	    grid [label $top.l$i -text $num -fg red] \
+		    -column 0 -row $startrow \
+		    -rowspan [expr 1 + $row - $startrow]
+	}
+	set expcons(lastconstr) \
+		[expr $expcons(lastconstr) > $num ? \
+		$expcons(lastconstr) : $num ]
+    }
+    # row separator
+    grid [frame $top.sp$row -bd 8 -bg white] \
+	    -columnspan 16 -column 0 -row [incr row] -sticky nsew
+    grid rowconfig $top $row -minsize 2 -pad 2
+    # column separators
+    foreach col {3 7 11} {
+	grid [frame $top.vs${col}$row -bd 8 -bg white] \
+		-column $col -row 0 -rowspan $row -sticky nsew
+	grid columnconfig $top $col -minsize 2 -pad 2
+    }
+    # resize the canvas & scrollbar
+    update idletasks
+    set sizes [grid bbox $top]
+    $expcons($frm).canvas config -scrollregion $sizes
+    set hgt [lindex $sizes 3]
+    # set the maximum height for the canvas from the frame
+    set maxheight [expr \
+	    [winfo height [winfo parent $expgui(consFrame)]] - 130]
+
+    # use the scroll for BIG constraint lists
+    if {$hgt > $maxheight} {
+	grid $expcons($frm).scroll -sticky ns -column 2 -row 0
+    }
+    $expcons($frm).canvas config \
+	    -height $maxheight \
+	    -width [lindex $sizes 2]
+    $expgui(consFrame).n compute_size
+    # report constraint errors
+    set msg {}
+    foreach key [lsort [array names varlist]] {
+	if {[llength $varlist($key)] > 1} {
+	    regexp {(.*)_(.*)_(.*)} $key dummy var phase atom
+	    append msg "   $var for atom $atom (phase $phase) is in"
+	    append msg " constraints [CompressList $varlist($key) 40]\n"
+	}
+    }
+    $expgui(consFrame).n compute_size
+    update idletasks
+    if {$msg != ""} {
+	set msg "Error: an atomic parameter can appear in only one constraint. Here is a list of parameters that are referenced in more than one constraint:\n\n$msg"
+	MyMessageBox -icon error -message $msg \
+		-helplink "expgui6.html AtomConstraintsError" \
+		-parent [winfo toplevel $expgui(consFrame)] 
+    }
+}
+
+# this is called to delete an atomic constraint
+proc DeleteAtomConstraints {mode} {
+    global expcons expgui
+    # get the constraints to delete
+    set dellist {}
+    for {set i 1} {$i <= $expcons(lastconstr)} {incr i} {
+	if $expcons(delete$i) {lappend dellist $i}
+    }
+    # nothing to delete?
+    if {$dellist == ""} return
+    if {[MyMessageBox -message \
+	    "Do you want to delete constraint(s) [CompressList $dellist]?" \
+	    -parent [winfo toplevel $expcons(atommaster)] \
+	    -type {No Delete} -default no] == "no"} return
+    foreach num [lsort -decreasing -integer $dellist] {
+	constrinfo atom delete $num
+	RecordMacroEntry "constrinfo atom delete $num" 0
+	incr expgui(changed)
+    }
+    RecordMacroEntry "incr expgui(changed)" 0
+    DisplayAtomConstraints $mode
+}
+
+# called to edit a single constraint set
+proc EditAtomConstraint {num mode} {
+    global expcons expmap expgui
+
+    set top {.editcons}
+    catch {toplevel $top}
+
+    if {$mode == "mm"} {pleasewait "making window..."}
+
+    bind $top <Key-F1> "MakeWWWHelp expgui6.html EditAtomConstraints"
+    eval destroy [grid slaves $top]
+    if {$num == "new"} {
+	wm title $top "New Constraint"
+	set clist {}
+	grid [label $top.top -text "Editing new constraint"] \
+	    -column 0 -row 0 -columnspan 4
+
+    } else {
+	wm title $top "Constraint #$num"
+	set clist [constrinfo atom get $num]
+	grid [label $top.top -text "Editing constraint #$num"] \
+	    -column 0 -row 0 -columnspan 4
+    }
+    # column headings
+    grid [canvas $top.canvas \
+	    -scrollregion {0 0 5000 500} -width 100 -height 50 \
+	    -xscrollcommand "$top.scroll set"] \
+	    -column 0 -row 1 -columnspan 4 -sticky nsew
+    grid columnconfigure $top 3 -weight 1
+    grid rowconfigure $top 1 -weight 1
+    catch {destroy $top.scroll}
+    scrollbar $top.scroll -orient horizontal \
+	    -command "$top.canvas xview"
+    #    grid $top.scroll -sticky ew -column 0 -row 2 -columnspan 4
+    # create a scrollable frame inside the canvas
+    set cfr [frame $top.canvas.fr -class Coord]
+    $top.canvas create window 0 0 -anchor nw  -window $cfr
+
+    grid [button $top.add -text "New Column" \
+	    -command "NewAtomConstraintColumn $top $cfr $num [list $mode]"] \
+	    -column 0 -row 3  -columnspan 2 -sticky ew
+    grid [button $top.done -text "Save" \
+	    -command "SaveAtomConstraint $num $top [list $mode]"] \
+	    -column 0 -row 4 -sticky ns
+    grid [button $top.quit -text "Cancel\nChanges" \
+	    -command "CancelEditConstraint $top $num"]  -column 1 -row 4
+    grid [button $top.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expgui6.html EditAtomConstraints"] \
+	    -column 2 -row 3 -columnspan 99 -rowspan 2 -sticky e
+
+    set col 0
+    set row 1
+    if {$mode == "mm"} {
+	set head {Atom(s) Variable Multiplier} 
+	incr row 2
+    } else {
+	set head {Phase Atom(s) Variable Multiplier} 
+    }
+    foreach lbl $head {	
+	# row separator
+	grid [frame $cfr.spc$row -bd 8 -bg white] \
+		-columnspan 60 -column 0 -row [incr row] -sticky nsew
+	grid rowconfig $cfr $row -minsize 2 -pad 2
+ 	if {$lbl == ""} {
+	    incr row
+	} else {
+	    grid [label $cfr.t$row -text $lbl] -column $col -row [incr row]
+	}
+    }
+    # row separator
+    grid [frame $cfr.spc$row -bd 8 -bg white] \
+	    -columnspan 60 -column 0 -row [incr row] -sticky nsew
+    grid rowconfig $cfr $row -minsize 2 -pad 2
+    # make a list of unique phase #, variables & multipliers
+    catch {unset atomlist}
+    foreach item $clist {
+	if {$item == -1} break
+	set key [lindex $item 0]_[lindex $item 2]_[lindex $item 3]
+	lappend atomlist($key) [lindex $item 1]
+    }
+    set ic 0
+    foreach key [lsort [array names atomlist]] {
+	incr ic
+	regexp {(.*)_(.*)_(.*)} $key dummy phase var mult
+    }
+    # delete traces on expcons(var1)
+    foreach v [ trace vinfo expcons(var1)] {
+	eval trace vdelete expcons(var1) $v
+    }
+    # fill the listbox & set the vars
+    set ic 0
+    foreach key [lsort [array names atomlist]] {
+	incr ic
+	regexp {(.*)_(.*)_(.*)} $key dummy phase var mult
+	# delete traces on expcons(phase$ic)
+	foreach v [ trace vinfo expcons(phase$ic)] {
+	    eval trace vdelete expcons(phase$ic) $v
+	}
+	MakeAtomConstraintColumn $cfr $ic $col $num $mode
+	incr col 3
+	# set the various variables
+	set expcons(phase$ic) $phase
+	set expcons(mult$ic) $mult
+	set expcons(var$ic) $var
+	FillAtomsConstraintList $ic $atomlist($key)
+	trace variable expcons(phase$ic) w "FillAtomsConstraintList $ic {}"
+    }
+    if {$num == "new"} {NewAtomConstraintColumn $top $cfr $num $mode}
+    trace variable expcons(var1) w SetVarConstraintMenu
+    SetVarConstraintMenu
+    # resize the canvas & scrollbar
+    update idletasks
+    set sizes [grid bbox $cfr]
+    $top.canvas config -scrollregion $sizes
+    set width [lindex $sizes 2]
+    # use the scroll for BIG constraints
+    if {$width > 600} {
+	set width 600
+	grid $top.scroll -sticky ew -column 0 -row 2 -columnspan 4
+    }
+    $top.canvas config -height [lindex $sizes 3] -width $width
+    # force the window to stay on top
+    if {$mode == "mm"} {donewait}
+    putontop $top
+    tkwait window $top
+    afterputontop
+}
+
+# called when the "Cancel Changes" button is pressed
+proc CancelEditConstraint {top num} {
+    global expcons
+    if {$expcons(var1) == ""} {destroy $top; return}
+    if {$num == "new"} {destroy $top; return}
+    set ans [MyMessageBox -type "{Abandon Changes} {Continue Edit}" \
+	    -parent [winfo toplevel $top] -default "abandon changes" \
+	    -helplink "expguierr.html AbandonEditConstraints" \
+	    -icon warning -message  \
+	    {Do you want to lose any changes made to this constraint?}]
+    if {$ans == "abandon changes"} {destroy $top}
+}
+
+# called to make each column in the atom parameter dialog
+proc MakeAtomConstraintColumn {cfr ic col num mode} {
+    global expmap expcons expgui
+    set row 1
+    # make column separator
+    incr col 2
+    grid [frame $cfr.sp$col -bd 8 -bg white] \
+	    -rowspan 9 -column $col -row $row -sticky nsew
+    grid columnconfig $cfr $col -minsize 2 -pad 2
+
+    # there should be more than one phase
+    if {[lindex $expmap(phasetype) 0] == 4} {
+	set list [lrange $expmap(phaselist) 1 end]
+    } else {
+	set list $expmap(phaselist)
+    }
+    if {$mode != "mm"} {
+	eval tk_optionMenu $cfr.phase$ic expcons(phase$ic) $list
+	grid $cfr.phase$ic -column [incr col] -row [incr row 2] -columnspan 2
+    } else {
+	incr col
+	incr row 2
+    }
+    # make the listbox
+    set expcons(atomlistbox$ic) $cfr.lb$ic
+    if {$mode == "mm"} {
+	set wid 21
+    } else {
+	set wid 12
+    }
+    grid [listbox $cfr.lb$ic -height 10 -width $wid \
+	    -exportselection 0 -selectmode extended \
+	    -yscrollcommand " $cfr.sb$ic set"] \
+	    -column $col -row [incr row 2] -sticky nse
+    bind $expcons(atomlistbox$ic) <Button-3> \
+	    "$expcons(atomlistbox$ic) selection set 0 end"
+    grid [scrollbar $cfr.sb$ic -command "$cfr.lb$ic yview"] \
+	    -column [expr 1+$col] -row $row -sticky wns
+    if {$mode == "mm" && $num == "new"} {
+	set expcons(varmenu$ic) [tk_optionMenu $cfr.var$ic expcons(var$ic) \
+		FRA X Y Z UIS XYZU]
+	$expcons(varmenu$ic) insert 5 separator
+    } elseif {$mode == "mm"} {
+	set expcons(varmenu$ic) [tk_optionMenu $cfr.var$ic expcons(var$ic) \
+		FRA X Y Z UIS]
+    } elseif {$num == "new"} {
+	set expcons(varmenu$ic) [tk_optionMenu $cfr.var$ic expcons(var$ic) \
+		FRAC X Y Z UISO U11 U22 U33 U12 U23 U13 MX MY MZ XYZU Uxx XYZU+-F]
+	$expcons(varmenu$ic) insert 14 separator
+    } else {
+	set expcons(varmenu$ic) [tk_optionMenu $cfr.var$ic expcons(var$ic) \
+		FRAC X Y Z UISO U11 U22 U33 U12 U23 U13 MX MY MZ]
+    }
+    grid $cfr.var$ic -column $col -row [incr row 2] -columnspan 2
+    grid [entry $cfr.c${col}$ic -width 10 \
+	    -textvariable expcons(mult$ic)] \
+	    -column $col -row [incr row 2] -columnspan 2
+}
+
+# called when the "New column" button is pressed to add a new constraint
+proc NewAtomConstraintColumn {top cfr num mode} {
+    global expcons expmap expgui
+    set col -3
+    set row 1
+    for {set ic 1} {$ic < 500} {incr ic} {
+	incr col 3
+	if [winfo exists $cfr.lb$ic] continue
+	# delete traces on expcons(phase$ic)
+	foreach v [ trace vinfo expcons(phase$ic)] {
+	    eval trace vdelete expcons(phase$ic) $v
+	}
+	MakeAtomConstraintColumn $cfr $ic $col $num $mode
+	# set the various variables to initial values
+	set expcons(atmlst$ic) {}
+	if {$mode == "mm"} {
+	    set expcons(phase$ic) 1
+	    FillAtomsConstraintList $ic {}
+	} elseif {[lindex $expmap(phasetype) 0] != 4 \
+		&& [llength $expmap(phaselist)] == 1} {
+	    set expcons(phase$ic) $expmap(phaselist)
+	    FillAtomsConstraintList $ic {}
+	} elseif {[lindex $expmap(phasetype) 0] == 4 \
+		&& [llength $expmap(phaselist)] == 2} {
+	    set expcons(phase$ic) [lindex $expmap(phaselist) 1]
+	    FillAtomsConstraintList $ic {}
+	} else {
+	    set expcons(phase$ic) {}
+	}
+	set expcons(var$ic) {}
+	set expcons(mult$ic) 1.0
+	trace variable expcons(phase$ic) w "FillAtomsConstraintList $ic {}"
+	break
+    }
+    # set the allowed constraints
+    SetVarConstraintMenu
+    # resize the canvas & scrollbar
+    update idletasks
+    set sizes [grid bbox $cfr]
+    $top.canvas config -scrollregion $sizes
+    set width [lindex $sizes 2]
+    # use the scroll for BIG constraints
+    if {$width > 600} {
+	set width 600
+	grid $top.scroll -sticky ew -column 0 -row 2 -columnspan 4
+    }
+    $top.canvas config -height [lindex $sizes 3] -width $width
+}
+
+# called when the leftmost constraint variable is changed, so that 
+# only allowed constraints are offered to the user.
+proc SetVarConstraintMenu {args} {
+    global expcons
+    set maxvar [$expcons(varmenu1) index end]
+    set allowed {}
+    switch $expcons(var1) {
+	FRAC {set allowed FRAC}
+	FRA {set allowed FRA}
+	X -
+	Y -
+	Z {set allowed "X Y Z"}
+	XYZU {set allowed XYZU}
+	UISO {set allowed UISO}
+	UIS {set allowed UIS}
+	XYZU+-F {set allowed XYZU+-F}
+	U11 -
+	U22 -
+	U33 -
+	U12 -
+	U23 -
+	U13 {set allowed "U11 U22 U33 U12 U23 U13"}
+	Uxx {set allowed Uxx}
+	MX -
+	MY -
+	MZ {set allowed "MX MY MZ"}
+    }
+    for {set ic 2} {$ic < 500} {incr ic} {
+	if [catch {set expcons(varmenu$ic)}] break
+	if [winfo exists $expcons(varmenu$ic)] {
+	    # if only one variable choice is allowed select it, 
+	    # if not and the current value is not allowed, blank it out
+	    if {[llength $allowed] == 1} {
+		set expcons(var$ic) $allowed
+	    } elseif {[lsearch $allowed $expcons(var$ic)] == -1} {
+		set expcons(var$ic) {}
+	    }
+	    set num 0
+	    for {set num 0} {$num <= $maxvar} {incr num} {
+		# ignore error on separators
+		catch {
+		    set var [$expcons(varmenu$ic) entrycget $num -label]
+		    if {[lsearch $allowed $var] == -1} {
+			$expcons(varmenu$ic) entryconfigure $num \
+				-state disabled
+		    } else {
+			$expcons(varmenu$ic) entryconfigure $num \
+				-state normal
+		    }
+		}
+	    }
+	} else {
+	    break
+	}
+    }
+}
+
+# called to load the parameter values into the atom parameter dialog
+proc FillAtomsConstraintList {ic atomselectlist args} {
+    global expcons expgui expmap
+    # fill the atoms box
+    set phase $expcons(phase$ic)
+    if {[lindex $expmap(phasetype) [expr {$phase -1}]] == 4} {
+	set cmd mmatominfo
+	set mm 1
+    } else {
+	set cmd atominfo
+	set mm 0
+    }	
+    $expcons(atomlistbox$ic) delete 0 end
+    set atmlst {}
+    if  {$expgui(asorttype) == "type"} {
+	# sort on atom type
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom [$cmd $phase $atom type]"
+	}
+	set atmlst [lsort -ascii -index 1 $atmlst]
+    } elseif {$expgui(asorttype) == "number"} {
+	# sort on atom number
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom $atom $phase"
+	}
+	set atmlst [lsort -integer -index 1 $atmlst]
+    } elseif {$expgui(asorttype) == "x"} {
+	# sort on x
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom [$cmd $phase $atom x]"
+	}
+	set atmlst [lsort -real -index 1 $atmlst]
+    } elseif {$expgui(asorttype) == "y"} {
+	# sort on y
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom [$cmd $phase $atom y]"
+	}
+	set atmlst [lsort -real -index 1 $atmlst]
+    } elseif {$expgui(asorttype) == "z"} {
+	# sort on z
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom [$cmd $phase $atom z]"
+	}
+	set atmlst [lsort -real -index 1 $atmlst]
+    } else {
+	# error "Bad expgui(asorttype) = $expgui(asorttype)"
+	# other -- ignore and sort on atom number
+	foreach atom $expmap(atomlist_$phase) {
+	    lappend atmlst "$atom $atom $phase"
+	}
+	set atmlst [lsort -integer -index 1 $atmlst]
+
+    }
+    # make a list of atoms in the box
+    set expcons(atmlst$ic) {}
+    foreach tuple $atmlst {
+	set atom [lindex $tuple 0]
+	lappend expcons(atmlst$ic) $atom
+	if {$mm} {
+	    $expcons(atomlistbox$ic) insert end [\
+		    format "%-6s%-3s%-2s%3d%4d %-6s" \
+		    [$cmd $phase $atom label] \
+		    [$cmd $phase $atom residue] \
+		    [$cmd $phase $atom group] \
+		    [$cmd $phase $atom resnum] \
+		    $atom \
+		    [$cmd $phase $atom type]]
+	} else {
+	    $expcons(atomlistbox$ic) insert end [format "%-6s%3d %-6s" \
+		    [$cmd $phase $atom label] \
+		    $atom \
+		    [$cmd $phase $atom type]]
+	}
+	# select the atom if appropriate
+	if {[lsearch $atomselectlist $atom] != -1} {
+	    $expcons(atomlistbox$ic) selection set end
+	}
+    }
+    if {$atomselectlist == "ALL"} {
+	$expcons(atomlistbox$ic) selection set 0 end
+    }
+}
+
+# this is called to change an atomic constraint
+proc SaveAtomConstraint {num top mode} {
+    global expcons expgui
+    # special variables XYZU & Uxx should only occur with num == "new"
+    # then add new constraints
+    if {$expcons(var1) == ""} {
+	MyMessageBox -message \
+	    "No variables were selected to constrain" \
+	    -parent [winfo toplevel $expcons(atommaster)] \
+	    -type {Fix} -default fix -icon error
+	return
+    }
+    set varlist {{}}
+    if {$expcons(var1) == "XYZU+-F"} {set varlist "X Y Z UISO FRAC"}
+    if {$expcons(var1) == "XYZU"} {
+	if {$mode == "mm"} {
+	    set varlist "X Y Z UIS"
+	} else {
+	    set varlist "X Y Z UISO"
+	}
+    }
+    if {$expcons(var1) == "Uxx"} {set varlist "U11 U22 U33 U12 U23 U13"}
+    set atomlist {}
+    foreach var $varlist {
+	set clist {}
+	for {set ic 1} {$ic < 500} {incr ic} {
+	    if [catch {set expcons(varmenu$ic)}] break
+	    if [winfo exists $expcons(varmenu$ic)] {
+		set phase $expcons(phase$ic)
+		if {$var == ""} {
+		    set v $expcons(var$ic)
+		} else {
+		    set v $var
+		}
+		if  {$expcons(var1) == "XYZU+-F"} {
+		    set mult 1
+		} else {
+		    set mult $expcons(mult$ic)
+		}
+		set atomlist {}
+		foreach indx [$expcons(atomlistbox$ic) curselection] {
+		    lappend atomlist [lindex $expcons(atmlst$ic) $indx]
+		}
+		if {[llength $atomlist] == [llength $expcons(atmlst$ic)] \
+			&& $v == "UISO"} {
+		    set atomlist ALL
+		} else {
+		    set atomlist [lsort -integer $atomlist]
+		}
+		# ignore this column if phase is invalid or there are no atoms
+		if {![catch {expr $phase}] && \
+			[llength $atomlist] > 0 && \
+			$v != ""} {
+		    # error if mult is invalid
+		    if [catch {expr $mult}] {
+			MyMessageBox -message \
+				"Multiplier value \"$mult\" in column $ic is invalid" \
+				-parent [winfo toplevel $expcons(atommaster)] \
+				-type {Fix} -default fix -icon error
+			return
+		    }
+		    foreach atom $atomlist {
+			if  {$expcons(var1) == "XYZU+-F" && \
+				$var == "FRAC"} {
+			    set mult [expr -1*$mult]
+			}
+			lappend clist [list $phase $atom $v $mult]
+		    }
+		}
+	    }
+	}
+	if {$atomlist == ""} {
+	    MyMessageBox -message \
+		"No atoms were selected to constrain" \
+		-parent [winfo toplevel $expcons(atommaster)] \
+		-type {Fix} -default fix -icon error
+	    return
+	}
+	# maximum number of parameters in a constraint is 500
+	if {[llength $clist] > 500} {
+	    MyMessageBox -message \
+		    "There are [llength $clist] parameters in this constraint, but only 500 are allowed in an atom constraint." \
+		    -parent [winfo toplevel $expcons(atommaster)] \
+		    -helplink "expgui6.html AtomConstraintsMax" \
+		    -type {Fix} -default fix -icon error
+	    return
+	}
+	if {$expcons(var1) == "XYZU+-F" && [llength $atomlist] != 2} {
+	    MyMessageBox -message \
+		    "Exactly 2 atoms must be linked with the XYZU+-F option" \
+		    -parent [winfo toplevel $expcons(atommaster)] \
+		    -helplink "expgui6.html XYZUF" \
+		    -type {Fix} -default fix -icon error
+	    return
+	}
+	if {$num == "new"} {
+	    constrinfo atom add {} $clist
+	    RecordMacroEntry "constrinfo atom add {} [list $clist]" 0
+	} elseif {$clist != ""} {
+	    constrinfo atom set $num $clist
+	    RecordMacroEntry "constrinfo atom set $num [list $clist]" 0
+	} else {
+	    constrinfo atom delete $num
+	    RecordMacroEntry "constrinfo atom delete $num" 0
+	}
+	incr expgui(changed)
+	RecordMacroEntry "incr expgui(changed)" 0
+    }
+    destroy $top
+    DisplayAtomConstraints $mode
+}
+######################################################################
+# restraints codes
+######################################################################
+# this is used once to create the constraint page
+proc MakeRestraintsPane {} {
+    global expgui expcons expmap
+    # create the notebook
+    grid [NoteBook $expgui(restrFrame).n -bd 2 -side bottom] -sticky news
+    source [file join $expgui(scriptdir) distrest.tcl]
+    source [file join $expgui(scriptdir) chemrest.tcl]
+}
+
+# this is used to update the contents of the constraint page when displayed
+proc DisplayRestraintsPane {} {
+    global expgui expcons expmap
+    # create pages for each of the constraint "subpages"
+    catch {$expgui(restrFrame).n delete distrest}
+    catch {$expgui(restrFrame).n delete chemrest}
+    set atom normal
+    set mm disabled
+    if {[llength $expmap(phasetype)] == 0} {
+	set atom disabled
+    } elseif {[lindex $expmap(phasetype) 0] == 4} {
+	set mm normal
+	if {[llength $expmap(phasetype)] == 1} {
+	    set atom disabled
+	}
+    }
+    set expcons(distmaster) [\
+	    $expgui(restrFrame).n insert end distrest -text "Distance Restraints" \
+	    -state $atom \
+	    -createcmd "" \
+	    -raisecmd "DisplayDistanceRestraints"]
+ 
+    set expcons(chemmaster) [\
+	    $expgui(restrFrame).n insert end chemrest -text "Chemical Restraints" \
+	    -state $atom \
+	    -createcmd "" \
+	    -raisecmd "DisplayChemRestraints"]
+ 
+    set page [$expgui(restrFrame).n raise]
+    # open the atom constraints page if no page is open
+    if {$page == ""} {
+	foreach page [$expgui(restrFrame).n pages] {
+	    # loop to the first non-disabled page
+	    if {[$expgui(restrFrame).n itemcget $page -state] == "normal"} {
+		$expgui(restrFrame).n raise $page
+		return
+	    }
+	}
+    } else {
+	set pageupdate [$expgui(restrFrame).n itemcget $page -raisecmd]
+	catch $pageupdate
+    }
+}

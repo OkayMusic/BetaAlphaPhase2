@@ -1,0 +1,1213 @@
+GSAS News......
+
+Mar. 26, 2009
+1. GSAS is now compiled with GCC 3.4.5. The old compiler was 2.95.2. A major consequence is that floating point numbers are represented with the IEEE 754 standard; this has consequences for how floating point numbers are rounded upon output. Thus, this version will produce slightly different values (generally in the last place). A particular problem occured in DISAGL where angles that "must" be 180deg were slightly different. This has been explicitly fixed in this version.
+
+Aug. 25, 2008
+1. Fixed bug in Fourier map controls. The number of intervals for trigonal/hexagonal are mod(3) for a & b axes and mod(4) for tetragonal & cubic axes to avoid contouring errors in Coot and other programs.
+Aug. 11, 2008
+1. A new option for specifying atoms in the atom listing ("L") and change ("C") options in EXPEDT which allows specification of protein residues has been added. Enter the chain ID (1-2 letters in uppercase) after the 1st sequence number. Then the numbers refer to residue number in that chain. E.g. "123A:125" refers to residues 123-125 in the "A" chain.
+July 14, 2008
+More changes:
+1. A new addition has been made to the atom constraint menu for proteins (strictly molecules with any of the "standard" 20 amino acids). It allows constraints to be automatically formed between the Uisos of the atoms in each amino acid. By default two are formed, one for the main chain atoms and another for the side chain (except GLY & ALA). Alternatively, a single constraint for all atoms on each amino acid could be formed. Nonstandard amino acids are ignored; the appropriate constraints will need to be inserted by hand (using the "I" command).
+2. A Fourier map can now contain 8,000,000 elements. Beware there is no check (still). Limit used to be 5,000,000.
+3. The maximum number of points in a single powder pattern is now 200,000. I hope that is enough for everyone.
+4. CHI2FXYE (converts Fit2D chi files to GSAS fxye format) now writes correct BANK record.
+5. Restraints on angles and planes with "OXT" at the end of protein chains is now automatically found; the macro files have been changed to include these.
+6. POWPREF now optionally outputs an ASCII file of the radial distribution plot data which can be used in other programs.
+
+Apr. 28, 2008
+Many changes:
+1. Added new amino acid residue constraint capability. Each residue in a protein can be represented by a torsionally flexible rigid body. As defined in the macro file residue-rb.mac, the origin is C-alpha and a 3-parameter rotation about this is defined for six parameters. Torsion rotations are defined for the C-O orientation and the side chain "chi" rotations. Extensive use is made of quaternions for these rotations which simplifies the calculations and improves the rigid body rotation stability. The residue models defined in the macro file form an exact match to the bond distances/angles defined by Engh & Huber for ideal amino acids. The editor routine (option "Z" in the main LS editing menu) has options for automatically scanning the protein chain and determining the best initial settings for each residue rigid body and for setting all the appropriate atom refinement flags. In a typical protein this reduces the parameterization to a bit more than 1/3 of the full x,y,z set. It should be noted that the machinery put in for this can be used for any molecular fragment; the present limits are 20 atoms in the fragment with two defined torsion angle sequences with no more than four torsions allowed for each.
+2. GENLES is now able to handle very much larger problems. Atom limit is 15,000 for macromolecules, 200,000 constraint terms are allowed.
+3. The weight factors for the restraints can now be adjusted automatically for each cycle of least squares. The adjustment is so that each restraint type has the same average contribution to the minimization function as the average of those for the diffraction data. This appears to smooth out the refinement progress.
+4. All restraint searches (option "s") over a protein can now deal with chain breaks and 2-site disordered regions.
+5. Various routines in GSAS now have an upper limit of 50,000 reflections.
+6. An extremely old error in the single crystal structure factor routine was discovered in that it did not correctly compute the effect of anomalous dispersion on the Freidel (-h-k-l) reflections in noncentrosymmetric structures. The Fhkl set was correct but not an F-h-k-l set. Powder data calculations were always correct; Freidel pair reflections explicitly overlap and their sum was calculated correctly including all terms.
+7. SCMERGE now will process any one of a multiple single crystal histogram data set; previously it would only do the first one and any others were inaccessible. This is most important when multiple single crystal data sets are used in e.g. an anomalous scattering study with multiple wavelength data. By the way SCMERGE will not merge Freidel pairs.
+8. A new option in the atom constraint menu has been added. Option "C" constrains all parameters (x,y,z,Uiso & all Uij) between a pair of atoms (normally on the same site). The site fractions are also constrained with the opposite sign. This simplifies setting up two atom site disorder problems.
+9. GSAS2CIF has been modified so that some of the output (atoms & reflections) comforms to the mmcif dictionary for macromolecular phases. This simplifies their use in other macromolecular packages. Making these cif files comletely conform to mmcif is not envisioned at this time; it is particularly not possible for multihistogram diffraction data sets as this is not defined in mmcif.
+
+Jan. 29, 2008
+1. Modified RAWPLOT to properly use lookup table types of neutron TOF profile functions.
+2. Single crystal code SCMERGE will now handle 50,000 reflections. Previous limit was 20,000.
+3. Added new atom constraint option "C" that forms all the atom position, site fraction and thermal parameter constraints for an atom pair. This is most useful for site occupancy problems where two atom types occupy the same site. Constraints make position and thermal parameter shifts identical and site fraction shifts to have opposite sign.
+4. Further modified RAWPLOT so that peaks to be fitted can be directly selected with the cursor on the plot. One can plot subsections of the range, select peaks, plot a new subsection, select more peaks and then insert the entire (up to 75) suite of selected reflections for subsequent peak fitting. One can fit peaks within a small range, increase the range and insert more reflections using the cursor.
+5. The peak fitting menu in RAWPLOT now has a high resolution plot option ("J"); the main RAWPLOT menu had this option added earlier (4/6/05).
+
+Nov. 12, 2007
+1. Oops, forgot some arrays - GSAS now WILL do up to 200,000 profile points in a single powder pattern.
+2. A new weight modification for powder data is available. In histogram editing (same as where histograms are inserted) the "F" option is used to set the weight factors for the histogram. The first value ("weight factor" - FACTR) is a constant multiplier (default = 1.0) for all the powder profile weights. The second value ("weight balance" - WTM) changes the relative weighting between the low and high ends of the pattern (default WTM = 0.0). If WTM > 0.0 then 
+
+	w' = w*FACTR*exp(-WTM*T)        (this will down weight the high T part of the pattern)
+
+If WTM < 0.0 then
+
+        w' = w*FACTR*[1-exp(-WTM*T)]    (this will down weight the low T part of the pattern)
+
+where w is the weight obtained typically from 1/esd**2, T is either 2-theta in centidegrees or neutron TOF in microsec. The weight modification is applied when POWPREF is run. Non-zero values of WTM can be used to "force" a refinement to fit one end or the other of a pattern (at the expense of the other end) to facilitate jumping out of local false minima. Very small values of WTM are quite effective; in an initial trial with x-ray powder data, I set WTM=+/-0.001 and then back to WTM=0 for a sequence of protein refinements.
+3. After considerable thought and a read of the paper "A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection" by R. Kohavi, Intl. Joint Conf. on Artificial Intelligence (1995), I have reinstalled the facility for producing an "Rpfree" for powder data. It was originally introduced on Apr. 15, 2004 (it was removed July 25,2005). The note given at the time of introduction was:
+
+2. There is now an option in histogram editing to set aside a certain fraction of the profile points in a powder pattern to calculate an Rfree and Rwfree. This replaces the old 'S' option (which didn't work anyway). The Rfree & Rwfree values appear in the .LST file (not on screen) and in the EXP file. In my initial tests these seem to follow the Rp & Rwp values closely through the entire course of a refinement but maybe you all will see wilder behavior in your refinements. Note that you set two things for this - one is the percentage of points to set aside (1-10%) and a random number seed. The seed ensures that the selection of points remains the same for all runs of POWPREF; this will change if seed is changed or if profile limits & excluded regions are changed. If you want to use this it should be set very early in the analysis; setting it for just the final refinement cycles somewhat defeats its purpose.
+
+The maximum fraction that can be now set aside is 50%; powder data is usually very overdetermined in comparing number of profile points to number of parameters so this is not unreasonable. I have further modified HSTDMP and POWPLOT so that the Rpfree points are easily seen (plots as blue crosses while those used in the refinement are red). It should be noted that this "holdout" method is not strictly speaking a "cross-validation" according to Kohavi (but then again neither is the "Rfree" commonly evaluated for protein structure refinements). 
+
+Sept. 17, 2007
+1. The maximum number of profile points in an individual powder pattern is now 200,000.
+2. The program OVERLP has been extensively modified. The computation of the overlap factor has been changed to be more "rational" (the earlier version may have been in error). An additional file, name.HKL, is now output which has the <F^2> values, their sigmas and derived Fobs values from averaging the individual F^2 values. The FWHM is modified by the overlap factors to give an "effective" FWHM taking into account of the extra information gained from the reflection displacements between multiple histograms. It also tabulates an effective "completeness" table by data collection "shell".
+3. The restraints have been extensively modified to handle 2-site disorder in protein structures. Alternate atom sites must be indicated as "A" and "B" in the PDB name (the 4th character in the name). The alternate atoms must be collected together by residue in the atom list, "A"s before "B"s as is usually generated by e.g. Coot. Three or more site disorder is not addressed.
+4. The coupled torsion angle restraint ("Ramachandran restraint") has been further modified. It now follows a pattern similar to that used for torsion restraints. Tables of pseudopotential terms are inserted, each with a unique name (e.g. "ALA-1") into a single histogram. The restraints are then inserted each with one of these names to indicate which pseudopotential surface is to be used for that restraint. This way all coupled restraints can be contained within a single histogram rather than having ~30 individual histograms one for each type. There is now just a single Macro file, "2-torsion.mac", that is needed to generate these restraints. Users with old protein structure EXP files who want to continue using them will need to use a "hand editor" to remove the old histograms and modify the HTYPE & NHST records. Then in EXPEDT insert the new "R" restraint type histogram using 2-torsion.mac.
+5. The CNS output file from reflist has been changed. Apparently CNS wants Fobs & phase (0-360 deg) not Fa & Fb.
+
+July 5, 2007
+
+1. A new GSAS kit is now available at the CCP14 web site. It is for the MacOS10.4 on Intel operating system. This differs from the one currently at ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/OSX_gsas+expgui_Intel_2007Jan15.dmg provided by Brian Toby. This one is built using a version of the g77 Fortran compiler that closely matched that used for Windows & Linux. Your Mac must be runnig OS10.4 (not 10.3 or earlier) and have the X11 optional package installed. Because the setup on a Mac is complicated by the changes Apple has made to the BSD Unix operating system, I suggest you download & install Brian Toby's version first and then download & install the new one from CCP14 on top of it thus replacing the GSAS executables, etc. with the new ones. One should consider this to be much more of a "beta" test version of GSAS as there may be undetected errors because of the newness of the platform for GSAS.
+
+June 12, 2007
+
+1. A new record in the .EXP file has been defined:
+'HSTnn  NFOBS' the number of observed reflections for each phase in a histogram.
+
+2. REFLIST now can prepare a 'hkl' file suitable for the protein software CNS.
+
+3. Two new features have been added to the Pawley refinement menu: 
+The 'P' option produces a Wilson plot of the Pawley extracted intensities. The plot is made as ln[<F^2>/f^2] vs Q. A well formed Wilson plot will show deviations at low Q but will form a "reasonably" straight line of negative slope (= -<Uiso>). In this approximation the x-ray f is that for a neon atom/10 so the intercept is ln(scale) where scale is in terms of unit cell contents of electrons for x-ray patterns. For neutron data the scale is in terms of unit scattering lengths per unit cell. Significant deviations in this Wilson plot can arise from misfit background and peak profiles.
+The 'W' option permits the inclusion of a restraint to a Pawley refinement that the extracted intensities conform to a Wilson plot of specified scale and <Uiso>.
+
+4. The utility program overlp.exe is now included in gsas\exe. It computes the overlap factors as defined in Von Dreele, J. Appl. Cryst. 40, 133-143 (2007). Input is one or more .REF files from reflist, one for each histogram. Overlp produces a .TXT file named after the first .REF file. It is a table of overlap values for each reflection, columns are: reflection no., 2-theta, 1st histogram overlap factor & multihistogram overlap factor. Last column shows the effect of using multiple data sets on the reflection overlap. This .TXT file can be read into a spreadsheet program for plotting.
+
+5. The PVE file now conains RF**2, Rp and Rwp for each histogram. These are found at the top of the file before the individual parameter entries.
+
+6. The Pawley reflection keys have been modified. They are now 'HKL   nnnnnN' instead of 'HKL   Nnnnnn'. This facilitates adding more reflection records.
+
+7. The space group symbol now has all extraneous spaces removed so that only one will be between axial fields. Tabs are converted to spaces (done for all typed in input in any case).
+
+Apr. 14, 2007
+
+1. Fix bug in reading 'ALT' style raw powder data. Other types read correctly.
+
+2. Fix bug in output for .PVE files; the cell angles were missing.
+
+3. Modify SeqGSAS so that it can process data sets in reverse and over limited sets of data. Some small changes to Seqplot.
+
+Feb. 22, 2007
+
+1. Added option for Q(=2pi/d) plots for RAWPLOT and POWPLOT, This is controlled by the 'T' switch which cycles between 2-theta/TOF, d-spacing & Q-spacing plots. The initial setup is now for 2-theta/TOF plots; it used to be d-spacing plots.
+
+2. In the same vein, the option to produce sqrt(I) for the y-axis was implemented in POWPLOT & RAWPLOT. This gives an interesting view of the fit. The new "G" option toggles between this mode and the normal y-axis scale.
+
+3. Improved the graphics display with "real" Greek characters, superscripts, etc.
+
+Feb. 9, 2007
+
+1. Changed the form of the raw powder diffraction files read by GSAS from "direct access" with fixed 82 character records (80 characters of data + 2 of CR/LF) originally implemented on 4/11/01 to variable length sequential records. Thus, there is no need to preprocess these files with cnvfile or write them with this special format. The records retain the data format as described in the GSAS Manual for the length and spacing of each data item. Data files with the old format are still readable by GSAS; there is no need to further convert them. However, the old style (pre 4/11/2001) unix style files (80 character streaming records) cannot be read by GSAS. These must be converted by cnvfile to a more readable format.
+
+2. The number of data points in a powder pattern is now 120000.
+
+June 8, 2006
+
+1. Added facility for computing the LS matrix conditioning value. This is done for both full matrix and band matrix after normalization and application of the Marquardt modification. It is shown in the .LST file for each LS cycle. If zero then a warning is given about a possible singularity in the refinement. Otherwise, two values are given. The first is the inverse conditioning value and the second is the -log10 of that value. The latter is the number of digits that must be carried for sufficient precision. Log values less than 5-6 are OK and indicate no refinement problems are anticipated. Log values greater then 6 are cause for concern as the single precision used in GSAS for matrix inversion will give largely spurious results for the shifts. In this case one should look for near singularities in the refinement - likely as oscillations and other signs of LS instability.
+
+May 22, 2006
+
+1. Fix bug in space group routines (thanks to Allen Larson) that flagged C 41 2 21 as illegal even though it is a legal space group.
+
+Apr. 20, 2006
+
+1. Double maximum number of entries in time map to 2048 to accommodate newer neutron TOF data.
+
+Apr. 14. 2006
+
+1. Fix to GEOMETRY so that magnetic moments are correctly written in the 'M' option. Also corrects related error in EXPGUI.
+
+2. Fix to editing of d-ranges for single crystal data.
+
+Mar. 6, 2006
+
+1. Created a new graphics program, MUSTRPLOT, that prepares a graphics file for displaying the effect of the Stephens microstrain model. The graphics file is formed with the same plan as comment #1 for Feb. 26, 2006 and can be read by gnuplot and drawn as a 3D surface. Two files are produced, one has the X,Y,Z coordinates of the surface points and the other has the drawing instructons to gnuplot to give a surface plot. The first file is named 'somename.txt' and the second is 'somename.plt'. If the latter is 'load'ed into gnuplot, a plot will appear. Gnuplot can be obtained from www.gnuplot.info.
+
+2. Modified the solvent scattering function (e.g. Babinet's Principle) to add an additional fluctuation in the scattering factor via a J0 Bessel function.  The idea was to modify the scattering factors to accommodate shell formation in the solvent region around protein molecules. In initial tests these coefficients do refine to some values but it is not yet clear that any meaningful improvement in the fit is attained by their use. The atom scattering factors are now given as:
+
+f = fo-[A+B*J0(R*Q)]*exp(-U*Q^2)
+
+where A,B,R & U are refinable coefficients; Q=2pi/d. The old form of this function had just A & U as coefficients. Those of you who are using this function - please open the editing of this function in EXPEDT and reset the refinement flags as the old EXP file record will not have them set correctly. 
+
+Feb. 26, 2006
+
+1. Modified the "ascii" output in POWPREF; it now writes two files. One is essentially the same as before with a header of titles, x- and y-axes labels and then the data. The second file is a set of commands for gnuplot for reading the graphical data and plotting it. The first file is named 'somename.txt' and the second is 'somename.plt'. If the latter is 'load'ed into gnuplot, a plot will appear. Gnuplot can be obtained from www.gnuplot.info.
+
+Feb. 15, 2006
+
+1. Defined new background function #9 which is an interpolation function with constant intervals in log(TOF) or log(2-theta).
+
+Feb. 1, 2006
+
+1. Enhancements of SEQGSAS & SEQPLOT: SEQGSAS now will read raw data files until it runs out and then ask if "there are more". This is to allow SEQGSAS to run in a live data acquisition pipeline where one does Rietveld refinement on data as it is produced in an experiment varying temperature. SEQPLOT now has an "update" mode where new PVE files are read on demand ("U" option). SEQPLOT will now read 1000 PVE files; limited to 200 parameters. GENLES has been modified so that profile R values (Rp & Rpw) are put in the PVE file and the lattice parameters (a, b, c, etc.) with esds are also put in this file when varied. ASCII table output tweaked a bit to give 6 sig(?) figures; used to be 4. Raw data file names still must be in numerical sequence but no longer require any leading characters (although this is a good idea anyway) before the number (e.g. 25.dat, 26.dat, etc. is OK). Please note that SEQGSAS does not work for raw data sets that are not in "proper" GSAS format. Use CNVFILE to fix them if needed.
+
+2. Modifications to PC-GSAS so that the experiment file name appears in its window title bar (at top of window) and in its Windows progress bar entry. Makes working with several exp files simultaneously a lot easier.
+
+3. A revisit to the Peter Stephens anisotropic mustrain broadening stuff - still more corrections.
+
+4. Implement an "Rfree" option for single crystal data sets. This option can only be set once, best done before any refinement is done. Control is in the least squares control menu where you can select 1-10% of the reflections to be set aside for Rfree calculations. Reflections in each histogram are then chosen at random in the first run of GENLES to be used for Rfree. Subsequent GENLES cycles will then compute structure factors for these reflections but never use them in the refinement; they are used for Fourier calculations though. There is no "EXPEDT" means of resetting these (but there is a way by a "hand edit" of the .EXP file).
+
+Dec. 5, 2005
+
+1. SeqPLOT has been enhanced. It now can accept alternative values for the X-axis (i.e. temperatures) and a new X-axis label. It will output an ascii file with a table of all parameters (limit 200) found with esds for all the runs processed suitable for input to some other graphics program (e.g. Excel). The plots now show error bars (1 sigma) for all values.
+
+Nov. 27, 2005
+
+1. A new routine has been implemented. SeqGSAS will run a sequence of Rietveld refinements from a sequence of powder data sets. The data sets must be in numerical sequence (i.e. aaa01.dat, aaa02.dat, etc.). A completed refinement with the first data set in the sequence must first be done by hand; all refinement flags and options must be left set as for the last refinement. To facilitate extraction of the results the parameter name, value & esd list file print option (option "V" in L-S print option menu) should be set. SeqGSAS will copy the current EXP file changing the raw data file names for all powder histograms to the next ones in their series to a new EXP file named in numerical sequence. Two sets of POWPREF & GENLES are run by SeqGSAS to refine to this data set. It then repeats this process for the next data set; it stops when it has exhausted the sequence of raw file names. SeqGSAS has been installed in PC-GSAS.
+
+2. A second new routine has been added to GSAS. SEQPLOT will plot the results from a SEQGSAS run for each of the first 200 parameters refined. It is also limited to 100 runs; these limits are for array sizes. SEQPLOT is a "work in progress" and is currently missing an option to output an ASCII table of values to be used elsewhere. Comments about other "wants" are welcome. SEQPLOT is installed in PC-GSAS.
+
+Nov. 17, 2005
+
+1. Fixed the spectrum fitting in FITSPEC; errors in implementing the Marquardt stuff. And some small cleanup in RAWPLOT
+
+2. Fixed bug in RAWPLOT that prevented use of patterns for which no incident spectrum fitting was done but where a measured spectrum was used instead.
+
+Nov. 8, 2005
+
+1. Modified EXPEDT & POWPREF so that "spin flip" (really time reversal) operators are set to all "black" for new magnetic phases or changes in space group as well as set undefined ones to all "black". This eliminates mysterious magnetic reflection indexing errors, etc.
+
+Nov. 1, 2005
+
+1. Modified Marquardt damping in GENLES for smoother convergence & implemented it in RAWPLOT & FITSPEC to give better refinement performance in peak & spectrum fitting.
+
+2. Added a new routine to force values to be within range imposed by formatting. This should eliminate the "****" problem in the experiment file making it subsequently unreadable. If you still see stars where numbers should be - let me know so I can fix them in the next version of GSAS.
+
+3. Added option "A" to POWPLOT to output an ascii file of the plot data. Titles and axes legends are in file for use by other graphics routines; result will depend on certain options (B, I, T & V) chosen in POWPLOT.
+
+Sept. 26, 2005
+
+1. Modified the Pawley refinement so that reflections that exactly overlap due to symmetry (not accidentals) are constrained to have the same shift so that if they start all from zero, they will have the same value. These overlaps only occur for tetragonal and above symmetries. In addition, the Pawley refinement does work for multiple phases contrary to earlier notes.
+
+Sept. 6, 2005
+
+1. Modified the Pawley refinement output so that if the new value of a reflection structure factor is negative, that value is made positive. Thus, all structure factors will be greater than zero; this makes the restraint for "zero Pawley reflections" superfluous; thus it has been removed. The listing output will show '****' for any reflection that has its value forced positive and the total number of these is given at the end of the relection listing for each cycle of refinement. In tests this modification greatly stabilized Pawley refinements and gives a better distribution for the smaller reflection intensities. 
+
+2. Another fix to GEOMETRY to correct output of magnetic moments for DRAWxtl, etc.
+
+3. Fix a bug that made HKLSORT not work.
+
+4. Add a DMAX control for reflections used in Fourier maps.
+
+5. Modified the way the "-bkgd" R-factors are calculated. Fixed background is subtracted from Yo summed in the denominators; this makes these R-factors larger and more sensitive to changes in Bragg intensity. This has no impact on the least-squares refinement.
+
+6. Fixed error in RAWPLOT peak fitting that gave incorrect esd for the peak d-spacing.
+
+Aug. 15, 2005
+
+1. Tweaked the behavior of the Marquardt function when the minimization function increases. Minimum increase is now 15%; it was %20.
+
+2. Changed the summary output for all restraints to give the average contribution per restraint as well as totals.
+
+Aug. 9, 2005
+
+1. Changed the upper limit on the number of reflections allowed in a powder pattern from 16384 to 46340. This might seem to be an excessive number but the change was prompted by a user's bug report where GENLES behaved oddly at a certain point in his data - it became very slow. This was where the reflection number exceeded 16384. After the fix, things ran fine. BTW his pattern had more than 40,000 reflections; the LS cycle time for 306 parameters (80 atoms) & 60,000 profile points was 45sec on my 1.6GHz desktop PC (WinXP).
+
+NOTE: YOU MUST RERUN POWPREF BEFORE USING GENLES FOR THE FIRST TIME AFTER INSTALLING THIS VERSION OF GSAS.
+
+The reason is that the pointers indicating 1st & last reflections that contribute to each point in the pattern are now computed on a basis of 46340; previously the basis was 16384.
+
+POWPREF will now stop if more than 46340 reflections are generated in any histogram. The old version didn't stop with too many reflections. This limit is for all phases combined.
+
+2. The numerology involved in the above fix also occurs in GENLES with respect to parameter and variable numbers except that the error was in the opposite direction. This is now fixed as there would have been very weird problems if more than 32000 parameters were refined. The maximum number is now 46340.
+
+NOTE: YOU MUST RERUN GENLES BEFORE USING DISAGL, GSAS2CIF, ETC. AFTER INSTALLING THIS VERSION OF GSAS.
+
+The reason is that the indices that point to various locations in the v-cov matrix contained in the .cmt file may be incorrect.
+
+3. HSTDMP has been modified to show large reflection numbers rather than '****'. The screen output is a bit larger than 80 characters so adjust your console window appropriately. It now gives 1st refl. no. & number of contributing reflections.
+
+4. Put a few extra spaces in two PDB file records so that ADIT, etc. see software name & authors correctly. Also put number of molecules/cell on CRYST record - may be in error if molecule has symmetry.
+
+July 25, 2005
+
+1. Fixed bug in spherical harmonics editing that made multiphase textured refinements fail.
+
+2. Fixed bug in magnetic phase editing that deleted SPNFLP record from EXP file.
+
+3. Fixed old "feature" that allowed tabs to be introduced into the EXP file on certain records.
+
+4. Removed the "R-free" option for powder data. This did not provide the "cross-validation" that the 
+equivalent does for single crystal diffraction.
+
+5. Added a new feature to GENLES in which the residuals for powder data (Rp, Rwp, Rp-b, Rwp-b) are calculated for 9 equal numbers of steps across each powder pattern. The results appear as a sequence of new records in the EXP file along with the (TOF or 2-theta) boundaries in the data set.
+
+June 8, 2005
+
+1. Modified GENLES so that the Marquardt matrix modifier is changed before the current cycle. It will decrease by 20% or less depending on the ratio squared of the minimization function from the current cycle to that of the previous cycle. Previously, it was modified after the cycle completed. This change improved LS stability for refinements that required this matrix modifier (extreme damping).
+
+2. Modified the spherical harmonics so that 2500 coefficients are now permitted (old limit was 594). It doesn't mean of course that one can actually refine that many with a given data set but you can try.
+
+3. Modified RAWPLOT to allow simultaneous refinement of 75 Bragg peaks; I've used it for 56 and this works just fine.
+
+May 17, 2005
+
+1. Modified FITSPEC so that a multiple scattering and absorption correction is applied to vanadium data used for neutron TOF incident intensity measurements according to J.M. Carpenter, Rev. Sci. Inst. 40, 555-556 (1969). FITSPEC will ask for diameter of vanadium rod used in cm & write the radius on record 'INS   VRAD  '. If you change rods, edit this record by hand.
+
+2. A new GSAS program has been written, GSAS2MAP, which converts GSAS Fourier maps to other formats. This facility had been embedded in FORPLOT but is now separate. The maps that can be produced are: a) ascii file suitable for input to FOX (very big files!), b) DN6 "brix" format readable by a number of protein graphics programs (includes SPDBV and O), and c) the CCP4 map format which is more widely readable by protein graphics programs (including SPDBV, O and COOT - real nice!). The CCP4 map file format wants the space group number (!) not the symbol. Consequently, GSAS2MAP will ask for the space group number (once) and will keep it for future reference by putting it on the "SG SYM" record in your EXP file. Be warned that "nonstandard" space group settings may be either unknown to CCP4 or have peculiar space group numbers (i.e. larger than 230). A list of the allowed ones are in \gsas\data\CCP4_space_groups.txt.
+
+Apr. 13, 2005
+
+1. Eliminated some extra references to parameters not appropriate for nondiffraction histograms (e.g. scales) that were occasionally created.
+
+2. Fixed some errors in gsas2cif namely long lines for anisotropic thermal parameter records, missing sig on unit cell volume & underscores in atom type names.
+
+Apr. 6, 2005
+
+1. Added option of high resolution plots to POWPLOT & RAWPLOT. In high resolution mode all points (up to 90000) are plotted while in default low resolution mode only 5000 are plotted. Previous versions only plotted 2400 points so there will be improvement even in low resolution. High resolution mode is slow so it is best used for final plots before publication. 
+
+2. Added facility to POWPLOT and RAWPLOT for up to 4 differently scaled plot regions. The scaling is given as a caption near the bottom of the plot. Only powder patterns have this scaling option; it is not used for other 1-D plots produced in GSAS.
+
+3. Changed the graphics font from "Normal" (very plain single stroke letters) to "Roman" (similar to Times-Roman). Looks nicer but aren't filled in characters.
+
+4. A start has been made on a Z-matrix style constraint for side chains in macromolecules. A new item has been added to the least squares menu but it does not "do" anything yet.
+
+March 31, 2005
+
+1. Increased the number of peaks fitted simultaneously in RAWPLOT to 50.
+
+2. A major change in the way gsas programs are invoked from pc-gsas.exe. Both pc-gsas.bat and pc-gsas.exe have been modified so that the environment variables needed are invoked immediately before each gsas program is run thus eliminating the need to set them in either the autoexec.bat file (Win95/98/ME) or in the system/user environment space (WinNT/2K/XP) thus simplifying installation of gsas. This change also solves two problems:
+a) The mysterious zero byte files (e.g. "expedt") which appeared in the user working directory are now eliminated. These were created in error by each gsas program as it tried to determine the "Distribution Date" for that version of gsas.
+b) The "Distribution Date" for each gsas program is now correct and is the date/time that I compiled/linked it in making up that particular version of gsas. You can check this by examining the "properties" of any of the gsas executable programs (not pc-gsas.exe) and comparing the "Modified" date shown by Windows with the "Distribution Date" shown in the GSAS banner when the program is run. They should be identical. There will be differences of a few seconds between the various programs; that reflects the exact time they were linked. When you install this version of gsas please carefully read the "readme.txt" file as the installation is different from earlier ones. You may wish to remove all environment variables for gsas & PGPLOT_FONT from your computer as they are no longer needed. If you run gsas from batch files you will need to modify them as directed.
+
+Mar. 22, 2005
+
+1. Corrected some of the parameter names for the P. Stephens peak shape parameters. These were mostly for hexagonal/trigonal lattices.
+
+2. A new version of WRITSPINS has been put in GEOMETRY thanks to Brian Toby. Output is now in full agreement with drawings made by VRSTPLOT.
+
+Feb. 7, 2005
+
+1. Corrections made to the expressions for Dij in functions #5 so that the relationships
+
+A'=A-pi*D11/18000, etc.
+
+are true. Note the difference between this and what was given in the 9/26/04 version of the GSAS Manual, p 164 where the conversion factor shown was pi/9000.
+
+2. An error in VRSTPLOT which sometimes incorrectly plotted "red" magnetic vectors when all "black" magnetic operators were used.
+
+Jan. 26, 2005
+
+1. Updated neutron scattering lengths in atmdata.dat file to match those given in the "Neutron Data Booklet". This will not change any current refinement unless a new atom type is inserted in your experiment file. New experiment files will contain the new atom values. Changes were generally very small. The old atmdata.dat file is in gsas\data as "oldatmdata.dat".
+
+Dec. 10, 2004
+
+1. Yet another fix to the Finger, Cox & Jephcoat peak shape function where it could crash for a peak at exactly 90.000 deg 2-theta. Thanks to Jim Kaduk for finding this one.
+
+Nov. 13, 2004
+
+1. Fixed problem in CW function nos. 3-5 (Finger, Cox & Jephcoat function) where an odd crash occured at high 2-theta & very particular selections of coefficients. Error was the "reverse" of the one that was fixed by a trig substitution on 12/2/2002 (#2 below). This change results in an extremely small change in the fit for high angle reflections. Thanks to Lachlan Cranswick for pointing out the problem.
+
+2. Added facility to GEOMETRY for producing a list of all spins for a magnetic phase in the unit cell. Thanks to Brian Toby for this modification.
+
+Oct. 31, 2004
+
+1. Improvements to the Pawley refinement for better stability. Modify .REF output file format for very large fosq values. Add more editing options for Pawley reflections.
+
+2. Modify functions for profile #5 so that Dij are now directly proportional to deviations of metric tensor elements and not dependent on crystal symmetry.
+
+Oct.9, 2004
+
+1. Made generation of new Pawley hkl set by POWPREF optional. This should make doing Pawley refinements easier as the results of previous refinements will not be lost by running POWPREF.
+
+Oct. 1, 2004
+
+1. Typos in the editing of refinement flags for profile function #5 fixed. Only one not harmless was for orthorhombic & monoclinic Laue symmetries.
+
+Sept. 27, 2004
+
+1. A new version of the GSAS Manual has been prepared and a pdf file of it is included in the Windows distribution kit.
+
+Sept. 20, 2004
+
+1. For profile function #5 the Dij are now constrained by the Laue symmetry of the phase. For example for cubic phases only D11 is visible and refinable. This modification improves the stability of refinements using this function. See notes from Dec. 15, 2002 & Jan. 2, 2003 for fuller descriptions of the Dij functions and their use.
+
+2. As requested by Peter Stephens GSAS2CIF has been modified to optionally produce a "short" cif file which contains no diffraction data information. This form is useful for input into structure drawing routines but not for submission to a journal.
+
+3. A new utility routine CHI2FXYE has been added to the gsas/exe directory. It will convert "chi" files produced by fit2d to the GSAS fxye format. It assumes that the chi file was the result of an integration of 2D image powder data by fit2d and enters a value for esd that accounts for the longer integrated arc for higher angle parts of the powder pattern. These esds are not scaled on an absolute basis so some modification of the powder histogram weighting factor may be necessary for refinements that are combined with other data.
+
+Sept. 12, 2004
+
+1. Thanks to Johannes Birkenstock an error in the Lobanov & alte de Viega absorption function was found & fixed. The error arose for high values of muR>3 and at low angles (2theta < 20deg).
+
+June 26, 2004
+
+1. Fix #1 below broke RAWPLOT - now fixed.
+
+2. Fixed error in GSAS2CIF for handling of dummy histograms. For these "observed" data will not be listed in the cif file; only calcd & background values will be listed. Thus there will be no subsequent confusion about whether the observed values were really observed.
+
+June 7, 2004
+
+1. A new type of profile plot has been introduced in POWPLOT. The weighted intensities (with or without background subtrations) can be now plotted. The resulting plots with this option will not resemble the observed data (ordinary CW data including background is a straight line!) but does show significant errors in the fit.
+
+2. The Marquardt damping factor now decreases by 2% as the minimization function (M) decreases and visa versa. This acts to accelerate the progress of a Marquardt damped refinement while keeping it from diverging.
+
+3. The ascii reflection file output from REFLIST now gives a heading record identifying the data columns. These are HKL, mul, sinth/lam, TOF or 2-theta*100, FWHM, FoSq, sig(FoSq), obs flag & phase angle.
+
+June 3, 2004
+
+1. Fixed errors in arcsin, arccos & arctan2 routines that gave misbehavior in texture and possibly other calculations when the result angle was 0, +/-90 or 180.
+
+2. Fixed a mishandling of the last profile point under some circumstances.
+
+3. Made defaults for sample angles for sph. harmonics as follows:
+constant wavelength x-ray: omega=0, chi=0, phi=0; omega follows 1/2*2-theta for Bragg-Brentano neutron (TOF or CW)
+      			 : omega=0, chi=90, phi=0; omega fixed for Debye-Scherrer 
+These can be overridden, for example, in the iparm file by entering records similar to:
+INS  1CHI      90.0000                                                          
+INS  1OMEGA     0.0000                                                          
+INS  1PHI       0.0000                                                          
+for Debye-Scherrer geometry for x-ray powder diffraction (common for synchrotrons).
+
+4. A new polarization function has been added (#4). This is to be used for image plate data where the "intensity is conserved" (in Fit2D parlance). Thus, the calculated pattern requires an additional scaling by sin(2-theta) to correct for the increase with 2-theta owing to the longer integration arc. The names of Lp corrections #0 and #1 have been changed to reflect their true nature. 
+
+May 17, 2004
+
+1. A new capability has been installed in GSAS. It will do a multipattern Pawley refinement against a single list of reflections. The reflections can be from more than one phase and the patterns can be subject to refinements where some phases are done by Rietveld and others by Pawley (not tested). The Pawley set of reflections can also be subject to a restraint against negative values. For conventional CuKa data a single reflection entry is used to represent both Ka1 and Ka2 peaks; the RATIO parameter is used to scale them appropriately. The results are in the EXP file so they can easily be used for other purposes. Be aware that POWPREF will wipe out results from previous Pawley refinements and that much the same care in beginning refinements after POWPREF when doing LeBail refinements also must be done with Pawley refinements.
+
+May 7, 2004
+
+1. The Finger, Cox & Jephcoat peak shape functions have been improved in precision & speed (Thanks to Larry Finger). They now do a better job on very low angle peaks and are ~50% faster.
+
+2. A bug in the constraint editing for profile functions has been fixed. It used to prevent one from entering a constraint for profile parameter #21 or larger.
+
+April 15, 2004 (tax day in USA)
+
+1. A small cosmetic fix to the g-value editing routine.
+
+2. There is now an option in histogram editing to set aside a certain fraction of the profile points in a powder pattern to calculate an Rfree and Rwfree. This replaces the old 'S' option (which didn't work anyway). The Rfree & Rwfree values appear in the .LST file (not on screen) and in the EXP file. In my initial tests these seem to follow the Rp & Rwp values closely through the entire course of a refinement but maybe you all will see wilder behavior in your refinements. Note that you set two things for this - one is the percentage of points to set aside (1-10%) and a random number seed. The seed ensures that the selection of points remains the same for all runs of POWPREF; this will change if seed is changed or if profile limits & excluded regions are changed. If you want to use this it should be set very early in the analysis; setting it for just the final refinement cycles somewhat defeats its purpose.
+
+3. After some experience, I've had to set the integration controls for the Finger, Cox & Jephcoat axial divergence profile function back to where I had them a few years ago. Too many ripples. New version will be a bit slower but more accurate.
+
+March 17, 2004
+
+1. Thanks to Ted Prince & Brian Toby, the conjugate-gradient refinement option is now available in GENLES. It does not produce esd's for the parameters so the output list file (*.LST) format is different. Select it in the least squares controls menu (option "J"). It requires a lot more cycles for convergence than least-squares but each cycle is faster. Take your pick (but buyer beware!). Conjugate-gradients work with highly correlated variables, so this may be of value for cases where one is not sure if symmetry is present or not. The line-search algorithm in the CJ implementation conflicts with fitting of variables that have fixed limits in their values (for example profile parameters). In general, use CJ with coordinates and perhaps displacement parameters. It might be useful for LeBail refinements.
+
+2. The set of resonant scattering coefficients (f' & f") has been expanded to 10 radiations. In addition to the old set (CrKa, FeKa, CuKa, MoKa & AgKa) there are TiKa, CoKa, TaKa, WKa and AuKa. They are in the order listed here so all you CoKa fans should set IRAD=7 in your IPARM file and the correct f' and f" values will be there. Old GSAS exp files will not have these additional values so you will need to treat these as before. This version of EXPEDT & GENLES will continue to read the values from the old "XAN" records. New exp files will have XF1 and XF2 records containing the f' and f" values. See next note!
+
+3. The new f' and f" tables in the atmdata.dat file have been taken from the new Intl. Tables Vol. C, pp 219-222. The f" values are very close to the old Cromer & Liberman values. However, the f' values are quite different. The new values are determined with a different total Coulomb energy term (Etot/mc^2) compared to the older determination with (5/3)*Etot/mc^2. My testing with this set of f' values gives marginally better fits - maybe they are better. A new version of fprime has been prepared with this change; it reproduces the values in the new table quite well.
+
+4. The standard absorption tables in the atmdata.dat file have also been expanded to include the first 7 radiations (not TaKa, WKa or AuKa). The tables are thus a mixture of old values and two new sets for TiKa & CoKa taken from Intl. Tables, Vol. C, pp 193-199.
+
+5. A new profile function has been defined for x-ray energy dispersive data using the Thompson, Cox & Hastings pseudo-Voigt description. It is available in both EXPEDT/GENLES for LeBail and Rietveld refinement and in RAWPLOT for individual peak fitting. The additional coefficients beyond those for function #1 are LX, LY, ptec & stec for the Lorentzian part of the function.
+
+6. Thanks to Brian Toby there is now a Robust/Resistant weighting using the Tukey model (ref Prince, Mathematical Methods in Crystallography & Materials Sci) via LS control option T. This reduces the leverage for data that differ from the model by large amounts (relative to their SU) so that these outliers do not overpower the rest of the observations. This option should be used to diagnose problems; use in the later stages of a refinement is appropriate only when the source of the discrepancy is well understood.
+
+7. Lande g-factor was still misused. Thanks to Angus Lawson it is now really fixed correctly.
+
+8. FORPLOT may now be used to create ASCII .grd Fourier map files that can be read by FOX and perhaps eventually other software.
+
+9. Bug fixes have been made to several routines to address platform-specific bugs in Linux or OS X and to correct incorrectly computed unit cell offsets for distances and angles reported in GSAS2CIF.
+
+10. A new feature is present in GEOMETRY that computes the uncertainty on a function determined from more than one GSAS parameter. For example, this option can be used to estimate the standard uncertainty on a material composition, taking parameter correlation into account, when multiple atomic sites have shared occupancy. Does not work for banded matrices - needs full matrix.
+
+July 7, 2003
+
+1. Some additional modifications to gsas2cif to improve conformity to the cif rules (Thanks to Brian Toby).
+
+2. The Lande g-factor was misused in the magnetic form factor. This is now corrected. (Thanks to Matt Woodward for pointing this out).
+
+3. Increased the maximum number of symmetry and rigid body constraints in GENLES. Values now more commensurate with the maximum number of atoms in a macromolecular phase (5000).
+
+June 3, 2003
+
+1. Modify rigid body refinement to allow negative variable numbers to be used for the RB origin refinement. This gives proper refinement of the RB origin when it is on a x,-x,z special position found, for example, in certain hexagonal/trigonal space groups.
+
+2. Modify reflection limits in POWPREF so that the upper limits are in monotonically increasing order by extending limits on narrow reflections that are near wide ones. This eliminates some odd errors by GENLES.
+
+3. Fix some typos in the atomic weights given in the atmdata.dat file. The only serious one was that for Pb.
+
+4. Implement the "special form factor" option for neutrons. This should be useful for free spinning molecular groups (e.g. C60), etc. Assign the form factor to atoms "QA", etc. There can now be a set for x-rays & a different one for neutrons so that combined refinements are possible. See note #2 from Mar. 28, 2002 for more info.
+
+5. Modify minimization terms for torsion and coupled torsion pseudopotentials so that the square of the pseudopotential is minimized. This provides a stronger discrimination against errant torsion and phi/psi coupled torsion angles.
+
+6. Fixed magnetic form factor coefficients for V0 and Ni3 according to revisions given by Jane Brown. These fix errors in original <j2> tables in International Tables for Crystallography, Vol. C, p. 394 and in the Neutron Data Booklet, p. 2.5-6.
+
+7. The FCJ axial divergence routine is adjusted to give ~20% faster execution time. There is an extremely slight difference in the computed profiles; produces less than 1 sigma shift in refined parameters.
+
+8. The #3 and #9 background functions have been removed. These were two kinds of radial distribution functions; this functionality is better done by the Diffuse Scattering overall parameters. GSAS will now give error messages and stop if they are still in the exp file. I strongly recommend changing these background functions to something else and using the diffuse scattering (overall parameters option "D") instead.
+
+9. Allow use of the special form factors ("QA",...) for each term in the diffuse scattering function. Two atoms are selected for each term; these can be either "ordinary" or "special". The diffuse functions are implemented for both neutrons and x-rays so combined refinements are possible.
+
+Jan. 2, 2003
+
+1. Added a new entry in torsion.mac for the omega angle in a peptide backbone.
+
+2. Made modifications to gsas2cif (actually by Brian Toby) to have all "usable" data included in the cif file along with that which was used for Rietveld refinement. Files will now be longer so don't be surprised. Also modified some of the entry locations in the cif file & templates for instrument & sample details. Result should very closely conform to cif "rules", but will still require "hand editing" for specifics not part of the structure refinement process (i.e. sample prep, etc.).
+
+3. The new function #5 has been extended to the neutron TOF case. The "strain" is given by
+
+del-TOF = (D11*h^2+D22*k^2+D33*l^2+D12*h*k+D13*h*l+D23*k*l)*d^3
+
+As noted earlier for CW function #5, this is a modification of the old TOF function #3 with the Lij terms replaced by Dij. 
+
+Dec. 15, 2002
+
+1. A new constant wavelength X-ray and neutron profile function (#5) has been defined. This has the same form as #3 except that the "Lij" are now "Dij". These are coefficients for a macroscopic strain on the lattice parameters for the phase in a given histogram with respect to the lattice parameters given for that phase. The strain is given by
+
+del-2th = (D11*h^2+D22*k^2+D33*l^2+D12*h*k+D13*h*l+D23*k*l)*d^2*tan(th)
+
+This function has it's uses; e.g. for combining data sets taken at slightly different temperatures on the same sample.
+
+2. Fixed the table look-up facility for neutron TOF profile functions; it previously did not work correctly. This can be used to improve the fitting to TOF data from moderators that do not obey the simple empirical rules for the alpha & beta profile coefficients and the relation between TOF and d-spacing. gsas\example contains some example files that illustrate the use of this facility as well as reading the incident spectrum directly from a data file instead of using the results of fitting. The file sepdnew.prm contains records with "PABpnn"; the "p" is for profile function type, and "nn" is a record number. The 4 floating point values on each are d-spacing, delta-TOF, alpha & beta needed for, in this case, function #3. The delta-TOF is defined as the TOF observed from a single peak fit minus the TOF computed from C*d+A*d^2+Z. Note the negative function number (-3) on the "PRCF" record: this indicates that the table lookup is to be used. Also note the incident spectrum type of "10" on the "I ITYP" record; this indicates that the incident spectrum is to be read from the file "vanadium.gda" as noted on the "MFIL" record. The file NEWSI.EXP demonstrates the use of both these options compared to OLDSI.EXP. Both use the si9737.gda data set collected on SEPD at IPNS.
+
+3. Changed a few entries in the macro file "angles.mac"; some angle esd's were modified and a few entries had wrong atom labels for protein amino acids.
+
+Dec, 2, 2002
+
+1. Changed some file handling routines so that it may (please note the "may" - I haven't tested it!) be possible to run GSAS from a directory path with a space in the name. Most notably this would be MicroSoft's "\Program Files" directory. Please let me know of any difficulties; I know it works from the default C:\gsas path as usual.
+
+2. An annoying bug in the Finger, Cox & Jephcoat axial broadening profile functions (#3 & 4) is now fixed. The bug would mess up the profiles for low angle reflections (less than 1.5deg 2-theta) which are seen for high energy synchrotron work and in powder patterns of proteins and other complex materials. It probably affected all uses of this function at angles below 5 deg 2-theta independent of the choices of S/L & H/L and arose from the use of the difference between cos^2 of two angles close to 2-theta. A suitable trig substitution fixed the problem.
+
+Nov. 22, 2002
+
+1. Fixed Lande g factor editing. Value is now correctly updated in EXP file.
+
+2. Fixed error in spherical harmonics texture - one of the angles (theta) was misdefined in the mathematics after the modification to include an azimuthal angle (see Mar 28, 2002 below). One could obtain "correct" pole figures but the apparent sample orientation was incorrect.
+
+3. The name of "GEOMTRY" inside PC-GSAS is now corrected. It is now GEOMETRY.
+
+Oct. 24, 2002
+
+1. Phases excluded from a histogram will not be counted in calculation of weight fractions. Previously they were used in this calculation in error. They will also not show on input or output tables for various overall parameters.
+
+2. The unit cell parameters a,b,c are now shown with 5 places past decimal point. The unit cell volume record is changed so that the volume is put in a 15 character field. This should cause no problems elsewhere in GSAS as this record is written by GENLES for information and is not read anywhere.
+
+Oct. 2, 2002
+
+Another fix & a new feature...
+
+1. The raw powder input style 'FXYE' now works.
+
+2. A new facility for making a text file with parameter name, value and esd has been introduced. This file is written at the end of each cycle of least squares. The file name is 'expnam.PVE'. This option is selected in the least-squares print options as "V". This is of use for easily extracting results from a sequence of refinements done while following phase changes or thermal expansion via parametric diffraction studies.
+
+Sept. 27, 2002
+
+Still more cif stuff...
+
+1. Again fixed order of Uij's in cif output file. Wasn't fixed correctly last time.
+
+2. Allowed gsas2cif to process macromolecular phases. Does not conform to mmCIF standards and still needs work.
+
+3. Fixed error where profile coefficients were not inserted correctly in cif file.
+
+Sept. 23, 2002
+
+A bit more cif stuff...
+
+1. Fixed switch of Fo & Fc columns in reflection output in cif file. Also added d-spacing
+as new column.
+
+2. Found error in thermal parameter constraint for x, 1/8, x+1/4 (48e) in space group Ia-3d (probably also in a few others as well - any position marked '2(101)').
+
+3. Fixed order of Uij's in cif output file. Tables were headed U11 U12 U13 U22 U23 U33 but number were in normal GSAS order of U11 U22 U33 U12 U13 U23. This is now in proper order.
+
+July 29, 2002
+
+More CIF stuff...
+
+1. More new records for cif stuff added to exp file needed to give R-values, etc. in cif file by gsas2cif. Also fix calculation of fitted background for cif file.
+
+2. Fix problem when more than 9999 (!) LS cycles are done. GENLES will now reset cycle counter back to zero & start the count over.
+
+July 18, 2002
+
+CIF stuff, etc....
+
+1. New records for cif stuff. These include mass fraction & chemical composition info in the exp file. Also new records giving min and max transmission, extinction and preferred orientation corrections.
+
+2. #1 is for a newly revised (by Brian Toby) version of gsas2cif. The result should be much closer to a final submittable version of the cif file. See html file included in the gsas distribution kit for details.
+
+3. A small acknowledgement of an error in FORPLOT in that it won't properly convert a map to dn6 format unless the map is made with z-sections. The conversion option ("O") now reports problem; if a dn6 map is desired then FOURIER must be rerun with z-sections.
+
+4. Some cleaning up of the single phase ascii file output option in REFLIST. Long file names are now allowed.
+
+5. The newest version of GRWin (0.99.8b) is now implemented in GSAS. This may (or may not!) address the problem with memory allocations seen sometimes in Win98. 
+
+Apr. 15, 2002
+
+One more...
+
+1. There is now a soft restraint available for the magnitude of the magnetic moment on an atom. Find 'M' in the soft restraints menu.
+
+Mar. 28, 2002
+
+More fixes
+
+1. Added a limit on the bond lengths for allowed angle restraints. Limit is 2A by default; it can be changed.
+
+2. Fixed bugs in GENLES that might give peculiar results for more than 9 atom types. Limit should be up to 36 atom types are allowed.
+
+3. GSAS now allows inclusion of special form factor curves for x-ray diffraction data. This is most useful for describing the form factor from a freely disordered body such as C60, CH4, etc. The atom "type" must be 2 letters starting with "Q" (i.e. QA, QB, etc.). Five different ones are allowed. The form factor is read in from the x-ray form factor editing menu (reached in EXPEDT by "F R" from least squares main menu). To use this you need to create a two column table of sin(theta)/lambda vs form factors with up to 100 entries. A read option in form factor editing allows reading of this file. It can then be plotted from this menu; enter "U" to save it in your EXP file. A similar facility for neutrons does not presently exist; it will be included later.
+
+4. The mathematics for spherical harmonics texture has been modified to allow the detector position to be changed through an azimuthal rotation about the incident beam. This modified the rotation matricies given on p. 142 of the 1/19/01 GSAS Manual to be (in expanded form)
+
+Rx(-th)Ry(az)Rx(om)Ry(ch)Rx(ph+pho)Ry(cho)Rx(omo)
+
+where th=theta, az=azimuth, om=omega, ch=chi, ph=phi, pho= sample phi, cho=sample chi and omo= sample omega. As before pho, cho & omo are refinable (in principle). This change was made to accomodate fitting of texture data from the new HIPPO diffractometer at LANSCE and will also facilitate fitting texture data taken via image plates or CCD's at x-ray sources. The azimuthal angle is entered as a fixed record in the iparm file with the key 'INS hhDETAZM' (hh=bank number) in F10 format. It can be changed in the histogram editing menu with the new 'Z' option.
+
+Jan. 16, 2002
+
+Three more
+
+1. Oops, left a debug print in fitpeaks.for - part of RAWPLOT.
+
+2. Output Uij's in U11, U12, U13, U22, U23, U33 order in cif file.
+
+3. Fixes made to raw powder histogram reading routines to now handle properly data from the new LANSCE HIPPO diffractometer. Multiple time maps now supported; TIME_MAP of 10 is reserved (i.e. don't use it) for compatibility with old LANSCE HIPD & NPD data.
+
+Jan. 8, 2002
+
+A few more fixes
+
+1. An error in GSAS2CIF was fixed so it can now handle long experiment names.
+
+2. A harmless(?) bug in EXPEDT for DISAGL controls was fixed.
+
+3. PC-GSAS has been modified so that it will recognize an experiment file that is 'drag-dropped' on it. The experiment name and directory are set to that file.
+
+4. GSAS2CIF has been fixed so that it will correctly process macromolecular phases. The resulting cif file probably does not conform exactly to the requirements of mmCIF but it does come close to the requirements of powdCIF.
+
+5. All Windows graphics routines now plot the current plot to fill the GRWnd window. Previously drawn plots (up to 8) are retained; they may be found with the various controls in GRWnd. The console window shows the number of the current plot; this can be needed if the plot is expecting a mouse command and you have switched plots.
+
+6. Two new raw data formats for powder data are now supported. They are 'FXY' and 'FXYE'. For FXY the raw powder data consists of two columns; the first column is the position and the second is the measured intensity as counts. The position must be in the appropriate units for the measurement, i.e. centidegrees for CW, microseconds for TOF, and KeV for energy dispersive data. The columns are in free format and thus must be separated by at least one space. Integer, floating point or exponential format for the values are all allowed. For FXYE there are three columns; first one is position, the second is intensity and the third is esd in the intensity.
+
+7. A bug in GENLES that caused X-ray Rietveld refinements with many histograms (>24) to fail was fixed.
+
+Dec. 3, 2001
+A few fixes & improvements
+1. The "Babinet's Principle" solvent correction is now available for non-macromolecular phases. The earlier attempt at this didn't work (see #5 in Oct. 7 note).
+
+2. Comments can now be present in GSAS raw powder data files. Each comment line starts with '#' and can be placed immediately before the 'BANK' or 'TIME_MAP' records. There can be as many of these records as desired. These records are not visible to you when GSAS reads them but can be used to contain additional experimental details. 
+
+3. A fix was made to the raw data file open routine for compatibility with SGI machines.
+
+4. A fix was made to TCLDUMP to correct an error in tick mark positions in LIVEPLOT.
+
+Oct. 24, 2001
+One fix
+1. The atomic form factor for Co3+ was corrected; all others were checked for accuracy against those given in the International Tables for X-ray Crystallography Vol IV. Two errors in the published values were discovered. The value of b3 for Ru+4 is given as 0.36495; the correct value is 0.036495. The value of a4 for Ba+2 is given as 0.77634; the correct value is 0.773634. In the case of Ru+4 use of the published values does not reproduce the tabulated form factor curve while use of the GSAS values does give the correct curve. For Ba+2 the curves are indistinguisable. 
+The neutron scattering lengths were updated to the values given by V.F.Sears in Neutron News 3, 26-37 (1992). The largest changes for natural abundance elements were ~5% reductions in the scattering lengths for Ca and Ba from the old values given by Koster & Yelon. The new values also conform to those given by Sears in International Tables for Crystallography Vol. C, 383-391 (1992).
+
+Oct. 7, 2001
+A few more fixes & changes
+
+1. The profile parameter editing for x-ray data has been changes to give 3 places after the decimal point for GU, GV, GW & GP.
+
+2. The peak fitting routine in RAWPLOT now outputs the background coefficients and esd's.
+
+3. The cycle timings for building the LS matrix and inversion/solution are now shown by GENLES.
+
+4. The old "MS-DOS" version of GSAS has been removed from the ftp distribution site (ftp://ftp.lanl.gov/public/gsas). The utilities that were in that directory are now in the "windows" directory.
+
+5. The solvent correction option is now available for non-macromolecular phases.
+
+6. EXPTOOL has been modified to handle a new dummy histogram option in Brian Toby's EXPGUI.
+
+7. The MS Windows graphics has been changed to be more "friendly". Two new screen options are available which allow one to put other windows on top of the GRWND window. The next plot pops the graphics window to the top. In all 4 options the graphics window can be minimized; a new plot pops the graphics window into view and on top. Multiple plots are now shown as a cascade with the current plot on top of the pile. No changes were done to the Linux X-windows version.
+
+June 11, 2001
+Fixes & changes.....
+
+1. Missing font file (grfont.dat) placed in distribution kit.
+
+2. Error in phi/psi torsion angle restraint editing routine fixed.
+
+3. EXPTOOL fixed to handle new file formats.
+
+4. Program "GEOMETRY" now called correctly from PC-GSAS.
+
+5. The Windows gsaskit.exe distribution kit now includes the GSAS Manual as a pdf file. Use Adobe Reader to read it. The kit is now created as a self extracting executable that automatically creates the correct directory structure (i.e. the "-d" is no longer needed).
+
+6. The QBASIC GSAS interface has been removed.
+
+7. A modification of the "registration" procedure for EXP files is given in the "readme" file. It gives better behavior of the console window running each GSAS routine. 
+
+8. The appropriate macro files for setting up complete restraints for protein powder refinement for the 20 natural amino acids are now in \gsas\macros. You are on your own for other types of "macromolecules" and any possible ligand molecules (i.e. heme, NAG, etc.).
+
+9. The "old" versions of the experiment files are now numbered "EXPNAM.Onn" where nn is a hexadecimal value. These form a back history of your experiment files as your work progresses. By entering "D" (delete) in the first menu in EXPEDT you can backup for as many previous versions as you have retained on your disk drive. Once you have entered "D" you cannot change your mind so be careful about going back to a previous version. The largest version extension is ".OFF" (i.e. 255 versions). It is not clear what will happen if you exceed this. If you are close to this limit I recommend deleting all "EXPNAM.Onn" files; the next run of EXPEDT or GENLES will generate "EXPNAM.O01".
+(Thanks to Allen Larson for this one).
+
+10. Experiment names are no longer restricted to 8 characters. The entire file name including path is restricted by the operating system to 255 characters. However, GSAS experiment names and the path should not have imbedded blanks.
+
+May 31, 2001
+More fixes:
+
+1. A new version (0.99.7a) of the GRWin library is now used. GSAS now uses the "mscvrt" version of the g77 libaries. The previous version used the "crtdll" libaries. Consequently the Windows behavior is changed for graphics. The GRWin window is now always "on top" (i.e. above the console & other windows).
+
+2. The cursor/keyboard now works correctly in all Win versions.
+
+3. Eight simultaneous plots are allowed in all Windows versions of GSAS. The ninth
+plot overwrites the first, the tenth overwrites the second, etc. 
+
+4. gsas2cif now works and produces the calculated background correctly.
+
+5. The line width for the Windows graphics routines has been increased. The resulting "emf" (encapsulated metafile) files can then be used to "insert" into a Word or PowerPoint document which will print nicely.
+
+A remaining mystery:
+
+1. Empty files (expedt, genles, etc.) are created in Windows under certain conditions.
+ 
+April 26, 2001
+More fixes:
+
+1. A typo in the magnetic form factor for Fe3+ .. replace a comma with a period.
+
+2. Fix an error in PC-GSAS - selecting 'gsas2pdb' ran gsas2cif.
+
+3. Changed window closing behavior for gsas routines run from PC-GSAS. They now stay open until a carriage return is given.
+
+4. An error in plotting fourier maps from vrstplot is fixed.
+
+5. The cursor/keyboard commands are changed slightly. The keyboard doesn't seem to work in WinNT (Bill Gates' problem?).
+
+6. A new statistical "measure" suggested by J. Ihringer is given at the end of each LS cycle. It is "offset/sigma" which is the number of "standard deviations" that the minimization function is away from the optimum, i.e. when chi**2 is unity. It appears to be a more sensitive measure of how "good" the fit is.
+
+April 19, 2001
+Still one more fix:
+
+1. Error in reading many (>10) atom scattering factors.
+
+April 12, 2001
+One more fix:
+
+1. The d-spacings reported for fitted peaks in RAWPLOT were in error, now fixed.
+
+April 11, 2001
+Now things are better: New versions of both Windows and Linux-beta GSAS have been 
+placed on the ftp site. Major fixes include:
+
+1. The error that caused harmonics texture to fail was identified and fixed. The g77 library routine for atan2 didn't know what to do with atan2(0,0).
+
+2. The atom constraints now allow 500 individual constraints with 500 terms each.
+
+3. The EXP and raw data file formats for both Windows and Linux are fixed-length 82 character direct access form. They are directly interchangable between the two OS's.
+
+4. PC-GSAS.EXE now works in all MS Windows versions both 9x and NT derivatives.
+
+5. In anticipation of refinement of some very large structures, the parameter numbers
+shown in GENLES under 'pn' are now in hexadecimal format. 6. There is a new overall parameter for "radiation damage" with X-ray powder data only. This is probably only useful for multidetector or multiple scan data sets. There is one
+parameter for each phase in each histogram and there is an offset value to put the scans on the same "exposure time" scale. The exposure time scale is assumed to be porportional to 2-theta - offset.
+
+7. The Linux version was compiled and linked on RedHat 7.0 using the backward compatibility libraries. It should run in RedHat 6.2 or newer and other compatible Linuxes.
+
+8. The Windows version makes use of GRWin libaries and pgplot to produce a nice graphics window. Multiple plots can be seen in this window - each can be resized, scrolled, zoomed, etc. as well as copied & pasted elsewhere.
+
+9. More than one GSAS program can open a given EXP file simultaneously. There are no checks on reasonable access to this file so use this "feature" with care. It is useful to run POWPLOT while GENLES is running, but if you do EXPEDT twice on the same EXP file it's probably ruined! If people get into a lot of trouble over this I can fix it with access "rules".
+
+10. The "VERSION" record in the EXP file now contains the "load date" date/time for the GSAS routine that initially creates it. This is to help Brian Toby distinguish between various GSAS versions on a fine scale.
+
+11. Brian Toby is preparing a new SGI version - you SGI fans should look for it soon.
+
+12. Brian & I are exploring the use of proper "Install" packages for GSAS. Some remaining mysteries:
+	1. Cursor/keyboard behavior is oddly different in Win9x, WinNT & Linux.
+
+	2. Empty files (expedt, genles, etc.) are created in Windows under certain conditions.
+
+	3. Program windows close automatically at the end of a run - may not be desirable.
+
+	4. ?????
+
+March 16, 2001
+OK, some things went wrong. A few more fixes for both Linux & MS-DOS/Win versions ...
+
+1. The output from RAWPLOT of the fitted profile was modified a bit.
+
+2. The number of integration terms was changed for the Finger, Cox & Jephcoat peak shape functions (#3 & #4 for CW radiation). This removes the tendency to have "wiggly" calculated profiles for certain very asymmetric peaks. The cost is about 20% in run time for GENLES.
+
+3. I've had to revise the restrictions on the number of atom constraints. The limits now are 200 constraints and 500 terms each. The previous version had 2000 constraints and there were complaints that EXPEDT wouldn't load in WinNT/2000 (it was fine on my 128Mb Win98 machine and in Linux). The old EXPEDT was about 20Mb, this new version is about 5.5Mb and should be easier to load on smaller machines. This may have to be revisited again. 
+
+March 11, 2001
+New releases of both the "MS-DOS" and "LINUX" versions of GSAS are now available.
+Changes & bug fixes:
+
+1. Each powder histogram may now have a weight factor. By default the value is 1.0; it can be changed in the histogram editing menu after which POWPREF must be run to implement it. This can be used to change the relative weighting of different powder histograms or to "shift" a high chi**2. Caution is advised in using this option.
+ 
+2. The number of terms in each atom constraint is now 500; it was 100. This has not been explicitly tested but should work.
+
+3. An error in lattice parameter constraints has been fixed.
+
+4. The maximum size of Fourier maps is 5M elements. The size of a section is now arbitrary; this limit used to be 23000 imposed in FORPLOT.
+
+5. An attempt has been made to fix a bug in the twin calculation routine. The old one only seemed to work for neutron magnetic structures. It should be noted that refinement of a "Flack" parameter can be done with the twin option by entering a twin element with the inversion matrix.
+
+6. RAWPLOT now has an option to output the fitted profile appended after the peak fitting results.
+
+7. The torsion angle restraint has been changed to have pseudopotential representation for the angle.
+
+8. The output of several restraints have been changed to be more consistent with each other. 
+
+Oct. 11, 2000
+More changes:
+
+1. Some changes to the P. Stephens function for mustrain broadening. The fixes were to the trigonal & rhomohedral cases.
+
+2. The Fourier program now has the option of using Sim weights for all (but not PTSN) maps. This required a change to one record output by GENLES. Run GENLES before using FOURIER on old files created before this version of GSAS, otherwise you'll get an error.
+
+3. The GENLES output has been changed slightly so that "Powder totals" does not include restraints. The restraint total is now seen in the output.
+
+Aug. 16, 2000
+Still more changes:
+
+1. I've been chasing down the "divide by zero" and "invalid" errors. Several have been eliminated in this version of GSAS.
+
+Aug. 14, 2000
+More changes:
+
+1. Powder pattern intensity values that are zero or less are flagged as "excluded". This avoids a "divide by zero" error in GENLES.
+
+2. The refined values of the reciprocal metric tensor and the corresponding lattice parameters are forced to be "proper" by symmetry. Thus, trigonal/hexagonal a=b, etc. 
+
+3. A few small changes were made in some menus in anticipation of new GSAS manual.
+
+4. This isn't recent but GSAS2PDB can give atom coordinate esd's as separate records or an RMS value as the thermal parameter. GSAS2PDB now outputs a proposed powder diffraction template for submission to the PDB.
+ 
+A new version of the GSAS Manual has been prepared. It has a new exercise (x-ray powder data refinement) and the "Technical" section has been brought up-to-date. A pdf version will be available as soon as our "local" readers have had a change to offer correction & suggestions.
+
+July 3, 2000
+Some more changes:
+
+1. The residuals listed for Rietveld refinements have been changed. The listings for "All" have been replaced by ones for "-Bknd". This is to give an indication of the quality of the fit to the Bragg contribution to the powder pattern. The new Rwp and Rp residuals are defined as follows:
+
+Rp = sum{abs(Yo-Yc)*abs(Yo-Yb)/Yo}/sum{abs(Yo-Yb)}
+
+Rpw = sqrt[sum{w*[(Yo-Yc)*(Yo-Yb)/Yo]^2}/sum{w[Yo-Yb]^2}]
+
+2. The output file from RAWPLOT from fitting of reflecton positions has two additional formats appended to the end. These are 1) fitted positions suitable for reinput to RAWPLOT and 2) fitted d-spacings suitable for input to CRYSFIRE (R. Shirley's indexing package)
+
+3. The choice of screen graphics now includes a "Z" option for no onscreen graphics. A choice of hardcopy device is immediately made and every plot made is assumed to be "saved" as hardcopy. This change was made to facilitate use of GSAS graphics routines in batch mode.
+
+Both the Windows and Linux versions of GSAS have been updated with these changes.
+
+June 9, 2000
+A few more changes:
+
+1. The convergence criterion in GENLES has been changed to allow modification of the lower limit for the sum(shift/esd)**2. In least squares controls editing there is now the "V" option for changing this limit.
+
+2. The presentation of the axes for POWPLOT, etc. has been improved.
+
+May 21, 2000
+A few changes:
+
+1. The rigid body TLS model has been changed to be properly based on a Cartesian coordinate system (thanks to Allen Larson).
+
+2. GSAS is now more tolerant of raw data files, iprarm files and exp files that are not in the "proper" 80 character fixed length format. This is not completely fool proof but EXPEDT (and other programs) will detect either files with incorrect length records or those transferred from unix (i.e. Linux) and convert raw and iparm files to scratch before attempting to read them; the original files are left unchanged. EXP files with incorrect record are converted; the original file is retained with the extension changed to "CRP". CNVFILE has also been modified to handle Unix format
+direct access files transferred to MS-DOS (Windows).
+
+Mar. 3, 2000
+Some new things & fixes:
+
+1. The atmdata.dat now contain the <jo> and <j2> magnetic form factor tables from the Intl. Tables Vol. C. These are now read by GSAS to compute magnetic form factors. The spin-orbit coupling is selected by setting the Lande g factor.
+
+2. The atmdata.dat file now contains anomalous neutron scattering factors for selected elements & isotopes. These are mostly rare earths. The coefficients allow calculation of the wavelength dependence of b' and b"; this is most useful
+for TOF experiments.
+
+3. The "Stephens function" for microstrain broadening has been changed to use the correct multipliers for some of the contributing terms. The errors were mostly for rhombohedral/trigonal space groups.
+
+4. The number of atoms allowed for a macromolecular structure is 5000.
+
+5. There is now a "Marquardt" style damping factor in GENLES. It is a multiplier on the LS matrix diagonal elements. Useful values to try are between 1 and 2 in case of severe ocsillations.
+
+6. ORTEP & VRSTPLOT will not plot macromolecular structures. These structures are too large to be handled by these programs. I recommend using Swiss PDB Viewer instead.
+
+7. The atom delete function now works for macromolecules.
+
+Some unfinished business:
+
+1. A possible modification to the rigid body TLS model to be properly based on a cartesian coordinate system.
+
+2. Completion of the proper texture description for the m3 cubic space groups. It presently is approximated by the m3m model.
+
+3. Using the anomalous neutron scattering data now available in the atmdata.dat file to properly compute wavelength dependent absorption coefficients for elements with resonances.
+
+Oct. 4, 1999
+Some more fixes:
+
+1. The use/do not use toggle for the histograms has been fixed and improved.
+
+2. GSAS2PDB will now write PDB files for nonprotein phases. These can be read by graphics routines such as the MSI WebLab program and the Swiss PDB Viewer. The latter program will also read the "DN6" format Fourier maps.
+
+3. Errors in the selection and generation of nFo-(n-1)Fc maps have been fixed. FOURIER will now process up to 9 different kinds of maps in a single run.
+
+July 14, 1999
+
+After the beta release a few more fixes:
+
+1. The esd’s given in RAWPLOT for the d-spacings of fitted reflections for constant wavelength data were too high by 180/pi. This has been fixed.
+
+2. The output from the restraints routines has been modified so that the final column lists abs(delta/sig) and ‘****’ marks those with delt/sig > 3.0. This makes it easy to find the large restraint errors. The restraint histograms also have titles that appear in the GENLES output.
+
+3. The diffuse scattering records in the EXP file have been reformatted. GSAS automatically converts these records if needed. 
+
+July 6,1999
+
+I have placed a "beta" version of an extensively revised version of GSAS for PC on this Los Alamos ftp server. This is the "protein" version and will become the standard version for GSAS. In addition to the modifications needed to handle protein structures, there have been many bug fixes and enhancements as well. However, because of the extent of the modifications needed for proteins, this version is first being released as "beta". Specific changes are:
+
+1. There is now a new phase type = "macromolecular" (see phase editing menu). After setting this type, atom positions for a protein structure up to 2000 atoms can be inserted into an EXP file. A lot of other protein structure dependent options also become available.
+
+2. The EXP file can now be 12000 records long; the old limit was 7500. There is no check on this length and GSAS will behave very badly if it is exceeded.
+
+3. Rigid body size limit is now 500 atoms; the old limit was 100 atoms.
+
+4. The maximum number of protein atoms is 2000; for nonprotein phases the limit is 500.
+
+5. Protein atoms have FRAC, X, Y, Z & UISO as parameters; not UIJ or MX, MY or MZ.
+
+6. Protein atom records have fields for peptide residue number and name. Atom names and residue names should follow PDB (Protein Data Base) rules.
+
+7. For protein phases, GSAS can read PDB files to create new atom positions or replace an existing set. The Cartesian to crystal transformation is done automatically using lattice parameters or matrix found in the PDB file.
+
+8. A new routine, GSAS2PDB, can produce a PDB file from protein atom positions. This is needed to input the protein structure into graphical routines such as WebLab Viewer (Molecular Simulations) or SwissPDB Viewer (by Nicolas Guex) as well as other protein structure analysis routines such as PROCHECK (Morris, et al.). This routine does not work on "ordinary" phases and it does not produce "full" PDB files suitable for submission without some further editing.
+
+9. FOURIER can now produce modified delta-F maps with nFo-(n-1)Fc (2<=n<=9) as coefficients.
+
+10. The maximum size of a Fourier map is 6M elements; the old limit was 1M elements.
+
+11. FORPLOT has an option for converting GSAS Fourier map files into "O" style map files. This "DN6" format can be read by SwissPDB Viewer and displayed as one or two contour meshes superimposed on the crystal structure.
+
+12. GENLES now has two new refinement options. These are control over the maximum atom shift (no limit by default) and formation of a "band matrix" approximation to the full matrix. DISAGL and BIJCALC properly use the inverse band matrix to calculate esd's on bond lengths, etc.
+
+13. The restraint options have been greatly expanded to include bond angles, nonbonded contacts and hydrogen bonds (only for proteins), chiral volumes to dictate handedness, planar groups, torsion angles and "phi/psi" pseudopotentials. Input of restraints for proteins has been greatly streamlined and a number of GSAS macro files can be found in \gsas\macros to apply these. All of the restraints except nonbonded & hydrogen bond contacts are available for nonprotein phases. The number of restraints can be very large; sequence numbers are in a 4-digit hex form so the ultimate limit is ~64K; the real limit is the size of the EXP file. Consequently, distance restraints created by earlier versions of GSAS may not be read correctly by this version, although an 
+attempt has been made to convert the record formats in EXPEDT.
+
+14. New refinement parameters for a "solvent" correction have been included in GENLES. This modifies the atomic scattering factors by f* = f - A*exp(-U*Q^2/2). This is very useful for improving the fit to very low angle lines in protein structures where a large portion of the unit cell contents is "unstructured" water. It may also find good use in zeolite refinements where there is ill defined scattering in the larger cages. Each diffraction histogram (powder & single crystal) has it's own solvent corrections.
+
+15. The diffuse scattering model (Debye scattering with thermal motion) originally used in background function #9 has now been developed as a separate set of parameters independent of the background function. There are 99 allowed diffuse scattering terms. Thus one can fit the diffuse scattering separately from the background. This may be suitable as a Rietveld refinement version of "PDF" analysis. 
+
+16. The bug that gave "divide by zero" in POWPREF for RAL neutron TOF data has been fixed.
+
+17. The several bugs involving anisotropic thermal parameters in BIJCALC, EXPEDT, and VRSTPLOT have all been fixed. The original eigenvalue routines used for these were incorrectly used. Now all three and ORTEP give the correct representation for the thermal ellipsoids and EXPEDT correctly converts UISO to 
+UIJ's. BIJCALC and VRSTPLOT now give correct principal axes of thermal ellipsoids in nonorthogonal unit cells.
+
+18. The x-ray energy dispersive profile function that was broken in the latest PC version has been fixed.
+
+19. RAWPLOT now has the option for fitting positions, areas & shapes of up to 30 individual reflections in a powder pattern using the same profile functions available in GENLES.
+
+20. An error in formulation of the Peter Stephens anisotropic microstrain broadening model for hexagonal/trigonal cells has been fixed.
+21. The error in VRSTPLOT that resulted in some magnetic moment vectors being 
+plotted incorrectly has been fixed.
+
+22. POLFPLOT will now produce a 3D virtual reality file of the pole distribution for a selected hkl. The stereographic projection of this object is a conventional pole figure.
+
+23. A bug in RCALC when using powder reflection files has been fixed.
+
+24. The "dots" option for plotting the observed profile in POWPLOT has been implemented.
+
+25. The histogram editing menu has been modified. The "U" option is now a use/no-use toggle; the "D" option has been removed.
+
+26. The restraint histograms now have titles and there is a use/no-use option for their inclusion in a GENLES refinement. Listing the histograms shows these titles. The list and use/no-use toggle are included in the restraint editing menu.
+
+27. GSAS2CIF has been fixed so that it no longer fails for powder data. The output file appears to conform to the cif standard for powder data.
+
+28. GSAS can now read constant Q step data. The "BANK" record for such data is as follows:
+
+BANK BANKNO NSTEP NREC CONQ QMIN QSTEP LAM 0.0 STD
+
+The value of LAM is the one used in the data collection to calculate the Q scan and is used in GSAS only to convert the Q-values to 2-theta. 
+
+29. The maximum number of points allowed in a powder pattern is 90,000.
+
+30. The incident spectrum can be read in from a file instead of computed from a previously fitted function. This option is most applicable to neutron TOF data where the incident spectrum contains features that are not well fitted by a smooth function. The incident spectrum measurement must be made with the same time bin structure as the powder pattern to be analyzed. To invoke this option, modify the TOF neutron instrument parameter file by inserting the incident spectrum file name on a "INS nn MFIL" record and setting ITYP=11 on the "INS nnI ITYP" record. The "INS nnICOFFm", "INS nnIECOFm" and "INS nnIECORm" records are ignored. 
+
+31. The Fo extraction flag is set on by default. Consequently, R(F^2) is computed for every powder histogram.
+
+32. The "divergence criteria" in GENLES have been modified to allow a slight rise (25%) in the minimization function from one cycle to the next. Consequently, GENLES will continue LS cycles even if the refinement is 
+oscillating. A larger increase in the minimization function will cause GENLES to give the "divergence" message and stop.
+
+33. The bug involving a read of a logical field in POWPREF has been fixed. The Fo extraction flag on the "HST nn EPHAS" record has been changed to a (Y/N) character.
+
+34. (This was noted before). The full path name for the experiment file can be used in GSAS. One consequence is that the EXP extension can be registered with MS Windows and opened directly with EXPEDT, POWPREF, GENLES, etc. from the "right click" dropdown menu in MS Explorer. Directories containing EXP files can have any length names and can contain embedded space. The experiment names, however, are limited to 8 characters with no embedded spaces.
+
+35. The cylinder absorption function (#0) for powder diffraction has been replaced with a new one recently developed by N.N. Lobatov. The old function did not work for muR values greater than 1.0; Lobatov's formulation works for muR up to 30. Remember that the coefficient used in GSAS is muR/lambda.
+
+36. The 'LeBail' extraction procedure has two new options. One is that a 'damping' factor can be applied to the first cycle of refinement in a given GENLES run of LeBail extraction. The other is that one can choose all Fo’s=1.0 for the starting set or to use Fo’s computed from the atom set inserted for that phase. The Fo=1.0 starting set is the method originally described by leBail. 
+
+There are some bugs that have yet to be addressed:
+
+1. The atom delete function does not work properly for very large numbers of atoms (i.e. proteins). EXPEDT "goes away" for a very long time and upon return has messed up the atom list and has an incorrect number of atoms in the EXP file rendering it unusable. Delete atoms works fine for small structures though.
+
+2. ORTEP & VRSTPLOT fail with protein structures. I suspect I'll just disable them for protein phases as quite good third party software exists for plotting these structures.
+
+3. The spherical harmonics texture model does not work for the "tetrahedral" (no 4-fold axes) cubic space groups. This includes space groups such as Fd3, Fm3, etc. The "octahedral" (with 4-fold axes) cubic groups work fine.
+
+4. ?????? (help me find them!)
+
+March 22, 1999
+
+There is a new location for the gsas distribution kits. To keep hackers out Los Alamos National Laboratory has placed most computers behind a firewall and has provided a common location for "public" ftp materials. The gsaskits are now located at the site ftp://ftp.lanl.gov/public/gsas. Only those kits for PC, Linux, SGI and HP have been retained. Those for VMS are no longer being made available.
+
+January 28, 1998
+
+There are now three new versions of GSAS. These are for Microsoft operating systems on the PC, for Silicon Graphics Irix 6.2, and for Red Hat Linux version 4.2 on Intel 386 or better machines. All three are virtually identical in every respect and all use the PGPLOT graphics package for on screen graphics. The hard copy graphics support for all three is also identical using routines developed for GSAS. 
+
+Some specific remarks:
+
+1) All three versions use the full path name internally for the experiment name.
+
+2) A new peak shape function (#4) has been defined for CW x-ray, CW neutron and neutron TOF data. It is based on a new expression for "microstrain" broadening first presented by Peter Stephens (SUNY StonyBrook) at EPDIC-5 in Parma, Italy.
+
+3) For both SGI and Linux the new kits are gsaskit.tar.gz and the installation instructions are readme.sgi and readme.linux.
+
+Dec. 23, 1997
+
+This distribution of the PC version of GSAS represents a major modification of the system. The screen graphics in PC-GSAS is now driven with the PGPLOT subroutine library; the hard copy graphics remains driven by routines developed especially for GSAS. This modification is the major change that has been needed to facilitate a re-
+porting of GSAS back to other operating systems (namely unix based). There have also been a number of enhancements and bug fixes applied to this version. I hope to release a Linux version that matches this one immediately after the Holidays. This PC version has a number of internal changes to make it and the Linux 
+version have identical code as far as is possible. The bug fixes & enhancements are:
+
+1. A major mathematical error in GEOMETRY was fixed. This was the inadvertant use of the transpose of the crystal-to-orthogonal transformation matrix to generate Cartesian atomic coordinates in preparation for all subsequent calculations in GEOMETRY.
+
+2. Rigid bodies can now contain up to 100 atoms.
+
+3. The graphics interface for the PC offers two options. "A" is for VGA 640x400 resolution and "B" is for SVGA 800x600 resolution. The "A" option supports the mouse for moving the cursor; the "B" option only supports the "arrow" keys for moving the cursor. There are other differences in how the hardware handles these two options. For example, graphics created in option "A" can be made into a window with ALT-Enter, option "B" gives an error.
+
+Apr. 9, 1997
+
+Some modifications & bug fixes; as usual this is only for PC-GSAS. I hope to have access to a new SGI in a month or so (my old one died the other day)) thus I may be able to bring the SGI version of GSAS up to date with the PC one soon.
+
+1. The number of constraints that can be created for each kind of overall parameter is now 99; the old limit was 9. The limit on the number of terms is still 27 for each constraint. A consequence of this change is that old 
+constraints on profile coefficients and phase fractions that you may have in your experiment files are no longer visible to GSAS. You will have to reconstruct these constraints before running GENLES. The old records are still 
+in the .EXP file if you need to refer to them to make up the new constraints.
+
+2. RAWPLOT now has an option to produce a text file table of position, intensity, etc. from the raw data file.
+
+3. Some small fixes to VRSTPLOT (background color & some of the atom search routines).
+
+4. One more background function has been added (#9) which fits diffuse scattering in the background with a more sophisticated Debye model than is used in background function #3. 
+
+5. POWPLOT, RAWPLOT now draw 2500 points on the screen; this should improve the appearance of high resolution powder patterns when they are displayed over a wider 2-theta (TOF) range.
+
+Jan. 21, 1997
+
+Still more bugs and a few more improvements.
+
+1. The WinNT/Win3.1/DOS shell had some mistakes; these were fixed. The color menu was also fixed.
+
+2. VRSTPLOT had some display errors so that polyhedra were illuminated from the back in some cases and thus appeared black. This has been fixed. Also the color rendering has been adjusted to give a more realistic appearance. The bond & polyhedra vertex search routines have been improved. The center of rotation in 
+"spin" mode is now the center of the unit cell; earlier it was sometimes outside the drawing which made manipulation difficult.
+
+3. The number of atoms per phase everywhere in PC-GSAS is now 500.
+
+4. A minor bug in CNVFILE that added a duplicate of the last line into the output file has been fixed.
+
+5. After careful checking of the license for VRweb, I have placed a copy of the setup file in the [.DOS] directory. This is a beta test version 1.05b of the Win95/WinNT version of this software. There are special requirements for installation in WinNT. For more information on VRweb look at http://www.iicm.edu/vrweb.
+
+6. There is a new soft constraint option; one can "constrain" unit cell "chemical" sums. This includes composition, charge balance,  etc. Each constraint requires a value for the sum over the unit cell, an esd and the set of terms that contributes to the sum. The terms are selected by atom sequence no. and phase so the sum can cross phase boundaries. Each term also has a "factor" so one can multiply the site fraction by valence, etc. I have not tested this very extensively, just enough to know it works. Please, give me feedback on your applications of this feature.
+
+Jan. 10, 1997
+
+A few more bugs have come to light.
+
+1. The WinNT/Win3.1/DOS GSAS shell needed some additional items added to the menus. These include ITSPEC, REF2ASC, REF2BIN and VRSTPLOT. The color menu was also fixed.
+
+2. VRSTPLOT now produces a Fourier map contour net as one of its options for drawing. The selection of atoms in a unit cell is now more general. One should watch the number of contour lines produced by the Fourier option. If there are more than 150-200 contours then many VRML viewers will have trouble particularly on low-end machines. However, one can set VRSTPLOT to plot small parts of a crystal structure and thus get around this problem when working on a large structure (zeolite NaX comes to mind). 
+
+3. There are two new background functions; these are like the linear interpolation fixed background subtraction except that the points are at fixed intervals and the value at each point is refinable. They are really good if one doesn't want to bother with working out which of the others is more reasonable. However, they can be dangerous if a lot of terms is used.
+
+4. The source codes for a number of powder data conversion utilities are in the directory \gsas\codes. There are no guarantees they will work on a PC or even that they will compile.
+
+5. The maximum number of profile points for one powder histogram is now 50,000. That's to keep those folks at ESRF and APS happy.
+
+6. Refinement of structural parameters with energy dispersive data is now possible. When someone works out incident intensity corrections, etc. for this type of data, could they let everyone else know?
+
+Jan. 3, 1997
+
+There are some major new features that have been added to PC-GSAS as well as small bug fixes and minor modifications. Between the last "news" and this one I have done a number of unannounced upgrades which involved such minor fixes that I didn't bother announcing  them.  The major new features and fixes are:
+
+1. The routines REFLTOBIN and REFLTOASCII, which are used to convert reflection files to and from an ascii format, have been ported to PC-GSAS. These are mainly used by folks using the single crystal features of GSAS and need to move reflection files between different computer systems (i.e. VMS to PC).
+
+2. HSTDMP has been modified so that a period (.) has been placed in the CODE column of the  output. This is to make extraction of the profiles by 3rd party software (EXCEL, etc.) easier.
+
+3. A new graphical routine, VRSTPLOT, has been added to the system. It produces very spiffy 3D graphics via the VRML (Virtual Reality Modeling Language, Version 1.0) format. VRSTPLOT can draw ellipsoids for thermal motion or space filling spheres for individual atoms. It can draw  stick representations of bonds between selected atoms. It can draw polyhedra instead of balls or ellipsoids for selected atoms. The polyhedra can have any number of faces; the only criterion is that the faces are the outermost ones. It can even draw the C60 polyhedron; one has to "fool" it a bit by adding a dummy atom at the center of 
+the C60. The atoms and polyhedra are colored according to a set  of color values placed in a new version of the ATOMDATA.DAT file. So carbon is black, oxygen red, nitrogen blue and all the other familiar colors. Colors have been selected for about 2/3rds of the periodic table. These can be changed in VRSTPLOT if desired, 120 colors are available. VRSTPLOT  will also draw unit cell edges, magnetic moment vectors (colored black/red for spin reversal) and a set of planes for a selected hkl. The output of VRSTPLOT is a file (named expnam.wrl) that is then viewed by a 3rd party VRML viewer. The viewer reads the file and 
+displays the picture which can be manipulated as if you had a model of the structure in your hands. All of the 3D visualization is handled by the viewer as one moves aroud the structure. There are any number of these some as commercial packages, shareware or even as beta "freeware" versions. Browse the WWW for VRML, that way you'll find all the choices that are out there. They each have particular strengths & weaknesses; some do not support the full VRML 1.0 specification and some are faster (and bigger) than others. I personally use VRWeb and the viewer that comes with Netscape 3.0; the latter is very fast but requires more memory than VRWeb. However, this kind of graphics is very computationally intensive, the performance on anything much less than a 100MHz Pentium is likely to be very disappointing. VRSTPLOT can produce a drawing (lots of balls & sticks, for example) that will even bring a 200MHz Pentium Pro to its knees, so be careful what you draw.
+
+4.A serious start has been made to port PC-GSAS to the other platforms; thanks to Brian Toby. He has also created a Linux version which I will support after it is released.
+
+5. There were many minor fixes (spelling errors, messed up menu items, etc.) that were fixed; there seems to be an endless number of these to find. As usual I do appreciate knowing even the most trivial bug or error.
+
+June 7, 1996
+
+More bug fixes, especially to some of the new things added last time. Again only PC-GSAS has been updated. The major fixes are:
+
+1. The new CW profile function (Finger, Cox & Jephcoat) has been fixed and extensively  tested. It works extremely well without much of a time penalty on highly asymmetric powder lines. One test fit peaks as low as 3.5deg 2-theta (thanks to Robert Dinnebier for the test data).
+
+2. There have been major revisions to the sample orientation angles for the spherical  harmonics texture analysis. One result is that one should choose chi=90 for all of the usual data collection cases if you intend on using this model for preferred orientation.  This is now the default for new data sets of all kinds.
+
+3. The bug in DISAGL which rejected Fourier peaks as being "too close" has been fixed.
+
+4. Some of the onscreen lists have been made more friendly when there are many histograms in the experiment.
+
+5. The graphics backgrounds are now "brightwhite".
+
+6. There is a new Windows "shell" routine for PC-GSAS that runs in Windows95. It can be  controlled with the mouse and features pulldown menus, etc. Look for it in gsas\exe.
+
+7. The GSAS routine FITSPEC has been added to PC-GSAS.
+
+8. The general microstrain model ('Lij') has been extended to profile functions #2 & #3 for x-ray and neutron CW data. Some tests have been done for special cases and it seems to be effective.
+
+9. The manual is now available as a downloadable image (manual.pdf) which can be opened by Acrobat Reader 2.1 (available from http://www.adobe.com/acrobat). The manual is  searchable and can be kept "on line" on your machine. The file is 1.4Mb long, so plan accordingly.
+
+10. The bug which caused DISAGL to bomb with a lot of distances around one atom has been  fixed. There is a limit in DISAGL in which it only calculates angles between the first  25 atoms found around a given atom. DISAGL now warns of this and flags bonds not included  in the angle calculations.
+
+11. REFLIST now has an option for ASCII output of reflections for a single phase suitable  for both MULTAN and SIRPOW. SIRPOW will read the file directly; check the file format for  fields needed for MULTAN.
+
+March 11, 1996
+
+Again PC-GSAS has undergone extensive revision to both fix bugs and provide several important enhancements. Only PC-GSAS has been updated at this time. Allen Larson and  I are working to port these enhancements and fixes to the other versions. We expect  new VMS versions to appear next followed by the unix ones. The following are some of  the major fixed and enhancements:
+
+1. The space group bug which gave incorrect extinctions for some cubic space groups  has been fixed.
+
+2. The GSAS menu system had had a number of bugs fixed and it has been improved as well. It now checks to see that an experiment name has been declared before running those  things that need it (i.e. EXPEDT). It now includes items for file 
+conversion (CNVFILE), a better DOS interface and DLST to delete the list file.
+
+3. The graphics now draw lines on a white background so that images can easily be cut and pasted into other windows.
+
+4. Both the mouse and arrow keys work to position the cursor. ALT- accelerates the  cursor.
+
+5. The bug in DISAGL that sometimes gave incorrect esd's for distances & angles for large numbers of atoms has been fixed.
+
+6. Many small (& I'm sure annoying) errors in EXPEDT have been fixed. I want to thank  all those who pointed them out to me, it really helps.
+
+7. The error in PUBTABLES that reported gamma=90 for certain hexagonal space groups has been fixed.
+
+8. GEOMETRY has been modified so that more of its output for rigid body fitting and hydrogen atom placement appears in the list file. It's possible to input data strings by cut & paste between a window with the list file open via an editor and the GSAS  window running EXPEDT.
+
+9. The peak asymmetry function of Finger, Cox & Jephcoat for CW data has been installed as function #3 for both x-ray and neutron data. This needs extensive testing beyond what I have been able to do with data in hand. The two asymmetry parameters ('S/L' &  'D/L') are very highly correlated, so you may have to fix one & refine the other.
+
+10. Peak shape functions #1 & #3 for TOF data have been extended to include effects due to macroscopic strain and more general microstrain effects.
+
+11. GSAS now handles energy dispersive x-ray powder diffraction data but only in the leBail mode.
+
+12. GSAS now contains the generalized spherical harmonics description for texture for both TOF and CW data. It can be used in place of the March-Dollase model for Bragg-Brentano data. Select "cylindrical symmetry" for the sample (default) and choose some order for the harmonics. The texture code will handle other cases as well. However, we have not been able  to implement the spherical harmonics for the tetragonal space groups (P m3, etc.) We hope to  add this as soon as we work out the extremely extensive table of Fourier coeffcients needed  for this. Contact me for details.
+
+13. The graphics now supports HP-GL and color PostScript hardcopy.
+
+14. REFLIST now has an option for producing a file with h,k,l and Fo for a selected phase suitable for input into a direct methods program (MULTAN, etc.). Please let me know if you want other info. on this file as well.
+
+15. The output or the correlation matrix by GENLES has been changed to be more compact and readable. Only terms greater than 75% are listed.
+
+As you can see, I have done a lot of development in the PC version of GSAS. One reason for this is the apparent extreme interest in this version. Some 80% of all requests from you for GSAS  distribution kits are for the PC version. I expect this trend to continue for the forseeable future. Running times for fast PC's (100MHz and above) are very competitive with workstations and multiple GSAS runs can be done simultaneously with sufficient memory and Win95.
+
+April 21, 1995
+
+PC-GSAS has undergone further revision to fix more bugs and add some new features. Only PC-GSAS has been updated at this time. I shall be updating the  other versions as time permits. A few of the bugs are common to all versions so those will get fixed as they are released.
+
+1. A number of bugs in the single crystal codes have been addressed. The worst one was a mistransposed matrix in SCABS that caused several problems.
+
+2. A number of bugs that gave GPF's when EXPEDT was given unexpected keyboard input  were fixed. These are particularly hard to find because one usually gives sensible input to software.
+
+3. There is an additional menu introduced when a new phase is inserted. It gives the possibility of opening another experiment file as the source of the phase information. Everything for that phase is read; any refinement flags in this phase information are turned off, however.
+
+4. The mouse in graphics mode now is active for cursor action. The mouse buttons are not distinguished so the keyboard should be used for specific mouse actions. This is still a little buggy but the arrow keys still work as before. I'd like input on the mouse operation, please. 
+
+5. A couple of utility routines have been included. One is "cnvraw" which will convert GSAS files brought over from unix or vms to PC-GSAS format. It will fix experiment,  instrument parameter and powder data files. It won't handle the unix direct access  files though, convert these to sequential with convdtos before moving them to your  PC. Another is "grep" which can search the list file for interesting strings. For  example "grep Final nick.lst" will list all the "Final shift/esd" records in the  list file. 
+
+6. The environment variable situation in PC-GSAS has been simplified. You only need the addition to your path statement to include \gsas\exe and the set gsas=\gsas statement. The gsas.bat file no longer sets more environment variables.
+
+7. A number of errors in DISAGL, BIJCALC and PUBTABLES have been fixed. These routines previously failed to report correct esd's and PUBTABLES failed to write its results to the correct file. These have been fixed.
+
+8. The Lp correction for x-ray powder diffraction #2 has been removed. As pointed out  by Graeme Gainsford, it was in error and the true Lp function for diffracted beam  monochromators has the same functional form as the incident beam one apart from a  scaling factor. Thus, there was no need for an additional function. Function #0  (RBVD function) has the same functional form as #1 (Azaroff function) but it  expresses the polarization as a ratio instead of cos(mono 2-theta). Otherwise,  the two are identical in form and give identical fits.
+
+I have received reports of people running PC-GSAS on all sorts of machines ranging from a 16MHz 386/387 laptop with 2Mb memory to 90MHz Pentiums (that's mine) with few if any problems. It also seems to work in the MS-DOS window in IBM  OS/2; I'm told that GENLES runs comfortably with a 6Mb working memory.  
+
+Feburary 8, 1995
+
+I have now revised the PC-GSAS version to take care of the bugs that have been reported to me as well as a few I've found on my own. Moreover, there are some enhancements as well.
+
+1. The bug that gave a "divide by zero" for x-ray data in all versions of GENLES has been fixed for Alpha/VMS, VAX/VMS and PC versions. Seperate GENLES.EXE files are in their respective distribution directories for the first two. I havn't  
+done the unix fixes for this yet.
+
+2. The bug that crashed EXPEDT in attempting to set diffractometer constant refinement flags for x-ray data in PC-GSAS is fixed.
+
+3. Minor typos in various places in EXPEDT have been fixed for PC-GSAS. Other versions will follow later.
+
+4. PC-GSAS is now "optimized". GENLES now runs twice as fast as the "unoptimized" version released earlier. However, the optimizer does make mistakes and there may be new bugs that weren't in the earlier version. Please check your results and let me know what you find. One known bug is that the atom search routines in ORTEP fail in mysterious ways. It does not crash but fails to find atoms in searches over, for example, certain bond distance limits. Despite some effort this is not resolved.
+
+5. PC-GSAS now has hardcopy graphics support for both PostScript and encapsulated PostScript. The latter hardcopy files may be inserted into both MS Word and  WordPerfect documents. The plots are not visible (there is no TIFF included) but print fine. They can be resized within the document as well. 
+
+6. PC-GSAS now requires VGA graphics exclusively. Thus, it can be run in the MS-DOS window in Windows 3.1 without conflict although some machines will require it to be "full screen".
+
+7. The PC-GSAS is now available as a "self extracting" exe file. This should eliminate much of the difficulties people were having with "binary" vs "ascii" ftp file transfer. Instructions for installing it are in the file "[.dos]readme.dos"
+
+January 20, 1995
+
+Happy New Year to everyone. I hope everyone had a good holiday. Now for the long awaited news - I have placed the first PC version of GSAS in the "anonymous" ftp directory [anonymous.dos.gsas]. It has been developed using the Microsoft PowerStation Fortran to run on Intel i386 and better (486 or pentium) machines in MS-DOS. It uses a "DOS extender" to work beyond the 640K limit up to the full memory of your machine. I have tested it on a 8Mb 33MHz i486DX2 system, a 16Mb 90MHz pentium system and a 8Mb 32MHz i486DX2 laptop.  All work very well. In fact the original development was done on the laptop machine. The graphics 
+required is VGA (or better) but I haven't implemented any hardcopy option. Virtually all routines in the Unix & Alpha versions of GSAS have been implemented so that both powder and single crystal data can be processed. Because there were extensive changes that had to be made to the source, there may be many remaining bugs that I didn't find during my testing. If you find 
+something that fails or doesn't look right (even spelling errors) please let me know. Look at the file [.dos]readme.dos for installation details. 
+                           
+November 15, 1994 
+
+All distribution kits for GSAS have been updated. There were a few bug fixes  and a couple of new features that were in the new manual that hadn't made it into all the versions. The details: 
+
+1. The phase fractions are now given with the correct esds by GENLES for all histograms. The last version messed these up in some combinations of multiple phase/multiple histogram refinements. 
+
+2. The cell angle output in the setup part of GENLES is fixed. In earlier versions the gamma angle for hexagonal cells was given as 90.00 deg; internally the program used the correct angle. 
+
+3. Corrections were made the the single crystal routines SCABS, SCMERGE, etc. This mostly involved corrections to the crystal - orthogonal transformations andmake the absorption corrections more accurate. 
+
+4. GENLES now reports a residual based on Fo^2 for powder data anytime the extraction flag has been set for a histogram. This is similar to "R-Bragg" but clearly defined to be as close to the single crystal use as possible for 
+powder data. 
+
+5. GENLES now has the facility to refine the Ka2/Ka1 intensity ratio. The parameter is named KRATIO and is found as a diffractometer constant. Normally the value is 0.5; if you don't wish to refine it, that is the value 
+GSAS will assume. 
+
+6. A number of changes have been made to the contents of the experiment file in anticipation of implementing a "CIF" file output routine for GSAS. Some of these things are changed via new menu items in various places in EXPEDT; none are 
+essential for normal operation of GSAS.
+
+I have succeeded in producing a PC version of GSAS that runs in MS-DOS via a "DOS Extender" to enable use of the full machine memory. It is not yet complete and still needs considerable checking and debugging before it can be released. However, it appears to perform quite well even on a 33MHz, 486DX laptop, including graphics! I would like to know what parts of GSAS people would like to see in such a version. I have implemented EXPEDT, POWPREF, GENLES, POWPLOT, DISAGL, BIJCALC, GEOMETRY, ORTEP, FOURIER, FORSRH and FORPLOT. Let me know what else you want.
+
+September 1, 1994
+
+The long awaited new GSAS manual is now done. It consists of 4 Postscript files which are in the directory [anonymous.manual]. You can either download  the four original files (GSASMANUAL1.PS .. GSASMANUAL4.PS) or take one of the two backup style files (GSASMANUAL.BAK or GSASMANUAL.TAR) and recreate the original files on your machine. These files are in the plainest type of  Postscript I can manage but they contain the full manual including drawings.
+
+June 17, 1994
+
+All distribution kits for GSAS have been updated. There have been a number of bug fixes and minor modifications. Some were done in anticipation of a new release of the manual. There are also a few new features that have been added to 
+the system; a short list of details follows.
+
+Changes to GSAS:
+
+1. The "timeout" period for the distribution machine, MIST.LANSCE.LANL.GOV, has been extended to 10min. This should help with some difficulties people have had in ftp transfers particularly overseas.
+
+2. FPRIME on VMS systems is working again. There was a mixup between VMS and UNIX sources in the last release.
+
+3. GENLES now produces a unit cell formula weight and calculated density based on the actual unit cell contents including atom site fractions. This output appears  after the refined atom parameter listing for each phase. No esd is given for these values so use them with due consideration of the errors in the atom fractions and the errors in the "standard" atomic weights.
+
+4. GENLES now produces a weight fraction associated with each phase fraction. If a phase was subject to a "leBail" extraction, the weight fraction will be reported  as zero. As with #3, no esd is given.
+
+5. For those of you who use the GSAS library to link to your own codes, there is in the [anonymous] directory the file "gsas_glossary.lst" which may help. It contains the argument list for all the routines in GSAS along with a short (although sometimes  nonexistent!) description of what the routine does.
+
+6. The powder absorption now includes two additional choices for two versions of a surface roughness correction. One is by Pitschke, Hermann & Mattern and the other  is by Suortti. Both give essentially identical results and will frequently make a dramatic improvement in the values of thermal parameters obtained from Bragg- Brentano x-ray data. In some of my tests the Uiso's from x-ray data came very close  the the neutron values (which of course are correct!) Refinement of them will proceed  a little oddly since both the scales and U's must shift to compensate so GENLES will give the "diverging refinement" message 
+a few times as these things get to their  new values.
+                                                                     
+May 2, 1994
+
+There is now a distribution kit available for HP-UX. It is identical to the other version released earlier. As this is a first release for the HP, there may be bugs that don't show up in the other versions despite the fact that it has passed all our QA tests.  Those of you that use it please let us know of any bugs or problems.
+
+Apr. 18, 1994
+
+The newest versions of GSAS for VAX/VMS, Alpha/VMS, SGI Irix and DEC Ultrix have been placed in their respective directories. This is the first consolidated distribution so we would like to know of any difficulties you may have in retrieving the kits and installing them. There is not a kit for HP-UX at this time.
+
+Changes to GSAS:
+
+1. New hard copy device for "EPS" postscript. This output can be put directly into PC or MAC word processor documents (Word, etc.)
+
+2. New adjustible X-windows device (graphics option "H").
+
+3. Maximum no. of background terms is 36. This is not tested to its full extent for any of the background functions. You should expect that some of the functions may fail in odd ways (overflows, etc.) for very large numbers of terms; so beware.
+
+4. A rationalization of the GSAS standard for the choice of orthogonal coordinate system. We had at least three different conventions; now there is just one.
+
+5. There is a fix to the preferred orientation calculations. It was in error for non-centrosymmetric space groups. This is now fixed.
+
+6. Remove extraneous output file from ORTEP.
+
+7. Replace all "free format" WRITE, TYPE, etc. statements with formatted ones.
+
+8. Make the colors that appear on various graphics devices more uniform.
+
+9. Fix a bug involving "unobserved" reflections in FOURIER.
+

@@ -1,0 +1,812 @@
+<html>
+<head>
+   <title>EXPGUI -- LIVEPLOT/BKGEDIT</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="excledt.html">Next page<BR>(EXCLEDT)</A>
+</TH><TH><A Href="expguic.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI Utilities (1),<BR>LIVEPLOT and BKGEDIT
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+This page documents the LIVEPLOT and BKGEDIT utility programs 
+in the EXPGUI package.
+LIVEPLOT and BKGEDIT are actually the same program, but perform
+different functions, depending on how they are invoked. 
+LIVEPLOT is used to display the quality of the diffraction fit, while
+BKGEDIT is used to fit a background function to fixed background points
+that have been input by the user.
+<P>
+Both LIVEPLOT and BKGEDIT get the current diffraction information 
+by running the GSAS TCLDUMP program. (In GSAS/EXPGUI before 2001, the
+GSAS HSTDUMP program was used, which was less powerful. This code has
+not been removed, but will not be used if TCLDUMP is present.)
+
+<a name="liveplot"></a>
+<H3>LIVEPLOT</H3>
+LIVEPLOT is started by pressing the LIVEPLOT button on the toolbar
+or via the Graphs/liveplot menu item.
+<P>
+Some of the features available in LIVEPLOT are:
+<UL>
+<LI><IMG SRC="new.gif" alt="New!">
+  Plotting of Topas refinement results in LIVEPLOT:
+  Upon request, LIVEPLOT has been augmented to read in results from
+  Topas, as well as GENLES.
+  <a HREF="#Topas">See below for details.</a>
+<LI><IMG SRC="new.gif" alt="New!">  
+Regions of the plot can be magnified to show more detail, for example
+  in regions at high Q. 
+<LI><IMG SRC="new.gif" alt="New!"> 
+Plots can be <a href="#export">exported to obtain publication-quality
+graphics </a> -- <B><I>now on all platforms</I></B>.
+<LI><IMG SRC="new.gif" alt="New!"> Intensity can be displayed as I/sigma(I)
+ <LI>The plot is updated automatically after each refinement run
+<LI>The plot can be "zoomed-in", by clicking on the corners of the 
+area to be magnified and "zoomed-out" using the 
+right mouse button (Mac: Apple+click)
+<LI>
+The units used for plotting histograms can be selected. Choices are: 
+native units (2Theta/TOF/KeV); d-space (A) or Q (A<sup>-1</sup>)
+ <LI>
+  The background (fixed plus fitted) can be plotted or can be subtracted. 
+<LI>
+Reflection tickmarks can be displayed in a variety of formats 
+<LI>
+LIVEPLOT can be coupled to the LOGIC or CMPR programs, so that 
+peak positions for an arbitrary unit cell and
+spacegroup can be shown superimposed on the "Rietveld plot."
+<LI>
+Reflection indices (<I>hkl</I> values) can be shown for tickmarks 
+<LI>
+The cumulative chi<sup>2</sup> function or 
+ (obs-calc)/sigma can be plotted.
+<LI>
+The cursor position can be displayed
+</UL>
+
+<a name="bkgedit"></a>
+<H3>BKGEDIT</H3>
+<IMG SRC="note.gif" alt="Note!">
+BKGEDIT is used to fit a background function to a set of points
+selected by the user.
+For most refinements, this is not needed, 
+as it is possible to simply select a background 
+function (I find that the type 1 function, 
+shifted Chebyschev polynomials, works well)
+and then refine, adding terms until a good fit is obtained.
+On occasion, poor initial fits are obtained in this manner. This is
+most common in cases where large numbers of peaks are poorly fit. Since 
+significant sections of the data are not well fit, the refinement results in 
+an unreasonable background function, because this yields better agreement 
+with the observed data.
+In these cases,
+it may be best to fix the background to follow a "reasonable" curve in the
+initial stages and then refine the background in the final stages of 
+refinement, when a good model has been obtained. 
+<P>
+The BKGEDIT program, as shown below, is used to input a set a background 
+points via the mouse. The points are then used to determine a type 1 
+(Chebyschev) background function that fits the input background points. These
+terms can then be saved in the experiment file creating a background that 
+is good enough for the initial stages of refinement and that can be 
+refined once the model is adequate for the task.
+<IMG SRC="note.gif" alt="Note!">
+BKGEDIT can be used to fit GSAS background functions 1-6 (though
+for most purposes only type 1 is needed.)
+<P>
+<IMG SRC="b1.gif" align=TEXTOP alt="BKGEDIT screen image">
+<H4>Steps in fitting a background function</H4>
+The BKGEDIT program is started from 
+via the Powder/bkgedit menu item or by pressing the 
+"Fit Background Graphically" button on the 
+<A href="expgui3.html#EditBackground">"Edit Background"</A>
+dialog box (invoked from the "Edit Background" button on the 
+<A href="expgui3.html">Histogram pane</A>.)
+toolbar
+or 
+<OL>
+<LI><a href="#zoom">Zoom in</a> on the lower intensity section of the 
+plot, so that the background is clearly discernible. In some cases, the 
+data will need to be handled in sections.
+<LI>Press the "Add" button to add background points. 
+Note the cursor changes from cross-hairs to an arrow, 
+when the "Add" button is pressed.
+<LI>Move the mouse to the first location
+where a background point will be added and click with the left
+mouse button. A magenta triangle will appear at the location.
+Points can be added in any order. It is best to make sure that the fixed points
+are placed over the entire range of the data, e.g. near the maximum and minimum
+data points in TOF, 2theta, etc.
+<DL><DL>
+Note that it is advisable to place many background points in areas where
+the background is changing rapidly (where the background is most bumpy).
+</DL></DL>
+As background points are entered, they are saved in a file named 
+<I>EXPNAM</I><font face="courier">.bkg</font><I>N</I>, where 
+<I>EXPNAM</I> is the experiment name and <I>N</I> is the histogram number.
+If BKGEDIT is restarted at some later time, these points are reread.
+<LI>If any points are placed in incorrect positions, they can be deleted by 
+pressing the "Delete" button. The mouse cursor changes to a circle. When 
+the mouse left clicked, the fixed background point closest to the mouse 
+position (which may be outside the zoom range) is deleted.
+<LI>Background points can also be edited by entering numbers into the
+"Background points" area.
+<LI>After enough background points have been entered, the 
+"Fit" button turns from gray to black. When pressed, the selected 
+background function is fitted 
+and the resulting curve is shown as a blue dashed line.
+<DL><DL>
+<LI>It is suggested that you start with relatively few 
+terms and add terms and background points as needed.
+Note that the maximum number of increases as 
+more background points are entered.
+<LI>Editing the terms manually is possible. The curve is reevaluated as 
+changes are made.
+<LI>For the type 3 background function (radial distribution function), 
+the R terms are listed separately from the other
+background terms. These R (radii) values must be entered manually and 
+are not refined.
+</DL></DL>
+<LI>Once a good background function is determined, it can be saved in the
+experiment file by pressing the "Save in EXP file & Exit" button. This will
+set the background type, and save the terms. 
+It will also turn off
+the background refinement flag for the appropriate histogram so that the 
+terms are not refined inadvertently.
+</OL>
+
+<P>
+Note that POWPREF must be run at least once before BKGEDIT can be used,
+however, use of 
+GENLES before BKGEDIT is optional. If the data range is changed, for example
+by excluding a section of the data at the lower end, or changing tmax (dmin),
+the Chebyschev polynomial terms must change to generate the same
+background values, so both POWPREF and BKGEDIT should be rerun to 
+regenerate the Chebyschev terms.
+
+<H4>Why not use fixed background points?</H4>
+I personally feel that 
+a refined background function is preferrable to use of a fixed model,
+if at all possible.
+One reason for this is that Rietveld refinements usually achieve better fits
+when the background is optimized. A second reason refining the background 
+provides a 
+feel for the interaction between background values and displacement 
+(thermal) parameters.
+Usually, background and displacement parameters are fairly independent, but
+for some materials, where the high Q (high 2theta) portion of the pattern
+has many completely overlapped peaks, it is impossible to uniquely 
+determine where the 
+background should be placed, either by refinement or by manual placement. 
+Under these circumstances, the background should be refined with the 
+displacement parameters fixed at an appropriate value for the material. The 
+background should then be fixed for all future refinements 
+and the displacement parameters can then be refined. <I>Of course this 
+means you have predjudiced the refinement to result in the expected 
+average displacement parameter and this </I><B>must</B><I> be noted 
+any publication. However, if this is necessary, the data simply do not 
+contain sufficient information to independently determine
+background and displacement parameters. Use of fixed background points 
+would not demonstrate this and would lead the researcher to a false 
+sense of security (or fear, if the values are unreasonable) 
+that the displacement parameters actually mean something.</I>
+<P>
+If you still want to use fixed background points, despite this tirade,
+be sure to set the estimated
+error on those points to be 0.0. Use of non-zero estimated errors, can 
+result in artificially lowered R-factors and chi-squared values. 
+In one test, I was able to lower the R<sub>wp</sub> and 
+reduced chi<sup>2</sup> values, 
+from the correct values of 0.042 and 3.0, respectively, to misleading 
+values of 0.036 and 0.8, 
+respectively. [As expected, the R(F<sup>2</sup>) stayed constant at 0.045
+with the different fixed background errors; 
+FYI, refining the background caused R(F<sup>2</sup>) to drop to 0.036, 
+so I would consider the refined background to be better.]
+<P>
+If the background is so truly irregular that only use of fixed background 
+points will do, 
+BKGEDIT can be used to generate these fixed background points.
+The file used by BKGEDIT to save these points, 
+<I>EXPNAM</I><font face="courier">.bkg</font><I>N</I>,
+will define the background points if read directly into EXPEDT 
+by typing "@R" at the initial prompt in EXPEDT:
+<FONT FACE="COURIER"><PRE>
+   Is this the file you wish to use? (?,D,K,Q,R,Y) ><u>@r</u>
+</PRE></FONT>
+prompt and then supplying the name of the file, in response to the next prompt:
+<FONT FACE="COURIER"><PRE>
+   Enter the name of your macro file: <u>GARNET.bkg1</u>
+</PRE></FONT>
+Doing this will cause the background points you entered into BKGEDIT to 
+be used in GSAS
+fixed background points. If you do this you do not want to save the 
+fitted background function as well, as this would effectively subtract 
+double the desired background.
+Note that GSAS allows simultaneous use of 
+both fixed and a refined background;
+this is seldom done.
+
+<hr><h2>LIVEPLOT/BKGEDIT Features</h2>
+<B>Plot contents:</B>
+Reflection markers can be placed using the File/Tickmarks menu item
+<IMG SRC="note.gif" alt="Note!">or by pressing the
+"1" key for phase 1, "2" for phase 2,... Note that many attributes 
+for reflection markers can be edited using 
+Options/<a href="#configTick">Configure Tickmarks</a>
+
+<P>
+<a name="nexthist"></a>
+<IMG SRC="note.gif" alt="Note!">
+If more than one histogram is available to plot, it is possible to cycle 
+between the histograms by pressing the "n" or "N" (for next) key.
+<P>
+<a name="zoom"></a>
+<B>Plot zooming:</B>
+When the left (usual) mouse button is pressed, this defines one corner
+of a region to be magnified, as is shown to the right. 
+If the mouse is then moved, the diagonal 
+corner of this magnification region is defined. When the left mouse button
+is pressed a second time, the selected section of the plot is magnified to
+fill the entire plot.
+<P>
+<img SRC="mzoom.gif" align=RIGHT alt="LIVEPLOT manual zoom">
+Zoom settings are saved. 
+If the right mouse button is pressed, the previous zoom setting is used, 
+so that the left mouse button is used to "zoom in" and the right mouse
+button is used to "zoom out." Note, on the Macintosh, hold down the 
+Apple button while using the [only] mouse button to simulate a right-click.
+
+<P>
+<IMG SRC="note.gif" alt="Note!">
+<a name="manzoom">
+</a>Zoom settings can also be entered manually by pressing the "Z" key. This 
+opens a dialog, as is shown to the right, where the x- or y-axis range
+can be specified. Any value that is not specified is set to the maximum 
+or minimum for the entire dataset. It is possible to zoom further in using
+the mouse, but to zoom out beyond the manual zoom limits, the "reset" button
+on the manual zoom menu must be used.
+<P>
+<a name="zoomshift"></a>
+To shift the zoom region around, 
+the right and left arrow keys can be used to shift the 
+region 10 % to the left or right. 
+Likewise, 
+the up and down arrow keys can be used to shift the region up or down by 10 %.
+Holding down the control key down while pressing these keys increases
+the amount of the shift to 100 %.
+<P>
+<a name="LiveCursor"></a>
+<img SRC="cursor.gif" align=RIGHT alt="LIVEPLOT live cursor">
+<IMG SRC="note.gif" alt="Note!">
+<B>Cursor Display:</B>
+Pressing the "L" (or "l") key, or using the Option/Show Cursor Position
+menu button causes the position of the cursor (mouse position) 
+in plot to be shown. The coordinates are listing in a small area below 
+the plot. The position display is updated as the mouse is moved. The
+same key, menu button, or the button labeled "Close cursor display" can be 
+used to remove the display.
+<P>
+<br clear=all>
+<h2>Features in LIVEPLOT only</h2>
+<img SRC="lz.gif" BORDER=3 align=RIGHT alt="LIVEPLOT Screen snapshot">
+<a name="Cchi2"></a>
+<B>The cumulative chi<sup>2</sup></B>
+function was first suggested by 
+Bill David as a way to see which reflections have the greatest influence on 
+chi<sup>2</sup> [W.I.F. David, <I>Accuracy in Powder Diffraction-III</I>, 2001]. 
+It is defined for point j as 
+<IMG SRC="cchi2.gif" alt="equation for cumulative chi2 function" ALIGN=TOP>
+where y<sub>obs,i</sub> and y<sub>calc,i</sub> are the observed and computed
+data points and sigma<sub>i</sub> is the expected error. Thus, the statistically
+expected value for
+[(y<sub>obs,i</sub>-y<sub>calc,i</sub>)/sigma<sub>i</sub>]<sup>2</sup> is 1 
+and this function should rise in a smooth line if all points are fitted as 
+statistically expected.
+This can be displayed using the "Cumulative Chi2" item in the Options menu.
+<P>
+In the plot to the right, the cumulative chi<sup>2</sup> function is shown in 
+purple. Note that first peak is not well fit, but the low angle "shoulder" is 
+as important as the peak misfitting, with respect to the chi<sup>2</sup>.
+<P>
+<a name="OmCoS"></a>
+<B>Plotting (Obs-Calc)/Sigma</B>
+A more traditional way to see the data points that have the worst agreement
+between observation and model is to plot the difference between these values,
+but weighted by the reciprocal of the expected uncertainty, <I>e.g.</I> 
+(y<sub>obs,i</sub> - y<sub>calc,i</sub>)/sigma<sub>i</sub>, as defined above.
+The standard plot of (y<sub>obs,i</sub> - y<sub>calc,i</sub>) over-emphasizes
+minor discrepancies in strong peaks while being insensitive to very 
+significant discrepancies in weaker peaks, so the 
+(y<sub>obs,i</sub> - y<sub>calc,i</sub>)/sigma<sub>i</sub> is the more valuable
+plot. 
+This can be displayed using the "(obs-calc)/sigma" item in the Options menu.
+
+<P>
+<br clear=all>
+<a name="hkl">
+</a><img SRC="lind.gif" BORDER=3 align=RIGHT alt="LIVEPLOT Screen snapshot">
+<B>Reflection indices</B>
+are be displayed by pressing "H" or "h" while the
+mouse is near a reflection (holding the shift key while 
+pressing the left mouse button also works, but sometimes interferes with the
+zoom feature). 
+Pressing "A" or "a" shows all reflections in the displayed region.
+The indices are shown
+on the screen for phases with tickmarks (as shown to the right). 
+Indices are listed in the "Separate window for <I>hkl</I> labels" 
+(as seen below) for all phases, regardless of the tickmark settings.
+Displayed indices will remain on the screen for a preset time and
+then will be deleted; alternately, pressing "D" or "d" deletes the hkl labels.
+Several aspects of reflection labeling can be customized, 
+see the <a href="#hklOpts">HKL labeling options</a> for further information.
+
+<img SRC="lind1.gif" align=LEFT alt="LIVEPLOT Screen snapshot">
+
+<br clear=all>
+<P>
+<a name="magnification"></a>
+<B>Plot Magnification</B>
+Sections of the plot can be magnified through use of options in the
+Magnification menu or by using control-1 through control-9. 
+<img SRC="magreg.png" align=RIGHT alt="LIVEPLOT Screen snapshot">
+<UL>
+<LI>The Magnification/Add region menu item requests a location in the
+  pattern (2Theta/TOF/KeV/d-space/Q) and a multiplier. Data where the
+  scan variable (2Theta...) is of that value or higher, up to the
+  next region or end of the pattern are multiplied by that factor. The
+  factor, must be >0.
+<LI>Magnification/Edit regions brings up a menu (see below) where the previously
+ defined regions can be changed. The region boundaries can be moved
+  and the multiplier values can be changed. If a multiplier is set to
+  zero (or negative) that region is removed.
+<LI>Magnification/Clear deletes all previously defined regions
+<LI>Pressing control plus a positive digit (1,2,3,...9) also adds a
+  magnification region. The digit determines the magnification
+  multiplier. Data where the
+  scan variable (2Theta...) from the mouse position up to the
+  next region or end of the pattern are multiplied by that factor.
+<img SRC="editreg.png" align=RIGHT alt="LIVEPLOT menu">
+</UL>
+ <br clear=all>
+<P>
+<a name="export"></a>
+<B>Export plot options</B>
+<UL><LI>
+<IMG SRC="new.gif" alt="New!"> 
+The LIVEPLOT program can export plots to to a <I>high quality</I> PDF
+  file for presentations or publications using <A
+  HREF="http://www.gnuplot.info/">gnuplot</A>.
+  The PDF will match what is is shown on fairly
+  closely with respect to colors, <A href="#plotfont">font sizes</a>
+  and <a href="#zoom">zoom</a>. The new <A href="#magnification">plot magnification</a> to show detail in
+  the fit and for publication increase the 
+  <A href="#plotfont">plot font</a> so that the figure size can be
+  reduced to the standard Rietveld postage stamp, required by so many
+  Journals -- allowing the text to be discerned, even if the problems in the
+  fit cannot.
+  <P>Starting August
+  2011, windows and Mac versions of gnuplot are included with the GSAS
+  binaries; gnuplot is easily
+  installed on Linux with standard tools such as yum (Redhat),
+  apt-get (ubuntu) or zypper (openSuse). 
+
+<P><LI>  The plot can be exported to 
+<A HREF="http://plasma-gate.weizmann.ac.il/Grace/">Grace</A>, WYSIWYG 2D plotting tool for X-Windows
+that produces publication-quality graphics that appear very similar to
+  what is seen in LIVEPLOT/BKGEDIT. Further, Grace
+  can be used to enhance the plot, for example by editing captions,
+  figure display options and even annotate the plot.
+  Grace runs well on Linux and Mac computers; Many UNIX users know 
+  this program under a previous name, xmgr.
+  For Windows,
+  installation of <A HREF="http://cygwin.com/">Cygwin</A> is required.
+  <P><LI>
+For use in many other graphics programs, LIVEPLOT will produce a 
+"comma separated variable" data file with the data displayed on the screen. 
+The user will need to read this in,
+set line styles and scaling, etc., but this does provide an option for 
+generating high-quality graphics for presentations and publications.
+<P><LI>LIVEPLOT will produce PostScript versions of the plot on the screen,
+but the quality is rather low (this is a limitation of the BLT graphics
+package).
+  <P><LI>LIVEPLOT/BKGFIT can also be used to prepare input for FOX (Free
+  Objects for Xtallography). 
+  
+</UL>
+<a name="Topas"></a>
+<B>Plotting of Topas refinement results in LIVEPLOT</B>
+Upon request, LIVEPLOT has been augmented to read in results from
+Topas. Follow the procedure
+<A
+  HREF="http://topas.dur.ac.uk/topaswiki/doku.php?id=outputting_publication_quality_plots_using_expgui">Publication
+  Quality Plots using Liveplot in EXPGUI</A> from the <A
+  HREF="http://topas.dur.ac.uk/topaswiki">Durham University Topas Wiki</A> to
+  generate an output file that LIVEPLOT can read. Then use the "Import
+from Topas" menu item in the File menu to open a dialog window where
+the file can be imported. It is optimal to use the extension
+<tt>.ascii</tt> for the Topas export file.
+<P>
+Note that in normal use, LIVEPLOT is started from inside EXPGUI with
+an open .EXP file. If LIVEPLOT will be used frequently for Topas, it
+may be useful to create a shortcut to start LIVEPLOT directly. This
+can be done in Windows by following these 
+<A
+HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallWindows#shortcut">instructions
+to make a short cut</A>, but reference file <tt>.../expgui/liveplot</tt>
+rather than file <tt>.../expgui/expgui</tt>. Similar things can be
+done in Linux and on the Mac. 
+
+<hr><h2>LIVEPLOT/BKGEDIT Keyboard Shortcuts</h2>
+Frequent users of LIVEPLOT & BKGEDIT will find that many useful actions
+can be performed very easily by learning the following keystroke commands.
+Note that either uppercase or lowercase letters may be used.
+<DL>
+<DT><a href="#hkl">H</a>
+<DD>Labels reflections near cursor
+<DT><a href="#hkl">A</a>
+<DD>Labels all reflections
+<DT><a href="#hkl">D</a>
+<DD>Deletes reflection labels
+<DT><a href="#manzoom">Z</a>
+<DD>Specify zoom range manually
+<DT><a href="#tickmarks">1, 2,...</a>
+<DD>Displays reflection positions (tickmarks) for histogram 1, 2 etc.
+<DT><a href="#nexthist">N</a>
+<DD>Loads next histogram
+<DT><a href="#LiveCursor">L</a>
+<DD>Turns on display of cursor position
+<DT><a href="#zoomshift">arrow keys</A>
+<DD>Moves zoom region around in plot
+<DT><a href="#mag">Control+1, 2,...</a>
+<DD>Defines a <a href="#magnification">magnification region</A> at the
+  cursor location.
+</DL>
+
+<hr><h2>LIVEPLOT/BKGEDIT Menu Contents</h2>
+A few of these options are omitted from BKGEDIT.
+<img SRC="lm1.gif" align=RIGHT alt="LIVEPLOT Menu">
+<H3>File Menu</H3>
+<DL><DL>
+<a name="tickmarks"></a>
+<DT>Tickmarks
+<DD>Checkbuttons are provided for each phase to determine if tick marks
+will be shown. 
+<IMG SRC="note.gif" alt="Note!">
+Tickmarks can also be 
+toggled by pressing the
+"1" key for phase 1, "2" for phase 2,...
+Also see the Options/<a href="#configTick">Configure Tickmarks</a>
+menu item for information
+on tickmarks.
+<DT>Histogram
+<DD>This allows a histogram to be selected to be loaded
+<DL><DL>
+<IMG SRC="note.gif" alt="Note!">
+It is also possible to advance
+between the histograms by pressing the "n" or "N" (for next) key.
+</DL></DL>
+<DT>Update Plot
+<DD>The causes LIVEPLOT to read read the current histogram again from 
+the datafile
+<DT>Export Plot
+<DD>This offers options for exporting the plot in multiple formats.
+<DL><DL>
+<DT>to PDF
+ <IMG SRC="new.gif" alt="New!"> 
+<DD>Creates a <I>high quality</I> PDF file that may be useful for
+  presentations or publications. Note that you may wish to use
+  <A href="#magnification">plot magnification</a> to show detail in
+  the fit and for publication increase the 
+  <A href="#plotfont">plot font</a> so that the figure size can be
+  reduced.
+
+<DT>to PostScript
+<DD>Creates a <I>low quality</I> PostScript file containing the LIVEPLOT 
+output. See the Options/"Set PS output" button for where the file is created.
+Most unix systems are capable or printing PostScript files.
+On Windows, a program such ghostview may be needed to translate the 
+PostScript to a format that can be viewed or printed.
+
+  <A name="grace">
+<DT>to Grace
+<IMG SRC="note.gif" alt="Note!">
+<DD>Plots can be exported to 
+<A HREF="http://plasma-gate.weizmann.ac.il/Grace/">Grace</A>, WYSIWYG 2D plotting tool for X-Windows
+that produces publication-quality graphics. 
+After the plot is exported, it can be further 
+enhanced and annotated in grace.
+
+<DT>to .csv file
+  <DD>Creates a "comma separated variable" file. This contains all the
+  diffraction data shown in the plot. It can be used to produce a plot
+  in some other graphics program. 
+  <DT>Fox XML
+  <DD>The Fox program provides structure solution capabilities. This
+  option can be used to write data in the XML format that Fox uses. 
+</DL></DL>
+<DT>Quit
+<DD>Exits BKGEDIT/LIVEPLOT.
+</DL></DL>
+<br clear=all>
+<img SRC="lm2.gif" align=RIGHT alt="LIVEPLOT Menu">
+<H3>Options Menu</H3>
+<DL><DL>
+<a name="configTick"></a>
+<DT>Configure Tickmarks<DD>
+This submenu provides options that controls how tickmarks are displayed.
+<P><DL><DL>
+<DT>Auto locate<DD>
+When this option is selected, tickmarks are placed in different positions
+for each phase, automatically, similar to how tickmarks are shown in POWPLOT.
+<DT>Manual Placement<DD>
+Tickmarks are drawn at specific heights that can be set for each phase 
+(see below). The default
+is for lines to be draw from "-Inf" to "Inf", which creates lines from the
+bottom to the top of the plot. 
+<DT>Label by name
+<IMG SRC="note.gif" alt="Note!">
+<DD>
+By default, a label "Phase1",... is displayed in the legend when tickmarks
+for that phase are displayed. When this button is pressed, the first 
+20 characters of each phase name (phase title) are used instead. This
+label can be edited, as described in the next paragraph.
+<DT>Phase <I>n</I> opts<DD>
+The options for each phase allow the line to be changed between 
+solid and dashed, color of the line can be specified and 
+the vertical placement of the tickmarks can be specified. The 
+"Show Reflections" flag, 
+set in the File/Tickmarks menu,
+as well as the label used for the phase can also be changed here.
+
+</DL></DL>
+<P>
+<DT>Obs Symbol (Symbol Type)
+<DD>This brings up a menu where the symbol type and size for the 
+observed data points (and for BKGEDIT, the fixed background points) 
+can be selected.
+<P>
+<DT>Symbol Color
+<DD>The colors for all the displayed lines and symbols can be changed here.
+<P>
+<DT>X units
+<DD>The x units can be selected here. The choices are 
+"as collected" (2Theta/TOF/KeV), d-space (A) or Q (A<sup>-1</sup>)
+<P>
+<DT>Y units
+<DD>The intensity values can be normalized by the incident spectrum
+(for energy dispersive methods) or
+  <IMG SRC="new.gif" alt="New!"> can be displayed as a ratio with the
+  experimental uncertainty [I<sub>obs</sub>/sigma(I<sub>obs</sub>),
+  I<sub>calc</sub>/sigma(I<sub>obs</sub>) and their difference].
+</DL></DL>
+<br clear=all>
+<img SRC="lm3.gif" align=RIGHT alt="LIVEPLOT menu">
+<a name="hklOpts"></a>
+<DL><DL>
+<DT>HKL labeling
+<DD>This brings up a menu that selects 
+<UL><LI>Erase time:
+how long in seconds that <I>hkl</I> values are shown 
+before they are erased (0 means that they are not erased), 
+<LI>Label size: the size of the
+labels in pixels,
+<LI>Search Region: only reflections within this number of pixels of the mouse, 
+when the "h" key is pressed (if any) are labeled,
+<LI>Separate window: when this
+option is selected, reflection labels are shown in a text window
+</UL>
+<DT>Subtract background
+<DD>The background is always shown, even when subtracted
+<DT>Include legend
+<DD>The legend is the optional box in the upper left that defines the 
+plot entries
+<DT>Show [Hide] Cursor Position
+<DD>This turns <a href="#LiveCursor">Cursor position display</a> on and off.
+<DT>Set PS output
+<DD>For UNIX this allows the file to be sent directly to a printer
+or can be saved in a file. For Windows, a file must be written.
+<DT>Set screen font
+<DD>This option is used to control the font used for menus, graphics and 
+other aspects of windows. This value can be saved as a default value. 
+<A name="plotfont">
+  <DT>Set plot font
+<DD>This option is used to change the font used in the plot
+  window. This has a similar effect to changing the screen font, but
+  can be changed over a wider range and only affects the
+  graph. Changing the font size either way will change the font used
+  in the exported .PDF.
+<DT>Raise on update
+<DD>This causes the plot to be placed on top of other windows, if partially
+obscured, when the plot is updated. At this time, this option does not
+work in Windows-NT and -2000.
+<DT>Cumulative Chi2
+<DD>The causes the Cumulative chi<sup>2</sup> function to be displayed 
+(as <a href="#Cchi2">presented above</a>).
+<DT>(obs-calc)/sigma
+<DD>The causes the (y<sub>obs</sub>-y<sub>calc</sub>)/sigma
+values to be displayed 
+(as <a href="#OmCoS">presented above</a>).
+
+<DT>Save Options
+<DD>Causes many of the options set in this menu to be saved in the 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>) file.
+</DL></DL>
+<br clear=all>
+
+<P>
+<hr><H2>Customization of LIVEPLOT & BKGEDIT</H2><A NAME="customize"></A>
+The <FONT FACE="COURIER">localconfig</FONT> and 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files are read, if present.
+The following variables control how LIVEPLOT, and in most cases BKGEDIT, 
+function and can be 
+customized by changing their values in the 
+<FONT FACE="COURIER">localconfig</FONT> and 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files.
+<DL><DL>
+<DT><FONT FACE="COURIER">peakinfo(flag<i>n</i>)</FONT><DD>
+These variables define if peak positions will be shown 
+for reflections in phase "<i>n</i>". Reflections will be shown if
+the value is non-zero.
+
+<DT><FONT FACE="COURIER">peakinfo(color<i>n</i>)</FONT><DD>
+These variables define the default colors for 
+reflections in phase "<i>n</i>"
+
+<DT><FONT FACE="COURIER">peakinfo(dashes<i>n</i>)</FONT><DD>
+These variables define if peaks will be dashed for 
+reflections in phase "<i>n</i>" (UNIX only). Lines will be dashed if
+the value is non-zero.
+
+<DT><FONT FACE="COURIER">peakinfo(min<i>n</i>) and peakinfo(max<i>n</i>)</FONT><DD>
+These variables dictate the placement vertical position for reflection
+markers, when manually placed (see expgui(autotick), below). To draw
+to the edge of the screen, use -Inf and Inf.
+</DL></DL>
+
+The following variables are written to 
+<font face="courier">.gsas_config</font> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+when 
+"Save Options" is used. These variables are all set from the GUI and therefore
+do not need to be edited manually. 
+
+<DL><DL>
+<DT><FONT FACE="COURIER">graph(printout)</FONT><DD>
+This is set to 1 if PostScript files 
+will be printed and 0 if they will be written to disk (for Windows all
+files should be written to disk).
+
+<DT><FONT FACE="COURIER">graph(outname)</FONT><DD>
+This is the default for the file name used
+when PostScript files will be written to disk.
+
+<DT><FONT FACE="COURIER">graph(outcmd)</FONT><DD>
+This is the default for the command used
+to print PostScript files (Unix only). 
+
+<DT><FONT FACE="COURIER">graph(legend)</FONT><DD>
+Sets the default value for display of the legend in LIVEPLOT and WIDPLT.
+
+<DT><FONT FACE="COURIER">graph(autoraise)</FONT><DD>
+This option shows up in the options menu item as "Raise on update."
+When set to non-zero, the LIVEPLOT window is raised 
+(placed on top of any other overlapping) windows
+each time it is updated.
+This option does not seem to work in Windows-NT, but this may depend on
+the version of Tcl/Tk.
+
+<DT><FONT FACE="COURIER">peakinfo(obssym)</FONT><DD>
+Symbol for observed data points. Valid choices are square, circle, diamond, 
+plus, cross, splus and scross.
+
+<DT><FONT FACE="COURIER">peakinfo(obssize)</FONT><DD>
+Size for the symbol for observed data points. A value of 1 corresponds to about 1/8 inch
+(about 3 mm).
+
+<DT><FONT FACE="COURIER">expgui(pixelregion)</FONT><DD>
+When hkl values are loaded (using tcldump) and reflections are labeled, reflections 
+can be labeled using a Shift-Left-Mouse click. All labeled reflections within expgui(pixelregion)
+pixels of the mouse position are assumed to be overlapped and are labeled.
+
+<DT><FONT FACE="COURIER">expgui(fadetime)</FONT><DD>
+The time in seconds before reflection labels are removed. A value of zero means that reflections
+must be deleted manually (Shift-Right-Mouse).
+(Mac: Shift+Apple+click)
+<DT><FONT FACE="COURIER">expgui(lblfontsize)</FONT><DD>
+A size for reflections labels in pixels.
+
+<DT><FONT FACE="COURIER">expgui(hklbox)</FONT><DD>
+If this variable is non-zero, reflection indices are shown in a box.
+
+<DT><FONT FACE="COURIER">expgui(autotick)</FONT><DD>
+If this variable is non-zero, reflection markers positions are 
+set automatically.
+</DL></DL>
+<P>
+<hr><H2>Interfacing External Programs</H2>
+<B>Combining LIVEPLOT with CMPR & LOGIC</B>
+If you have the 
+<A HREF="https://subversion.xray.aps.anl.gov/trac/CMPR">CMPR</A>
+program installed on your computer, you can use superimpose on the 
+GSAS results the peaks for an arbitrary unit cell.
+<P>
+When the CMPR program is installed in the same location
+as the GSAS package (<i>e.g.</i> 
+<font face="courier">/home/gsas</font> & 
+<font face="courier">/home/cmpr</font>
+or <font face="courier">C:\DIFRC\GSAS</font> & 
+<font face="courier">C:\DIFRC\CMPR</font>) or if 
+the CMPR/LOGIC programs are loaded into standard locations 
+(<font face="courier">/usr/local/cmpr</font> or 
+<font face="courier">~/cmpr</font> for Unix and Mac OSX or 
+<font face="courier">c:\cmpr</font> or 
+<font face="courier">c:\Program files\cmpr</font> for Windows), 
+the LIVEPLOT program will locate both programs and add an extra menu labeled
+"Peak Gen" to the menu bar. If the CMPR program is not located automatically,
+you may customize this location by specifying a value for 
+Tcl/Tk variable cmprdir by including a line such as this:
+<PRE>
+          set cmprdir C:/ncnrpkg/cmpr
+</PRE>
+ in the <FONT FACE="COURIER">localconfig</FONT>, 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+or <FONT FACE="COURIER">c:\gsas.config</FONT> files 
+[note that forward slashes ("/") should be used here, even for windows.]
+
+<P>
+The "Peak Gen" menu will have either or both of two entries 
+"Display a cell" and "Plot ICDD Entry", depending on what 
+software is located. The
+"Display a cell" option produces a window similar to the
+<A href="https://subversion.xray.aps.anl.gov/CMPR/trunk/doc/cmprdoc.html#editcell">
+Edit Cell feature in CMPR</A>
+where allowed reflection positions are displayed for a set of unit cell 
+parameters and optionally a space group or extinction conditions.
+<P>
+Note that these routines display peak positions in units of 2Theta, Q or
+d-space. If you are using TOF or EDS data, you must select Q or d-space 
+display in LIVEPLOT. If you are using 2Theta, you must supply the correct
+wavelength.
+<P>
+Note that a version of both EXPGUI and CMPR/LOGIC from November 2003 or later 
+must be used for these features to work.
+
+</UL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A>
+</TH><TH><A Href="excledt.html">Next page<BR>(EXCLEDT)</A>
+</TH><TH><A Href="expguic.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

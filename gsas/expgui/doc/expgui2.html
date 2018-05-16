@@ -1,0 +1,306 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui3.html">Next page</A>
+</TH><TH><A Href="expgui1.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 2
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+
+<h3>A.2 Phase Panel</h3> 
+<DL><DL>
+The phase panel is used to edit information
+about the structural model(s) found in the experiment 
+file. The flags for refining the unit cell and atomic parameters,
+as well as ther damping values, 
+can be set  on this panel. Note that if a
+single atom is selected using the mouse, the information 
+for that atom can be edited. If a group of atoms is 
+selected
+<A href="expgui.html#mouseactions">(see Mouse Actions)</A>
+the damping and refinement flags 
+for all the selected atoms are changed.
+<P>
+If the EXPTOOL program 
+<A href="expgui.html#installation">(see the installation instructions)</A>
+is installed, buttons for adding phases and atoms will 
+appear on this panel, as seen below. If the
+program is not properly installed, no errors occur, but the buttons
+do not appear.
+<P>
+Note that the order that atoms appear in this panel is 
+determined by the 
+<a href="expguic.html#sortatoms">"Sort Atoms by"</a> option 
+in the Options Menu. <IMG SRC="note.gif" alt="Note!">
+The parameter used for sorting is designated 
+with a "*" on the title line above the atoms. 
+<IMG SRC="note.gif" alt="Note!">
+Clicking on this title line rotates through the sorting modes.
+</DL></DL>
+<img SRC="2.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<P>
+<P>
+<a name="addphase"></a>
+<h4>A.2.1 Modify Unit Cell Parameters
+<IMG SRC="new.gif" alt="New!">
+</h4> 
+<DL><DL>
+<img SRC="2g.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+If the "Edit Cell" button is pressed, the unit cell parameters can be 
+changed, as shown to the right. Note that only the parameters allowed 
+by symmetry can be changed.
+
+<br clear=all>
+</DL></DL>
+<P>
+<a name="xform"></a>
+<h4>A.2.2 Modify Atom</h4> 
+<DL><DL>
+<img SRC="2a.jpg" align=RIGHT alt="EXPGUI Screen snapshot">
+The "Modify Atom" button ("Modify Atoms" when multiple atoms are
+  selected) provides access to additional options that can
+  transform or modify the selected atom(s) from the phase panel  
+<A href="expgui.html#mouseactions">(see Mouse Actions</A> for
+  information on selecting atoms); this opens the menu window shown to
+  the right.
+Note that changes are made to the coordinates when the buttons on this
+  window (such as 
+"Transform Coordinates", "Set Occupancies",...) are pressed.
+<P><B>Modify Coordinates:</B>
+  This is used 
+to transform the coordinates coordinates of the selected atoms using a
+set of  transformation relationships.
+  
+<P><B>Reset Multiplicities:</B>
+ When atom positions are edited in EXPGUI, they may be moved off from
+  or onto special positions in the cell, changing the site
+  multiplicity -- but this will not be reflected in the phase
+  display. When atoms are subsequently refined, GENLES will update the
+  multiplcities. Pressing the  "Reset Multiplicities" button cases
+  this to be done right away (I think this may not work if there are no
+  histograms present). 
+
+<P><B>Xform Origin 1 to Origin 2:</B> This button is only available for those 
+orthorhombic, tetragonal and cubic space groups that are listed in the
+International Tables with two origin settings. (These space groups have 
+a location in the unit cell that has higher symmetry than a location of 
+a center of symmetry: origin 1 is placed at the highest symmetry location; 
+origin 2 is placed at the computationally reasonable location, the center 
+of symmetry. GSAS only uses the origin 2 settings.)
+If coordinates have been entered in the origin 1 setting, they may be 
+transformed to the origin 2 setting using this button. It is important
+  to select all atoms in the asymmetric unit before using this button.
+
+  <P><B>Modify Occupancies:</B>
+ This allows the occupancy to be set for one or more atoms. It is
+  most convenient for when many atoms will have their occupancy
+  changed at one time.
+
+<P><B>Modify Displacement Parameters:</B>
+  This allows one to set Uiso (or Uequiv) values for the selected
+  atoms (<B>Set U</B>). To change the flag that determines if the
+  selected atom(s) are represented as Isotropic or Anisotropic, press
+  the <B>Set Isotropic</B> or <B>Set Anisotropic</B> buttons.
+
+<P><B>Erase Atoms:</B>
+  The "Erase Atoms" removes the selected atoms from the phase. I
+  usually set the occupancy to 0. instead. 
+  
+<P><B>Fix Atom Coordinates:</B>
+When an atom is refined in GSAS, only the coordinates that are not
+defined by site symmetry are refined. However, in some space groups,
+it is necessary to not refine additional coordinates. The most common
+example are polar space groups (P1, P2, P2<sub>1</sub>, C2,  P4, P4<sub>1</sub>, P
+4<sub>2</sub>, P4<sub>3</sub>, I4, I4<sub>1</sub>, P3, P3<sub>1</sub>, P3<sub>2</sub>, R3, P6, P6<sub>1</sub>, P6<sub>5</sub>, P6<sub>2</sub>, P6<sub>4</sub> and
+P6<sub>3</sub> - from
+<a href="http://www.ruppweb.org/Xray/comp/space_instr.htm"> Bernard Rupp's
+web site, http://www.ruppweb.org/Xray/comp/space_instr.htm</A>) where
+one or more coordinates of the origin are not defined by symmetry. In
+these space groups an appropriate number of coordinates must be fixed
+to define the origin. As an example, in P1, one x, one y and one z
+coordinate must not be refined; in space group P2<sub>1</sub>, the
+2<sub>1</sub> screw axis defines the origin at (0,0,z) so one z
+coordinate cannot be varied.
+
+Occasionally, while symmetry may allow
+atom coordinates to be varied, a crystallographer may choose to
+simplify or constrain the representation to fix the atom in a
+particular location and not refine with all allowed degrees of freedom.
+
+<IMG SRC="new.gif" alt="New!">
+ The "Fix Atom Coordinates" buttons allows a flag to be set (or
+cleared) for an atom
+to prevent refinement of selected coordinates, even when the X
+refinement flag is set. Note the addition of an "F" for the x and z
+coordinates of the first atom as shown in the phase panel, above. This
+indicates that x & z have been fixed. When the atom position is
+varied, only y will be optimized. 
+
+<br clear=all>
+</DL></DL>
+<P>
+<a name="addphase"></a>
+<h4>A.2.3 Add Phase</h4> 
+<DL><DL>
+When the "Add Phase" button is pressed, a dialog is created where the 
+space group and unit cell constants can be entered (below). 
+<IMG SRC="note.gif" alt="Note!">
+By using the 
+"Import phase from:" button at the lower right, one can read this information,
+as well as atomic parameters, from a file. 
+The button to the right of the "Import phase from:" button selects 
+the file format to be used. 
+See the <A HREF="expgui.html#import">coordinate import discussion</A> 
+for description of available formats.
+Note that it is relatively easy to add new routines for 
+importing coordinates;
+see the <A HREF="expgui_cfg.html#import">
+customization information</A> for more details.
+<BR>
+<img SRC="2b.gif" align=TEXTTOP alt="EXPGUI Screen snapshot"><P>
+<img SRC="2c.gif" align=LEFT alt="EXPGUI Screen snapshot">
+After the "Continue" button is pressed, the spacegroup is checked and the 
+generated symmetry operators are shown. These should be checked carefully,
+as GSAS will correctly generate a variety of standard and non-standard
+spacegroups, but it is fussy about spacing: for example "R 3 2" and "R 32"
+describe different (non-standard) space groups.
+<br clear=all><P>
+The EXPTOOL program is then run and the output is 
+optionally displayed (See <a href="expguic.html#exptoolout">Show EXPTOOL output</a>).
+<P>
+If atom coordinates have been read from a file, along with the 
+cell and space group, the "add new atoms" dialog is then shown, with the
+atoms displayed (as below.)
+If the file contains atoms that should not be included 
+in the .EXP file, the "Use Flag" button to the 
+right of each atom can be deselected to prevent the atom from being used. 
+<img SRC="2d.gif" align=LEFT alt="EXPGUI Screen snapshot">
+<br clear=all>
+Atoms will be included in the phase in the order they appear in the table.
+<IMG SRC="new.gif" alt="New!">
+This order can be changed by pressing the buttons in the top row of the
+table, which sorts the atoms according to the selected column. Note that 
+if the "Use Flag" button is deselected, the atom appears at the bottom 
+of the table.
+<P>
+When the "Add Atoms" button is pressed, the table is scanned for errors 
+such as invalid numbers or unknown atom types. If an error is encountered,
+a message is displayed listing the problem(s). Corrections can then be 
+made to the table before pressing the "Add Atoms" button again.
+<br clear=all><P>
+<img SRC="2b1.gif" align=LEFT alt="EXPGUI Screen snapshot">
+In the case of reading PowderCell .CEL files, the code may 
+have to translate coordinates to shift from an Origin 1 setting 
+to an Origin 2 setting. (GSAS, like many other crystallography programs, 
+assumes that if a center of symmetry is present, it is located at the origin.)
+If this is done, a message like the one to the left is displayed. 
+
+<br clear=all><P>
+</DL></DL>
+<a name="addatoms">
+<h4>A.2.4 Add Atoms</h4> 
+<DL><DL>
+When the "Add New Atoms" button is pressed, a table is generated, 
+as seen below, to enter atoms. <IMG SRC="note.gif" alt="Note!">
+The "Import atoms from:" button can 
+be used to read atoms from a file. 
+The button to the right of the "Import atoms from:" button selects 
+the file format to be used. 
+See the <A HREF="expgui.html#import">coordinate import discussion</A> 
+for description of available formats and 
+the <A HREF="expgui_cfg.html#import">
+customization information</A> for more details about adding 
+additional formats.
+Note that unlike in the 
+<a href="http:#addphase">Add Phase</a> section, the space group 
+and cell parameters in the imported file are ignored. The "Use" button to the 
+right of each atom can be deselected to prevent the atom from being used. 
+<img SRC="2e.gif" align=LEFT alt="EXPGUI Screen snapshot">
+<br clear=all><P>
+Atoms will be added to the phase in the order they appear in the table.
+<IMG SRC="new.gif" alt="New!">
+This order can be changed by pressing the buttons in the top row of the
+table, which sorts the atoms according to the selected column. Note that 
+if the "Use Flag" button is deselected, the atom appears at the bottom 
+of the table.
+<P>
+When the "Add Atoms" button is pressed, the table is scanned for errors 
+such as invalid numbers or unknown atom types. If an error is encountered,
+a message is displayed listing the problem(s). Corrections can then be 
+made to the table before pressing the "Add Atoms" button again.
+
+<br clear=all><P>
+</DL></DL>
+<a name="replacephase"></a>
+<h4>A.2.5 Replace Phase</h4> 
+<DL><DL>
+The "Replace Phase" is used to change the space group and 
+possibly unit cell for a phase. The input dialog, shown below, shows
+the current space group and unit cell parameters.
+By using the 
+"Import phase from:" button at the lower right, one can read this information,
+as well as atomic parameters, from a file. 
+The button to the right of the "Import phase from:" button selects 
+the file format to be used. 
+See the <A HREF="expgui.html#import">coordinate import discussion</A> 
+for description of available formats and 
+the <A HREF="expgui_cfg.html#import">
+customization information</A> for more details about adding 
+additional formats.
+<img SRC="2f.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<br clear=all><P>
+
+Once the 
+"Continue button is pressed, the space group is checked,
+as is shown in the <a href="http:#addphase">Add Phase</a> section.
+A table is then generated for input of atoms, very similar to
+that in the <a href="http:#addphase">Add Phase</a> section.
+If atom coordinates have been read from a file these atoms
+are included in the table.
+It should be noted that when a phase is replaced in EXPGUI, all atoms in 
+that phase are erased. If the current atom positions are to be 
+retained, the "Reenter current atoms" box in the initial 
+"Replace phase" dialog should be checked, these atoms will also 
+be included in the table.
+<P>
+Note that no changes are made until after the "Continue" button 
+is pressed on the "Enter Atoms" dialog, so that is is safe to 
+press "Cancel" at any point.
+
+<br clear=all>
+</DL></DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui3.html">Next page</A>
+</TH><TH><A Href="expgui1.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6A.html">Next page</A>
+</TH><TH><A Href="expgui6.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 7
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.7 Restraints panel</h3>
+<DL><DL>
+GSAS offers two ways to limit changes to parameters that are based on
+  expectations
+  created by a crystallographer to create what is felt to be the most
+  reasonable model.
+  Restraints penalize the fit if 
+aspects of a model (for example, bond lengths) differ from selected
+  values. They are sometimes called "soft constraints", but they are
+  not true constraints. They "push" the model towards the expectation(s)
+  specified by the scientist, but do not require that expectation be
+  maintained. Note that each expectation is weighted by the uncertainty
+  (sometimes s.u. or E.S.D.) for the expectation as well as the overall Restraint
+  Weighting factor. The smaller the uncertainty and the larger Restraint
+  Weighting factor, the stronger the model is "pushed" towards
+  following the expectation. 
+<P>  
+  Restraints effectively add additional
+  "observations" to the data that are
+  fit in GSAS. Of course, these "observations" are
+  conjectures made by the scientist and are not actually real data. 
+These are distingished from constraints (sometimes called "hard
+  constraints") which are listed on the 
+<A Href="expgui6.html">Constraints panel</A>). Constraints actually
+  reduce the actual number of refined parameters in a model,
+by grouping parameters so that a single shift (possibly scaled) is 
+applied to each parameter in the group.
+<P>
+  The Restraints panel can be used to set up restraints on
+  <a href="#DistanceRestraints"><B>Interatomic Distances</B></A> and
+  on <a href="#Chemical Restraints"><B>Atomic Composition</B></A>. Note
+  that the atomic composition constraints can be used to establish
+  quite complex constraints that account for charge balance or even
+  segregation of elements between phases. GSAS offers many other types
+  of restraints, but EXPEDT must be used to access them.
+</DL></DL>
+
+<a name="DistanceRestraints"></a>
+<H4>A.7.1 Distance Restraints</H4>
+<DL><DL>
+ When the distance restraints tab is first selected, the active
+  distance restraints for the selected phase are shown. The <B>Atom 1</B> and
+  <B>Atom 2</B> buttons can be used to sort this list.
+  <P>
+  The <B>Restraint Weight</B> parameter is very important. As this
+  determines how strongly the distance restraints will be used in the
+  refinement relative to the diffraction data. This value is sometimes
+  set as high as 500,000 in the initial stages of a fit, but should be
+  lowered as much as is possible in the final stages of the fit, as
+  needed to obtain chemically plausible interatomic distances. For
+  some refinements, a value of 0.0 is possible for the Restraint
+  Weight in the final stages. This removes any restraint effect.
+
+  To see how restraints are affecting the refinement, one can look at
+  the ratio of the "Sum(w*d**2)" (shown in the .LST file) for the
+  diffraction histograms vs. the restraint histogram.
+<P>
+  The <B>Active Restraints Editor</B> can be used to select distances
+  to be restrained or edit the restraints. If there are too many
+  distances shown, the options at the top of the window can be used to
+  select a distance range, or specific atoms to include. Likewise,
+  only restrained or unrestrained distances can be selected. The
+  changes are applied when the <B>Filter</B> button is pressed.
+<P>
+  The bottom section of the window shows individual interatomic
+  distances. A <B>Restraint</B> and <B>Tolerance</B> value is needed to restrain
+  that distance.
+</DL></DL>
+<img src="dist1.png" alt="Distance constraint example screen">.
+<DL><DL>
+
+  The quantity minimized is
+<blockquote>
+<blockquote>
+ "Restraint Weight" * SUM{  [ (Distance - Restraint) / Tolerance ]**2 } 
+</blockquote>
+</blockquote>
+thus the "Tolerance" provides individual weighting for each
+  restraint.
+<P>
+  To set a large number of restraints at the same time, select the
+  check button next to the distance(s), or use the <B>Check
+  All</B>. Then use the section above to enter a global
+  <B>Restraint</B> and <B>Tolerance</B> value. These values are set
+  when the <B>Set Checked</B> button is used.  The <B>Delete
+  Checked</B> button removes restraints from all selected distances.
+<P>
+The entered restraint information will be used onlt when the <B>Save
+  Changes</B> button is pressed. The <B>Cancel</B> button will reverse
+  any changes made while the window is open. Closing the window has
+  the same effect as "Cancel."
+  <P>
+  Once distances are entered, they are shown on the main panel, as
+  shown below. 
+</DL></DL>
+<img src="dist2.png" alt="Distance constraint example screen">.
+<DL><DL>
+  Note that the interatomic distances that are shown are determined by
+  the parameters to program DISAGL. These are controlled with the
+  <B>Edit Search Distance Parameters</B> button. 
+</DL></DL>
+<a name="Chemical Restraints"></a>
+<H4>A.7.2 Chemical (or Compositional) Restraints</H4>
+<DL><DL>
+  Chemical constraints allow a model to be penalized if it moves away
+  from expectations defined on the chemical compositions.
+  Up to 9 constraints, of form
+  <center>
+  <I>Target</I> = 
+  W<sub>1</sub> * O<sub>1</sub> * M<sub>1</sub> + 
+  W<sub>2</sub> * O<sub>2</sub> * M<sub>2</sub> + 
+  W<sub>3</sub> * O<sub>3</sub> * M<sub>3</sub> + ... 
+  </center>
+can be defined, 
+  where O<sub>i</sub> is the occupancy of atom <I>i</I> (often refined),
+  M<sub>i</sub> is the site multiplicity atom <I>i</I> (determined by
+  the site symmetry) and W<sub>i</sub> and <I>Target</I> are set by
+  the scientist who defines the constraint.
+This allows chemical constraints to be used in many different
+  ways. They can be used to "push" a model to have a particular
+  composition on a site, or "push" an overall unit cell compositon or
+  even encourage that the chemistry follow rules such a balanced
+  charges with fixed atomic valency. 
+<P>
+  When the panel is first loaded, it will be mostly blank, as shown below:
+</DL></DL>
+<img src="chem0.png" alt="Chemical constraint example screen">.
+<DL><DL>
+The "Add Constraint" button is used to enter one or more constraints,
+  which are then defined by selecting the phase, and atom name for
+  each atom in the constraint, as well as the weighting factor for
+  each atom (W<sub>i</sub>, above) as well as the Target value for the
+  sum (W<sub>1</sub> * O<sub>1</sub> * M<sub>1</sub> + 
+  W<sub>2</sub> * O<sub>2</sub> * M<sub>2</sub> + 
+  W<sub>3</sub> * O<sub>3</sub> * M<sub>3</sub> + ...) and the
+  uncertainty (ESD) for the sum, as shown below:
+</DL></DL>
+<img src="chem1.png" alt="Chemical constraint example screen">.
+<DL><DL>
+A more complex example, which implements a charge balance constraint,
+  is shown below. 
+</DL></DL>
+<img src="chem2.png" alt="Chemical constraint example screen">.
+<DL><DL>
+Constraints are saved as the values are typed in. Also, the sum of the
+  actual
+W<sub>i</sub> * O<sub>i</sub> * M<sub>i</sub> values is shown in the
+  upper right. 
+Atom entries where
+  the weight is blank or set to zero are ignored. New rows (up to 297)
+  are added when the existing ones are all used. If an error is
+  encountered in a constraint, a question mark ("?") is displayed for
+  the Actual Sum and the constraint is not saved. 
+
+</DL></DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6A.html">Next page</A>
+</TH><TH><A Href="expgui6.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,1461 @@
+set CIF_file_name cif_core_2.2.dic
+set CIF_file_size 399651
+set CIF_index_version 1.1
+set CIF_file_mtime 1021461480
+array set CIF_dataname_index {
+	_atom_site_[] 	{{cif_core_2.2.dic 28610 270} {{} {} {} 0 {} category_overview 0}}
+	_atom_site_adp_type 	{{cif_core_2.2.dic 29667 126} {c {} {{Uani {anisotropic Uij]}} {Uiso {isotropic U]}} {Uovl {overall U]}} {Umpe {multipole expansion U]}} {Bani {anisotropic Bij]}} {Biso {isotropic B]}} {Bovl {overall B]}}} 0 {} atom_site 1}}
+	_atom_site_aniso_b_11 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_b_12 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_b_13 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_b_22 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_b_23 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_b_33 	{{cif_core_2.2.dic 30562 659} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_label 	{{cif_core_2.2.dic 31527 308} {c {} {} 0 {} atom_site 1}}
+	_atom_site_aniso_ratio 	{{cif_core_2.2.dic 32148 116} {n 1.0: {} 0 {} atom_site 1}}
+	_atom_site_aniso_type_symbol 	{{cif_core_2.2.dic 32607 224} {c {} {} 0 {} atom_site 1}}
+	_atom_site_aniso_u_11 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_u_12 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_u_13 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_u_22 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_u_23 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_aniso_u_33 	{{cif_core_2.2.dic 33599 450} {n {} {} 1 A^2^ atom_site 1}}
+	_atom_site_attached_hydrogens 	{{cif_core_2.2.dic 34590 189} {n 0:8 {} 0 {} atom_site 1}}
+	_atom_site_b_equiv_geom_mean 	{{cif_core_2.2.dic 35395 551} {n 0.0: {} 1 A^2^ atom_site 1}}
+	_atom_site_b_iso_or_equiv 	{{cif_core_2.2.dic 36556 773} {n 0.0: {} 1 A^2^ atom_site 1}}
+	_atom_site_calc_attached_atom 	{{cif_core_2.2.dic 37648 128} {c {} {} 0 {} atom_site 1}}
+	_atom_site_calc_flag 	{{cif_core_2.2.dic 38398 301} {c {} {{d {determined from diffraction measurements]}} {calc {calculated from molecular geometry]}} {c {abbreviation for "calc"]}} {dum {dummy site with meaningless coordinates]}}} 0 {} atom_site 1}}
+	_atom_site_cartn_x 	{{cif_core_2.2.dic 39272 234} {n {} {} 1 A atom_site 1}}
+	_atom_site_cartn_y 	{{cif_core_2.2.dic 39272 234} {n {} {} 1 A atom_site 1}}
+	_atom_site_cartn_z 	{{cif_core_2.2.dic 39272 234} {n {} {} 1 A atom_site 1}}
+	_atom_site_chemical_conn_number 	{{cif_core_2.2.dic 39889 161} {n 1: {} 0 {} atom_site 1}}
+	_atom_site_constraints 	{{cif_core_2.2.dic 40406 205} {c {} {} 0 {} atom_site 1}}
+	_atom_site_description 	{{cif_core_2.2.dic 40931 116} {c {} {} 0 {} atom_site 1}}
+	_atom_site_disorder_assembly 	{{cif_core_2.2.dic 41571 438} {c {} {} 0 {} atom_site 1}}
+	_atom_site_disorder_group 	{{cif_core_2.2.dic 42510 604} {c {} {} 0 {} atom_site 1}}
+	_atom_site_fract_x 	{{cif_core_2.2.dic 43646 80} {n {} {} 1 {} atom_site 1}}
+	_atom_site_fract_y 	{{cif_core_2.2.dic 43646 80} {n {} {} 1 {} atom_site 1}}
+	_atom_site_fract_z 	{{cif_core_2.2.dic 43646 80} {n {} {} 1 {} atom_site 1}}
+	_atom_site_label 	{{cif_core_2.2.dic 45060 1313} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_0 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_1 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_2 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_3 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_4 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_5 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_label_component_6 	{{cif_core_2.2.dic 47025 1038} {c {} {} 0 {} atom_site 1}}
+	_atom_site_occupancy 	{{cif_core_2.2.dic 48443 453} {n 0.0:1.0 {} 1 {} atom_site 1}}
+	_atom_site_refinement_flags 	{{cif_core_2.2.dic 49757 154} {c {} {{. {no refinement constraints]}} {S {special position constraint on site]}} {G {rigid group refinement of site]}} {R {riding-atom site attached to non-riding atom]}} {D {distance or angle restraint on site]}} {T {thermal displacement constraints]}} {U {Uiso or Uij restraint (rigid bond)]}} {P {partial occupancy constraint]}}} 0 {} atom_site 1}}
+	_atom_site_restraints 	{{cif_core_2.2.dic 50238 208} {c {} {} 0 {} atom_site 1}}
+	_atom_site_symmetry_multiplicity 	{{cif_core_2.2.dic 50774 162} {n 1:192 {} 0 {} atom_site 1}}
+	_atom_site_thermal_displace_type 	{{cif_core_2.2.dic 51734 126} {c {} {{Uani {anisotropic Uij]}} {Uiso {isotropic U]}} {Uovl {overall U]}} {Umpe {multipole expansion U]}} {Bani {anisotropic Bij]}} {Biso {isotropic B]}} {Bovl {overall B]}}} 0 {} atom_site 1}}
+	_atom_site_type_symbol 	{{cif_core_2.2.dic 52356 307} {c {} {} 0 {} atom_site 1}}
+	_atom_site_u_equiv_geom_mean 	{{cif_core_2.2.dic 53279 340} {n 0.0: {} 1 A^2^ atom_site 1}}
+	_atom_site_u_iso_or_equiv 	{{cif_core_2.2.dic 54229 528} {n 0.0: {} 1 A^2^ atom_site 1}}
+	_atom_site_wyckoff_symbol 	{{cif_core_2.2.dic 55032 156} {c {} {} 0 {} atom_site 1}}
+	_atom_sites_[] 	{{cif_core_2.2.dic 56251 193} {{} {} {} 0 {} category_overview 0}}
+	_atom_sites_cartn_tran_matrix_11 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_12 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_13 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_21 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_22 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_23 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_31 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_32 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_matrix_33 	{{cif_core_2.2.dic 57173 587} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_transform_axes 	{{cif_core_2.2.dic 58038 217} {c {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_vector_1 	{{cif_core_2.2.dic 58585 554} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_vector_2 	{{cif_core_2.2.dic 58585 554} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_cartn_tran_vector_3 	{{cif_core_2.2.dic 58585 554} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_11 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_12 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_13 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_21 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_22 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_23 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_31 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_32 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_matrix_33 	{{cif_core_2.2.dic 59877 583} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_vector_1 	{{cif_core_2.2.dic 60790 551} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_vector_2 	{{cif_core_2.2.dic 60790 551} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_fract_tran_vector_3 	{{cif_core_2.2.dic 60790 551} {n {} {} 0 {} atom_sites 0}}
+	_atom_sites_solution_primary 	{{cif_core_2.2.dic 62177 373} {c {} {{difmap {difference Fourier map]}} {vecmap {real-space vector search]}} {heavy {heavy-atom method]}} {direct {structure-invariant direct methods]}} {geom {inferred from neighbouring sites]}} {disper {anomalous-dispersion techniques]}} {isomor {isomorphous structure methods]}}} 0 {} atom_sites 0}}
+	_atom_sites_solution_secondary 	{{cif_core_2.2.dic 62177 373} {c {} {{difmap {difference Fourier map]}} {vecmap {real-space vector search]}} {heavy {heavy-atom method]}} {direct {structure-invariant direct methods]}} {geom {inferred from neighbouring sites]}} {disper {anomalous-dispersion techniques]}} {isomor {isomorphous structure methods]}}} 0 {} atom_sites 0}}
+	_atom_sites_solution_hydrogens 	{{cif_core_2.2.dic 62177 373} {c {} {{difmap {difference Fourier map]}} {vecmap {real-space vector search]}} {heavy {heavy-atom method]}} {direct {structure-invariant direct methods]}} {geom {inferred from neighbouring sites]}} {disper {anomalous-dispersion techniques]}} {isomor {isomorphous structure methods]}}} 0 {} atom_sites 0}}
+	_atom_type_[] 	{{cif_core_2.2.dic 63565 195} {{} {} {} 0 {} category_overview 0}}
+	_atom_type_analytical_mass_% 	{{cif_core_2.2.dic 64085 82} {n 0.0:100.0 {} 0 {} atom_type 1}}
+	_atom_type_description 	{{cif_core_2.2.dic 64500 307} {c {} {} 0 {} atom_type 1}}
+	_atom_type_number_in_cell 	{{cif_core_2.2.dic 65119 74} {n 0: {} 0 {} atom_type 1}}
+	_atom_type_oxidation_number 	{{cif_core_2.2.dic 65546 75} {n -8:8 {} 0 {} atom_type 1}}
+	_atom_type_radius_bond 	{{cif_core_2.2.dic 66065 117} {n 0.0:5.0 {} 0 A atom_type 1}}
+	_atom_type_radius_contact 	{{cif_core_2.2.dic 66065 117} {n 0.0:5.0 {} 0 A atom_type 1}}
+	_atom_type_scat_cromer_mann_a1 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_a2 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_a3 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_a4 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_b1 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_b2 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_b3 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_b4 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_cromer_mann_c 	{{cif_core_2.2.dic 66977 377} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_dispersion_imag 	{{cif_core_2.2.dic 67740 230} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_dispersion_real 	{{cif_core_2.2.dic 67740 230} {n {} {} 0 {} atom_type 1}}
+	_atom_type_scat_dispersion_source 	{{cif_core_2.2.dic 68336 144} {c {} {} 0 {} atom_type 1}}
+	_atom_type_scat_length_neutron 	{{cif_core_2.2.dic 68884 181} {n {} {} 0 fm atom_type 1}}
+	_atom_type_scat_source 	{{cif_core_2.2.dic 69410 120} {c {} {} 0 {} atom_type 1}}
+	_atom_type_scat_versus_stol_list 	{{cif_core_2.2.dic 69820 250} {c {} {} 0 {} atom_type 1}}
+	_atom_type_symbol 	{{cif_core_2.2.dic 70440 367} {c {} {} 0 {} atom_type 1}}
+	_audit_[] 	{{cif_core_2.2.dic 71799 141} {{} {} {} 0 {} category_overview 0}}
+	_audit_block_code 	{{cif_core_2.2.dic 72156 77} {c {} {} 0 {} audit 0}}
+	_audit_creation_date 	{{cif_core_2.2.dic 72451 102} {c {} {} 0 {} audit 0}}
+	_audit_creation_method 	{{cif_core_2.2.dic 72793 76} {c {} {} 0 {} audit 0}}
+	_audit_update_record 	{{cif_core_2.2.dic 73115 250} {c {} {} 0 {} audit 0}}
+	_audit_author_[] 	{{cif_core_2.2.dic 74395 125} {{} {} {} 0 {} category_overview 0}}
+	_audit_author_address 	{{cif_core_2.2.dic 74981 179} {c {} {} 0 {} audit_author 1}}
+	_audit_author_name 	{{cif_core_2.2.dic 75750 312} {c {} {} 0 {} audit_author 1}}
+	_audit_conform_[] 	{{cif_core_2.2.dic 76756 201} {{} {} {} 0 {} category_overview 0}}
+	_audit_conform_dict_location 	{{cif_core_2.2.dic 77251 118} {c {} {} 0 {} audit_conform 1}}
+	_audit_conform_dict_name 	{{cif_core_2.2.dic 77634 121} {c {} {} 0 {} audit_conform 1}}
+	_audit_conform_dict_version 	{{cif_core_2.2.dic 78047 65} {c {} {} 0 {} audit_conform 1}}
+	_audit_contact_author_[] 	{{cif_core_2.2.dic 79181 210} {{} {} {} 0 {} category_overview 0}}
+	_audit_contact_author_address 	{{cif_core_2.2.dic 79787 127} {c {} {} 0 {} audit_contact_author 0}}
+	_audit_contact_author_email 	{{cif_core_2.2.dic 80220 200} {c {} {} 0 {} audit_contact_author 0}}
+	_audit_contact_author_fax 	{{cif_core_2.2.dic 80726 324} {c {} {} 0 {} audit_contact_author 0}}
+	_audit_contact_author_name 	{{cif_core_2.2.dic 81590 268} {c {} {} 0 {} audit_contact_author 0}}
+	_audit_contact_author_phone 	{{cif_core_2.2.dic 82221 371} {c {} {} 0 {} audit_contact_author 0}}
+	_audit_link_[] 	{{cif_core_2.2.dic 83837 148} {{} {} {} 0 {} category_overview 0}}
+	_audit_link_block_code 	{{cif_core_2.2.dic 84242 263} {c {} {} 0 {} audit_link 1}}
+	_audit_link_block_description 	{{cif_core_2.2.dic 84795 122} {c {} {} 0 {} audit_link 1}}
+	_cell_[] 	{{cif_core_2.2.dic 85937 144} {{} {} {} 0 {} category_overview 0}}
+	_cell_angle_alpha 	{{cif_core_2.2.dic 86540 496} {n 0.0:180.0 {} 1 deg cell 0}}
+	_cell_angle_beta 	{{cif_core_2.2.dic 86540 496} {n 0.0:180.0 {} 1 deg cell 0}}
+	_cell_angle_gamma 	{{cif_core_2.2.dic 86540 496} {n 0.0:180.0 {} 1 deg cell 0}}
+	_cell_formula_units_z 	{{cif_core_2.2.dic 87247 192} {n 1: {} 0 {} cell 0}}
+	_cell_length_a 	{{cif_core_2.2.dic 87848 505} {n 0.0: {} 1 A cell 0}}
+	_cell_length_b 	{{cif_core_2.2.dic 87848 505} {n 0.0: {} 1 A cell 0}}
+	_cell_length_c 	{{cif_core_2.2.dic 87848 505} {n 0.0: {} 1 A cell 0}}
+	_cell_measurement_pressure 	{{cif_core_2.2.dic 88695 157} {n 0.0: {} 1 kPa cell 0}}
+	_cell_measurement_radiation 	{{cif_core_2.2.dic 89105 136} {c {} {} 0 {} cell 0}}
+	_cell_measurement_reflns_used 	{{cif_core_2.2.dic 89432 186} {n {} {} 0 {} cell 0}}
+	_cell_measurement_temperature 	{{cif_core_2.2.dic 89960 142} {n 0.0: {} 1 K cell 0}}
+	_cell_measurement_theta_max 	{{cif_core_2.2.dic 90467 125} {n 0.0:90.0 {} 0 deg cell 0}}
+	_cell_measurement_theta_min 	{{cif_core_2.2.dic 90467 125} {n 0.0:90.0 {} 0 deg cell 0}}
+	_cell_measurement_wavelength 	{{cif_core_2.2.dic 90897 251} {n 0.0: {} 0 A cell 0}}
+	_cell_special_details 	{{cif_core_2.2.dic 91458 122} {c {} {} 0 {} cell 0}}
+	_cell_volume 	{{cif_core_2.2.dic 91899 434} {n 0.0: {} 1 A^3^ cell 0}}
+	_cell_measurement_refln_[] 	{{cif_core_2.2.dic 93434 330} {{} {} {} 0 {} category_overview 0}}
+	_cell_measurement_refln_index_h 	{{cif_core_2.2.dic 94180 101} {n {} {} 0 {} cell_measurement_refln 1}}
+	_cell_measurement_refln_index_k 	{{cif_core_2.2.dic 94180 101} {n {} {} 0 {} cell_measurement_refln 1}}
+	_cell_measurement_refln_index_l 	{{cif_core_2.2.dic 94180 101} {n {} {} 0 {} cell_measurement_refln 1}}
+	_cell_measurement_refln_theta 	{{cif_core_2.2.dic 94711 175} {n 0.0:90.0 {} 0 deg cell_measurement_refln 1}}
+	_chemical_[] 	{{cif_core_2.2.dic 95537 271} {{} {} {} 0 {} category_overview 0}}
+	_chemical_absolute_configuration 	{{cif_core_2.2.dic 98581 478} {c {} {{rm { absolute configuration established by
+ the structure determination of a
+ compound containing a chiral reference
+ molecule of known absolute
+ configuration]}} {ad { absolute configuration established by
+ anomalous dispersion effects in
+ diffraction measurements on the
+ crystal]}} {rmad { absolute configuration established by
+ the structure determination of a
+ compound containing a chiral reference
+ molecule of known absolute
+ configuration and confirmed by
+ anomalous dispersion effects in
+ diffraction measurements on the
+ crystal]}} {syn { absolute configuration has not been
+ established by anomalous dispersion
+ effects in diffraction measurements on
+ the crystal. The enantiomer has been
+ assigned by reference to an unchanging
+ chiral centre in the synthetic
+ procedure]}} {unk { absolute configuration is unknown,
+ there being no firm chemical evidence
+ for its assignment to hand and it
+ having not been established by
+ anomalous dispersion effects in
+ diffraction measurements on the
+ crystal. An arbitrary choice of
+ enantiomer has been made]}} {. inapplicable\]}} 0 {} chemical 0}}
+	_chemical_compound_source 	{{cif_core_2.2.dic 99380 272} {c {} {} 0 {} chemical 0}}
+	_chemical_melting_point 	{{cif_core_2.2.dic 99949 108} {n 0.0: {} 0 K chemical 0}}
+	_chemical_name_common 	{{cif_core_2.2.dic 100287 70} {c {} {} 0 {} chemical 0}}
+	_chemical_name_mineral 	{{cif_core_2.2.dic 100584 183} {c {} {} 0 {} chemical 0}}
+	_chemical_name_structure_type 	{{cif_core_2.2.dic 101026 123} {c {} {} 0 {} chemical 0}}
+	_chemical_name_systematic 	{{cif_core_2.2.dic 101412 67} {c {} {} 0 {} chemical 0}}
+	_chemical_optical_rotation 	{{cif_core_2.2.dic 101740 909} {c {} {} 0 {} chemical 0}}
+	_chemical_conn_atom_[] 	{{cif_core_2.2.dic 104014 822} {{} {} {} 0 {} category_overview 0}}
+	_chemical_conn_atom_charge 	{{cif_core_2.2.dic 105349 152} {n -6:6 {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_display_x 	{{cif_core_2.2.dic 105911 539} {n 0.0:1.0 {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_display_y 	{{cif_core_2.2.dic 105911 539} {n 0.0:1.0 {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_nca 	{{cif_core_2.2.dic 106781 81} {n 0: {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_nh 	{{cif_core_2.2.dic 107191 346} {n 0: {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_number 	{{cif_core_2.2.dic 108059 78} {n 1: {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_atom_type_symbol 	{{cif_core_2.2.dic 108420 189} {c {} {} 0 {} chemical_conn_atom 1}}
+	_chemical_conn_bond_[] 	{{cif_core_2.2.dic 110075 588} {{} {} {} 0 {} category_overview 0}}
+	_chemical_conn_bond_atom_1 	{{cif_core_2.2.dic 111054 228} {n 1: {} 0 {} chemical_conn_bond 1}}
+	_chemical_conn_bond_atom_2 	{{cif_core_2.2.dic 111054 228} {n 1: {} 0 {} chemical_conn_bond 1}}
+	_chemical_conn_bond_type 	{{cif_core_2.2.dic 112090 143} {c {} {{sing {single bond]}} {doub {double bond]}} {trip {triple bond]}} {quad {quadruple bond]}} {arom {aromatic bond]}} {poly {polymeric bond]}} {delo {delocalized double bond]}} {pi {pi bond]}}} 0 {} chemical_conn_bond 1}}
+	_chemical_formula_[] 	{{cif_core_2.2.dic 113460 2229} {{} {} {} 0 {} category_overview 0}}
+	_chemical_formula_analytical 	{{cif_core_2.2.dic 115949 267} {c {} {} 0 {} chemical_formula 0}}
+	_chemical_formula_iupac 	{{cif_core_2.2.dic 116481 587} {c {} {} 0 {} chemical_formula 0}}
+	_chemical_formula_moiety 	{{cif_core_2.2.dic 117508 972} {c {} {} 0 {} chemical_formula 0}}
+	_chemical_formula_structural 	{{cif_core_2.2.dic 118810 754} {c {} {} 0 {} chemical_formula 0}}
+	_chemical_formula_sum 	{{cif_core_2.2.dic 119801 341} {c {} {} 0 {} chemical_formula 0}}
+	_chemical_formula_weight 	{{cif_core_2.2.dic 120450 331} {n 1.0: {} 0 Da chemical_formula 0}}
+	_chemical_formula_weight_meas 	{{cif_core_2.2.dic 121099 82} {n 1.0: {} 0 Da chemical_formula 0}}
+	_citation_[] 	{{cif_core_2.2.dic 123036 153} {{} {} {} 0 {} category_overview 0}}
+	_citation_abstract 	{{cif_core_2.2.dic 123445 201} {c {} {} 0 {} citation 1}}
+	_citation_abstract_id_cas 	{{cif_core_2.2.dic 123916 120} {c {} {} 0 {} citation 1}}
+	_citation_book_id_isbn 	{{cif_core_2.2.dic 124300 139} {c {} {} 0 {} citation 1}}
+	_citation_book_publisher 	{{cif_core_2.2.dic 124752 102} {c {} {} 0 {} citation 1}}
+	_citation_book_publisher_city 	{{cif_core_2.2.dic 125175 106} {c {} {} 0 {} citation 1}}
+	_citation_book_title 	{{cif_core_2.2.dic 125541 114} {c {} {} 0 {} citation 1}}
+	_citation_coordinate_linkage 	{{cif_core_2.2.dic 126237 429} {c {} {{no {citation unrelated to current coordinates]}} {n {abbreviation for "no"]}} {yes {citation related to current coordinates]}} {y {abbreviation for "yes"]}}} 0 {} citation 1}}
+	_citation_country 	{{cif_core_2.2.dic 126920 114} {c {} {} 0 {} citation 1}}
+	_citation_database_id_medline 	{{cif_core_2.2.dic 127390 110} {n 1: {} 0 {} citation 1}}
+	_citation_id 	{{cif_core_2.2.dic 127909 421} {c {} {} 0 {} citation 1}}
+	_citation_journal_abbrev 	{{cif_core_2.2.dic 128646 126} {c {} {} 0 {} citation 1}}
+	_citation_journal_id_astm 	{{cif_core_2.2.dic 129042 262} {c {} {} 0 {} citation 1}}
+	_citation_journal_id_csd 	{{cif_core_2.2.dic 129611 214} {c {} {} 0 {} citation 1}}
+	_citation_journal_id_issn 	{{cif_core_2.2.dic 130095 147} {c {} {} 0 {} citation 1}}
+	_citation_journal_full 	{{cif_core_2.2.dic 130569 80} {c {} {} 0 {} citation 1}}
+	_citation_journal_issue 	{{cif_core_2.2.dic 130950 98} {c {} {} 0 {} citation 1}}
+	_citation_journal_volume 	{{cif_core_2.2.dic 131353 99} {c {} {} 0 {} citation 1}}
+	_citation_language 	{{cif_core_2.2.dic 131748 56} {c {} {} 0 {} citation 1}}
+	_citation_page_first 	{{cif_core_2.2.dic 132112 128} {c {} {} 0 {} citation 1}}
+	_citation_page_last 	{{cif_core_2.2.dic 132112 128} {c {} {} 0 {} citation 1}}
+	_citation_special_details 	{{cif_core_2.2.dic 132807 159} {c {} {} 0 {} citation 1}}
+	_citation_title 	{{cif_core_2.2.dic 133345 113} {c {} {} 0 {} citation 1}}
+	_citation_year 	{{cif_core_2.2.dic 133744 112} {n {} {} 0 {} citation 1}}
+	_citation_author_[] 	{{cif_core_2.2.dic 135363 176} {{} {} {} 0 {} category_overview 0}}
+	_citation_author_citation_id 	{{cif_core_2.2.dic 135859 148} {c {} {} 0 {} citation_author 1}}
+	_citation_author_name 	{{cif_core_2.2.dic 136606 272} {c {} {} 0 {} citation_author 1}}
+	_citation_author_ordinal 	{{cif_core_2.2.dic 137107 123} {c {} {} 0 {} citation_author 1}}
+	_citation_editor_[] 	{{cif_core_2.2.dic 137930 196} {{} {} {} 0 {} category_overview 0}}
+	_citation_editor_citation_id 	{{cif_core_2.2.dic 138446 148} {c {} {} 0 {} citation_editor 1}}
+	_citation_editor_name 	{{cif_core_2.2.dic 139193 232} {c {} {} 0 {} citation_editor 1}}
+	_citation_editor_ordinal 	{{cif_core_2.2.dic 139654 123} {c {} {} 0 {} citation_editor 1}}
+	_computing_[] 	{{cif_core_2.2.dic 140903 151} {{} {} {} 0 {} category_overview 0}}
+	_computing_cell_refinement 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_data_collection 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_data_reduction 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_molecular_graphics 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_publication_material 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_structure_refinement 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_computing_structure_solution 	{{cif_core_2.2.dic 141940 133} {c {} {} 0 {} computing 0}}
+	_database_[] 	{{cif_core_2.2.dic 142671 282} {{} {} {} 0 {} category_overview 0}}
+	_database_code_cas 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_csd 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_icsd 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_mdf 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_nbs 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_pdb 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_code_pdf 	{{cif_core_2.2.dic 143436 379} {c {} {} 0 {} database 0}}
+	_database_journal_astm 	{{cif_core_2.2.dic 144047 248} {c {} {} 0 {} database 0}}
+	_database_journal_csd 	{{cif_core_2.2.dic 144047 248} {c {} {} 0 {} database 0}}
+	_diffrn_[] 	{{cif_core_2.2.dic 145042 114} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_ambient_environment 	{{cif_core_2.2.dic 145413 70} {c {} {} 0 {} diffrn 0}}
+	_diffrn_ambient_pressure 	{{cif_core_2.2.dic 145824 104} {n 0.0: {} 1 kPa diffrn 0}}
+	_diffrn_ambient_temperature 	{{cif_core_2.2.dic 146268 101} {n 0.0: {} 1 K diffrn 0}}
+	_diffrn_crystal_treatment 	{{cif_core_2.2.dic 146755 193} {c {} {} 0 {} diffrn 0}}
+	_diffrn_measured_fraction_theta_full 	{{cif_core_2.2.dic 147202 118} {n 0:1.0 {} 0 {} diffrn 1}}
+	_diffrn_measured_fraction_theta_max 	{{cif_core_2.2.dic 147572 117} {n 0:1.0 {} 0 {} diffrn 1}}
+	_diffrn_special_details 	{{cif_core_2.2.dic 148056 194} {c {} {} 0 {} diffrn 0}}
+	_diffrn_symmetry_description 	{{cif_core_2.2.dic 148441 177} {c {} {} 0 {} diffrn 0}}
+	_diffrn_attenuator_[] 	{{cif_core_2.2.dic 149308 141} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_attenuator_code 	{{cif_core_2.2.dic 149778 231} {c {} {} 0 {} diffrn_attenuator 1}}
+	_diffrn_attenuator_material 	{{cif_core_2.2.dic 150303 60} {c {} {} 0 {} diffrn_attenuator 1}}
+	_diffrn_attenuator_scale 	{{cif_core_2.2.dic 150689 304} {n 1.0: {} 0 {} diffrn_attenuator 1}}
+	_diffrn_detector_[] 	{{cif_core_2.2.dic 151689 204} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_detector 	{{cif_core_2.2.dic 152378 61} {c {} {} 0 {} diffrn_detector 0}}
+	_diffrn_detector_area_resol_mean 	{{cif_core_2.2.dic 152780 66} {n 0.0: {} 0 mm^-1^ diffrn_detector 0}}
+	_diffrn_detector_details 	{{cif_core_2.2.dic 153038 76} {c {} {} 0 {} diffrn_detector 0}}
+	_diffrn_detector_dtime 	{{cif_core_2.2.dic 153449 121} {n 0.0: {} 0 {} diffrn_detector 0}}
+	_diffrn_detector_type 	{{cif_core_2.2.dic 153756 69} {c {} {} 0 {} diffrn_detector 0}}
+	_diffrn_radiation_detector 	{{cif_core_2.2.dic 154112 74} {c {} {} 0 {} diffrn_detector 0}}
+	_diffrn_radiation_detector_dtime 	{{cif_core_2.2.dic 154529 121} {n 0.0: {} 0 {} diffrn_detector 0}}
+	_diffrn_measurement_[] 	{{cif_core_2.2.dic 155406 174} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_measurement_details 	{{cif_core_2.2.dic 155835 79} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_measurement_device 	{{cif_core_2.2.dic 156412 114} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_measurement_device_details 	{{cif_core_2.2.dic 156886 123} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_measurement_device_type 	{{cif_core_2.2.dic 157218 100} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_measurement_method 	{{cif_core_2.2.dic 157582 52} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_measurement_specimen_support 	{{cif_core_2.2.dic 158035 103} {c {} {} 0 {} diffrn_measurement 0}}
+	_diffrn_orient_matrix_[] 	{{cif_core_2.2.dic 159294 149} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_orient_matrix_type 	{{cif_core_2.2.dic 159644 212} {c {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_11 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_12 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_13 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_21 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_22 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_23 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_31 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_32 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_matrix_ub_33 	{{cif_core_2.2.dic 160545 238} {n {} {} 0 {} diffrn_orient_matrix 0}}
+	_diffrn_orient_refln_[] 	{{cif_core_2.2.dic 162238 213} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_orient_refln_angle_chi 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_angle_kappa 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_angle_omega 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_angle_phi 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_angle_psi 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_angle_theta 	{{cif_core_2.2.dic 163158 211} {n {} {} 0 deg diffrn_orient_refln 1}}
+	_diffrn_orient_refln_index_h 	{{cif_core_2.2.dic 163770 126} {n {} {} 0 {} diffrn_orient_refln 1}}
+	_diffrn_orient_refln_index_k 	{{cif_core_2.2.dic 163770 126} {n {} {} 0 {} diffrn_orient_refln 1}}
+	_diffrn_orient_refln_index_l 	{{cif_core_2.2.dic 163770 126} {n {} {} 0 {} diffrn_orient_refln 1}}
+	_diffrn_radiation_[] 	{{cif_core_2.2.dic 164583 339} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_radiation_collimation 	{{cif_core_2.2.dic 165270 70} {c {} {} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_filter_edge 	{{cif_core_2.2.dic 165659 75} {n 0.0: {} 0 A diffrn_radiation 0}}
+	_diffrn_radiation_inhomogeneity 	{{cif_core_2.2.dic 165979 135} {n 0.0: {} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_monochromator 	{{cif_core_2.2.dic 166447 202} {c {} {} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_polarisn_norm 	{{cif_core_2.2.dic 166980 218} {n -180.0:180.0 {} 0 deg diffrn_radiation 0}}
+	_diffrn_radiation_polarisn_ratio 	{{cif_core_2.2.dic 167445 455} {n 0.0: {} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_probe 	{{cif_core_2.2.dic 168252 276} {c {} {{x-ray {}} {neutron {}} {electron {}} {gamma {}}} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_type 	{{cif_core_2.2.dic 168838 247} {c {} {} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_xray_symbol 	{{cif_core_2.2.dic 169592 94} {c {} {{K-L~3~ {K\a~1~ in older Siegbahn notation]}} {K-L~2~ {K\a~2~ in older Siegbahn notation]}} {K-M~3~ {K\b~1~ in older Siegbahn notation]}} {K-L~2,3~ {use where K-L~3~ and K-L~2~ are not resolved]}}} 0 {} diffrn_radiation 0}}
+	_diffrn_radiation_wavelength_[] 	{{cif_core_2.2.dic 170382 312} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_radiation_wavelength 	{{cif_core_2.2.dic 171125 55} {n 0.0: {} 0 A diffrn_radiation_wavelength 1}}
+	_diffrn_radiation_wavelength_id 	{{cif_core_2.2.dic 171579 357} {c {} {} 0 {} diffrn_radiation_wavelength 1}}
+	_diffrn_radiation_wavelength_wt 	{{cif_core_2.2.dic 172334 150} {n 0.0:1.0 {} 0 {} diffrn_radiation_wavelength 1}}
+	_diffrn_refln_[] 	{{cif_core_2.2.dic 174477 477} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_refln_angle_chi 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_angle_kappa 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_angle_omega 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_angle_phi 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_angle_psi 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_angle_theta 	{{cif_core_2.2.dic 175598 228} {n {} {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_attenuator_code 	{{cif_core_2.2.dic 176173 160} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_class_code 	{{cif_core_2.2.dic 176672 588} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_counts_bg_1 	{{cif_core_2.2.dic 177774 280} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_counts_bg_2 	{{cif_core_2.2.dic 177774 280} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_counts_net 	{{cif_core_2.2.dic 177774 280} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_counts_peak 	{{cif_core_2.2.dic 177774 280} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_counts_total 	{{cif_core_2.2.dic 177774 280} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_crystal_id 	{{cif_core_2.2.dic 178385 160} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_detect_slit_horiz 	{{cif_core_2.2.dic 179018 151} {n 0.0:90.0 {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_detect_slit_vert 	{{cif_core_2.2.dic 179018 151} {n 0.0:90.0 {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_elapsed_time 	{{cif_core_2.2.dic 179569 135} {n 0.0: {} 0 min diffrn_refln 1}}
+	_diffrn_refln_index_h 	{{cif_core_2.2.dic 180070 367} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_index_k 	{{cif_core_2.2.dic 180070 367} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_index_l 	{{cif_core_2.2.dic 180070 367} {n {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_intensity_net 	{{cif_core_2.2.dic 180759 144} {n 0: {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_intensity_sigma 	{{cif_core_2.2.dic 181329 196} {n 0: {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_intensity_u 	{{cif_core_2.2.dic 181949 187} {n 0: {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_scale_group_code 	{{cif_core_2.2.dic 182486 161} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_scan_mode 	{{cif_core_2.2.dic 183136 161} {c {} {{om {omega scan]}} {ot {omega/2theta scan]}} {q {Q-scans (arbitrary reciprocal directions)]}}} 0 {} diffrn_refln 1}}
+	_diffrn_refln_scan_mode_backgd 	{{cif_core_2.2.dic 183746 123} {c {} {{st {stationary counter background]}} {mo {moving counter background]}}} 0 {} diffrn_refln 1}}
+	_diffrn_refln_scan_rate 	{{cif_core_2.2.dic 184277 113} {n 0.0: {} 0 deg/min diffrn_refln 1}}
+	_diffrn_refln_scan_time_backgd 	{{cif_core_2.2.dic 184797 69} {n 0.0: {} 0 sec diffrn_refln 1}}
+	_diffrn_refln_scan_width 	{{cif_core_2.2.dic 185266 119} {n 0.0:90.0 {} 0 deg diffrn_refln 1}}
+	_diffrn_refln_sint/lambda 	{{cif_core_2.2.dic 185798 105} {n 0.0: {} 0 A^-1^ diffrn_refln 1}}
+	_diffrn_refln_standard_code 	{{cif_core_2.2.dic 186303 202} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_refln_wavelength 	{{cif_core_2.2.dic 186901 267} {n 0.0: {} 0 A diffrn_refln 1}}
+	_diffrn_refln_wavelength_id 	{{cif_core_2.2.dic 187566 80} {c {} {} 0 {} diffrn_refln 1}}
+	_diffrn_reflns_[] 	{{cif_core_2.2.dic 188690 484} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_reflns_av_r_equivalents 	{{cif_core_2.2.dic 189416 324} {n 0.0: {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_av_sigmai/neti 	{{cif_core_2.2.dic 190081 81} {n 0.0: {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_av_uneti/neti 	{{cif_core_2.2.dic 190504 81} {n 0.0: {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_h_max 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_h_min 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_k_max 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_k_min 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_l_max 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_limit_l_min 	{{cif_core_2.2.dic 191074 129} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_number 	{{cif_core_2.2.dic 191423 214} {n 0: {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_reduction_process 	{{cif_core_2.2.dic 191909 125} {c {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_theta_full 	{{cif_core_2.2.dic 192346 263} {n 0.0:90.0 {} 0 deg diffrn_reflns 0}}
+	_diffrn_reflns_theta_max 	{{cif_core_2.2.dic 192919 77} {n 0.0:90.0 {} 0 deg diffrn_reflns 0}}
+	_diffrn_reflns_theta_min 	{{cif_core_2.2.dic 193306 77} {n 0.0:90.0 {} 0 deg diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_11 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_12 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_13 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_21 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_22 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_23 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_31 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_32 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_transf_matrix_33 	{{cif_core_2.2.dic 194105 371} {n {} {} 0 {} diffrn_reflns 0}}
+	_diffrn_reflns_class_[] 	{{cif_core_2.2.dic 195759 181} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_reflns_class_av_r_eq 	{{cif_core_2.2.dic 196278 328} {n 0.0: {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_reflns_class_av_sgi/i 	{{cif_core_2.2.dic 197049 118} {n 0.0: {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_reflns_class_av_ui/i 	{{cif_core_2.2.dic 197611 118} {n 0.0: {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_reflns_class_code 	{{cif_core_2.2.dic 198172 65} {c {} {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_reflns_class_description 	{{cif_core_2.2.dic 198677 54} {c {} {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_reflns_class_d_res_high 	{{cif_core_2.2.dic 199155 220} {n 0.0: {} 0 A diffrn_reflns_class 1}}
+	_diffrn_reflns_class_d_res_low 	{{cif_core_2.2.dic 199797 218} {n 0.0: {} 0 A diffrn_reflns_class 1}}
+	_diffrn_reflns_class_number 	{{cif_core_2.2.dic 200349 184} {n 0: {} 0 {} diffrn_reflns_class 1}}
+	_diffrn_scale_group_[] 	{{cif_core_2.2.dic 201154 383} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_scale_group_code 	{{cif_core_2.2.dic 201925 218} {c {} {} 0 {} diffrn_scale_group 1}}
+	_diffrn_scale_group_i_net 	{{cif_core_2.2.dic 202473 220} {n 0.0: {} 0 {} diffrn_scale_group 1}}
+	_diffrn_source_[] 	{{cif_core_2.2.dic 203521 150} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_radiation_source 	{{cif_core_2.2.dic 203950 41} {c {} {} 0 {} diffrn_source 0}}
+	_diffrn_source 	{{cif_core_2.2.dic 204580 62} {c {} {} 0 {} diffrn_source 0}}
+	_diffrn_source_current 	{{cif_core_2.2.dic 204948 103} {n 0.0: {} 0 mA diffrn_source 0}}
+	_diffrn_source_details 	{{cif_core_2.2.dic 205237 69} {c {} {} 0 {} diffrn_source 0}}
+	_diffrn_source_power 	{{cif_core_2.2.dic 205605 98} {n 0.0: {} 0 kW diffrn_source 0}}
+	_diffrn_source_size 	{{cif_core_2.2.dic 205995 72} {c {} {} 0 {} diffrn_source 0}}
+	_diffrn_source_target 	{{cif_core_2.2.dic 206721 192} {c {} {{H {}} {He {}} {Li {}} {Be {}} {B {}} {C {}} {N {}} {O {}} {F {}} {Ne {}} {Na {}} {Mg {}} {Al {}} {Si {}} {P {}} {S {}} {Cl {}} {Ar {}} {K {}} {Ca {}} {Sc {}} {Ti {}} {V {}} {Cr {}} {Mn {}} {Fe {}} {Co {}} {Ni {}} {Cu {}} {Zn {}} {Ga {}} {Ge {}} {As {}} {Se {}} {Br {}} {Kr {}} {Rb {}} {Sr {}} {Y {}} {Zr {}} {Nb {}} {Mo {}} {Tc {}} {Ru {}} {Rh {}} {Pd {}} {Ag {}} {Cd {}} {In {}} {Sn {}} {Sb {}} {Te {}} {I {}} {Xe {}} {Cs {}} {Ba {}} {La {}} {Ce {}} {Pr {}} {Nd {}} {Pm {}} {Sm {}} {Eu {}} {Gd {}} {Tb {}} {Dy {}} {Ho {}} {Er {}} {Tm {}} {Yb {}} {Lu {}} {Hf {}} {Ta {}} {W {}} {Re {}} {Os {}} {Ir {}} {Pt {}} {Au {}} {Hg {}} {Tl {}} {Pb {}} {Bi {}} {Po {}} {At {}} {Rn {}} {Fr {}} {Ra {}} {Ac {}} {Th {}} {Pa {}} {U {}} {Np {}} {Pu {}} {Am {}} {Cm {}} {Bk {}} {Cf {}} {Es {}} {Fm {}} {Md {}} {No {}} {Lr {}}} 0 {} diffrn_source 0}}
+	_diffrn_source_type 	{{cif_core_2.2.dic 207200 68} {c {} {} 0 {} diffrn_source 0}}
+	_diffrn_source_voltage 	{{cif_core_2.2.dic 207571 100} {n 0.0: {} 0 kV diffrn_source 0}}
+	_diffrn_standard_refln_[] 	{{cif_core_2.2.dic 208429 353} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_standard_refln_code 	{{cif_core_2.2.dic 209193 263} {c {} {} 0 {} diffrn_standard_refln 1}}
+	_diffrn_standard_refln_index_h 	{{cif_core_2.2.dic 209867 115} {n {} {} 0 {} diffrn_standard_refln 1}}
+	_diffrn_standard_refln_index_k 	{{cif_core_2.2.dic 209867 115} {n {} {} 0 {} diffrn_standard_refln 1}}
+	_diffrn_standard_refln_index_l 	{{cif_core_2.2.dic 209867 115} {n {} {} 0 {} diffrn_standard_refln 1}}
+	_diffrn_standards_[] 	{{cif_core_2.2.dic 210700 385} {{} {} {} 0 {} category_overview 0}}
+	_diffrn_standards_decay_% 	{{cif_core_2.2.dic 211318 490} {n :100 {} 0 {} diffrn_standards 0}}
+	_diffrn_standards_interval_count 	{{cif_core_2.2.dic 212113 153} {n 0: {} 0 {} diffrn_standards 0}}
+	_diffrn_standards_interval_time 	{{cif_core_2.2.dic 212113 153} {n 0: {} 0 {} diffrn_standards 0}}
+	_diffrn_standards_number 	{{cif_core_2.2.dic 212495 111} {n 0: {} 0 {} diffrn_standards 0}}
+	_diffrn_standards_scale_sigma 	{{cif_core_2.2.dic 212947 135} {n 0.0: {} 0 {} diffrn_standards 0}}
+	_diffrn_standards_scale_u 	{{cif_core_2.2.dic 213421 126} {n 0.0: {} 0 {} diffrn_standards 0}}
+	_exptl_[] 	{{cif_core_2.2.dic 214310 214} {{} {} {} 0 {} category_overview 0}}
+	_exptl_absorpt_coefficient_mu 	{{cif_core_2.2.dic 214850 192} {n 0.0: {} 0 mm^-1^ exptl 0}}
+	_exptl_absorpt_correction_t_max 	{{cif_core_2.2.dic 215341 200} {n 0.0:1.0 {} 0 {} exptl 0}}
+	_exptl_absorpt_correction_t_min 	{{cif_core_2.2.dic 215341 200} {n 0.0:1.0 {} 0 {} exptl 0}}
+	_exptl_absorpt_correction_type 	{{cif_core_2.2.dic 216547 180} {c {} {{analytical {analytical from crystal shape]}} {cylinder cylindrical\]} {empirical {empirical from intensities]}} {gaussian {Gaussian from crystal shape]}} {integration {integration from crystal shape]}} {multi-scan {symmetry-related measurements]}} {none {no absorption correction applied]}} {numerical {numerical from crystal shape]}} {psi-scan {psi-scan corrections]}} {refdelf {refined from delta-F]}} {sphere spherical\]}} 0 {} exptl 0}}
+	_exptl_absorpt_process_details 	{{cif_core_2.2.dic 217096 179} {c {} {} 0 {} exptl 0}}
+	_exptl_crystals_number 	{{cif_core_2.2.dic 217489 100} {n 1: {} 0 {} exptl 0}}
+	_exptl_special_details 	{{cif_core_2.2.dic 217767 156} {c {} {} 0 {} exptl 0}}
+	_exptl_crystal_[] 	{{cif_core_2.2.dic 218916 208} {{} {} {} 0 {} category_overview 0}}
+	_exptl_crystal_colour 	{{cif_core_2.2.dic 219442 43} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_density_diffrn 	{{cif_core_2.2.dic 219912 159} {n 0.0: {} 0 Mgm^-3^ exptl_crystal 1}}
+	_exptl_crystal_density_meas 	{{cif_core_2.2.dic 220531 186} {n 0.0: {} 1 Mgm^-3^ exptl_crystal 1}}
+	_exptl_crystal_density_meas_temp 	{{cif_core_2.2.dic 221163 107} {n 0.0: {} 1 K exptl_crystal 1}}
+	_exptl_crystal_density_method 	{{cif_core_2.2.dic 221727 72} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_description 	{{cif_core_2.2.dic 222082 346} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_f_000 	{{cif_core_2.2.dic 222737 481} {n 0.0: {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_id 	{{cif_core_2.2.dic 223577 229} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_preparation 	{{cif_core_2.2.dic 224166 141} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_pressure_history 	{{cif_core_2.2.dic 224600 95} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_size_length 	{{cif_core_2.2.dic 225319 426} {n 0.0: {} 0 mm exptl_crystal 1}}
+	_exptl_crystal_size_max 	{{cif_core_2.2.dic 225319 426} {n 0.0: {} 0 mm exptl_crystal 1}}
+	_exptl_crystal_size_mid 	{{cif_core_2.2.dic 225319 426} {n 0.0: {} 0 mm exptl_crystal 1}}
+	_exptl_crystal_size_min 	{{cif_core_2.2.dic 225319 426} {n 0.0: {} 0 mm exptl_crystal 1}}
+	_exptl_crystal_size_rad 	{{cif_core_2.2.dic 225319 426} {n 0.0: {} 0 mm exptl_crystal 1}}
+	_exptl_crystal_thermal_history 	{{cif_core_2.2.dic 226036 94} {c {} {} 0 {} exptl_crystal 1}}
+	_exptl_crystal_face_[] 	{{cif_core_2.2.dic 227140 114} {{} {} {} 0 {} category_overview 0}}
+	_exptl_crystal_face_diffr_chi 	{{cif_core_2.2.dic 227822 277} {n {} {} 0 deg exptl_crystal_face 1}}
+	_exptl_crystal_face_diffr_kappa 	{{cif_core_2.2.dic 227822 277} {n {} {} 0 deg exptl_crystal_face 1}}
+	_exptl_crystal_face_diffr_phi 	{{cif_core_2.2.dic 227822 277} {n {} {} 0 deg exptl_crystal_face 1}}
+	_exptl_crystal_face_diffr_psi 	{{cif_core_2.2.dic 227822 277} {n {} {} 0 deg exptl_crystal_face 1}}
+	_exptl_crystal_face_index_h 	{{cif_core_2.2.dic 228495 123} {n {} {} 0 {} exptl_crystal_face 1}}
+	_exptl_crystal_face_index_k 	{{cif_core_2.2.dic 228495 123} {n {} {} 0 {} exptl_crystal_face 1}}
+	_exptl_crystal_face_index_l 	{{cif_core_2.2.dic 228495 123} {n {} {} 0 {} exptl_crystal_face 1}}
+	_exptl_crystal_face_perp_dist 	{{cif_core_2.2.dic 229039 127} {n 0.0: {} 0 mm exptl_crystal_face 1}}
+	_geom_[] 	{{cif_core_2.2.dic 230219 761} {{} {} {} 0 {} category_overview 0}}
+	_geom_special_details 	{{cif_core_2.2.dic 231155 186} {c {} {} 0 {} geom 0}}
+	_geom_angle_[] 	{{cif_core_2.2.dic 232622 192} {{} {} {} 0 {} category_overview 0}}
+	_geom_angle 	{{cif_core_2.2.dic 233189 175} {n {} {} 1 deg geom_angle 1}}
+	_geom_angle_atom_site_label_1 	{{cif_core_2.2.dic 233810 271} {c {} {} 0 {} geom_angle 1}}
+	_geom_angle_atom_site_label_2 	{{cif_core_2.2.dic 233810 271} {c {} {} 0 {} geom_angle 1}}
+	_geom_angle_atom_site_label_3 	{{cif_core_2.2.dic 233810 271} {c {} {} 0 {} geom_angle 1}}
+	_geom_angle_publ_flag 	{{cif_core_2.2.dic 234691 148} {c {} {{no {do not include angle in special list]}} {n {abbreviation for "no"]}} {yes {do include angle in special list]}} {y {abbreviation for "yes"]}}} 0 {} geom_angle 1}}
+	_geom_angle_site_symmetry_1 	{{cif_core_2.2.dic 235494 1041} {c {} {} 0 {} geom_angle 1}}
+	_geom_angle_site_symmetry_2 	{{cif_core_2.2.dic 235494 1041} {c {} {} 0 {} geom_angle 1}}
+	_geom_angle_site_symmetry_3 	{{cif_core_2.2.dic 235494 1041} {c {} {} 0 {} geom_angle 1}}
+	_geom_bond_[] 	{{cif_core_2.2.dic 237668 181} {{} {} {} 0 {} category_overview 0}}
+	_geom_bond_atom_site_label_1 	{{cif_core_2.2.dic 238228 150} {c {} {} 0 {} geom_bond 1}}
+	_geom_bond_atom_site_label_2 	{{cif_core_2.2.dic 238228 150} {c {} {} 0 {} geom_bond 1}}
+	_geom_bond_distance 	{{cif_core_2.2.dic 238805 63} {n 0.0: {} 1 A geom_bond 1}}
+	_geom_bond_publ_flag 	{{cif_core_2.2.dic 239472 178} {c {} {{no {do not include bond in special list]}} {n {abbreviation for "no"]}} {yes {do include bond in special list]}} {y {abbreviation for "yes"]}}} 0 {} geom_bond 1}}
+	_geom_bond_site_symmetry_1 	{{cif_core_2.2.dic 240239 1040} {c {} {} 0 {} geom_bond 1}}
+	_geom_bond_site_symmetry_2 	{{cif_core_2.2.dic 240239 1040} {c {} {} 0 {} geom_bond 1}}
+	_geom_bond_valence 	{{cif_core_2.2.dic 241553 70} {n {} {} 0 {} geom_bond 1}}
+	_geom_contact_[] 	{{cif_core_2.2.dic 242495 199} {{} {} {} 0 {} category_overview 0}}
+	_geom_contact_atom_site_label_1 	{{cif_core_2.2.dic 243085 157} {c {} {} 0 {} geom_contact 1}}
+	_geom_contact_atom_site_label_2 	{{cif_core_2.2.dic 243085 157} {c {} {} 0 {} geom_contact 1}}
+	_geom_contact_distance 	{{cif_core_2.2.dic 243681 63} {n 0.0: {} 1 A geom_contact 1}}
+	_geom_contact_publ_flag 	{{cif_core_2.2.dic 244368 184} {c {} {{no {do not include distance in special list]}} {n {abbreviation for "no"]}} {yes {do include distance in special list]}} {y {abbreviation for "yes"]}}} 0 {} geom_contact 1}}
+	_geom_contact_site_symmetry_1 	{{cif_core_2.2.dic 245156 1043} {c {} {} 0 {} geom_contact 1}}
+	_geom_contact_site_symmetry_2 	{{cif_core_2.2.dic 245156 1043} {c {} {} 0 {} geom_contact 1}}
+	_geom_hbond_[] 	{{cif_core_2.2.dic 247222 191} {{} {} {} 0 {} category_overview 0}}
+	_geom_hbond_angle_dha 	{{cif_core_2.2.dic 247808 243} {n {} {} 1 deg geom_hbond 1}}
+	_geom_hbond_atom_site_label_d 	{{cif_core_2.2.dic 248497 241} {c {} {} 0 {} geom_hbond 1}}
+	_geom_hbond_atom_site_label_h 	{{cif_core_2.2.dic 248497 241} {c {} {} 0 {} geom_hbond 1}}
+	_geom_hbond_atom_site_label_a 	{{cif_core_2.2.dic 248497 241} {c {} {} 0 {} geom_hbond 1}}
+	_geom_hbond_distance_dh 	{{cif_core_2.2.dic 249287 193} {n 0.0: {} 1 A geom_hbond 1}}
+	_geom_hbond_distance_ha 	{{cif_core_2.2.dic 249287 193} {n 0.0: {} 1 A geom_hbond 1}}
+	_geom_hbond_distance_da 	{{cif_core_2.2.dic 249287 193} {n 0.0: {} 1 A geom_hbond 1}}
+	_geom_hbond_publ_flag 	{{cif_core_2.2.dic 250088 199} {c {} {{no {do not include bond in special list]}} {n {abbreviation for "no"]}} {yes {do include bond in special list]}} {y {abbreviation for "yes"]}}} 0 {} geom_hbond 1}}
+	_geom_hbond_site_symmetry_d 	{{cif_core_2.2.dic 250942 1049} {c {} {} 0 {} geom_hbond 1}}
+	_geom_hbond_site_symmetry_h 	{{cif_core_2.2.dic 250942 1049} {c {} {} 0 {} geom_hbond 1}}
+	_geom_hbond_site_symmetry_a 	{{cif_core_2.2.dic 250942 1049} {c {} {} 0 {} geom_hbond 1}}
+	_geom_torsion_[] 	{{cif_core_2.2.dic 253283 205} {{} {} {} 0 {} category_overview 0}}
+	_geom_torsion 	{{cif_core_2.2.dic 253871 392} {n {} {} 1 deg geom_torsion 1}}
+	_geom_torsion_atom_site_label_1 	{{cif_core_2.2.dic 254784 739} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_atom_site_label_2 	{{cif_core_2.2.dic 254784 739} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_atom_site_label_3 	{{cif_core_2.2.dic 254784 739} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_atom_site_label_4 	{{cif_core_2.2.dic 254784 739} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_publ_flag 	{{cif_core_2.2.dic 256141 179} {c {} {{no {do not include angle in special list]}} {n {abbreviation for "no"]}} {yes {do include angle in special list]}} {y {abbreviation for "yes"]}}} 0 {} geom_torsion 1}}
+	_geom_torsion_site_symmetry_1 	{{cif_core_2.2.dic 257050 1041} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_site_symmetry_2 	{{cif_core_2.2.dic 257050 1041} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_site_symmetry_3 	{{cif_core_2.2.dic 257050 1041} {c {} {} 0 {} geom_torsion 1}}
+	_geom_torsion_site_symmetry_4 	{{cif_core_2.2.dic 257050 1041} {c {} {} 0 {} geom_torsion 1}}
+	_journal_[] 	{{cif_core_2.2.dic 259334 401} {{} {} {} 0 {} category_overview 0}}
+	_journal_coden_astm 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coden_cambridge 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_address 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_code 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_email 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_fax 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_name 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_notes 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_coeditor_phone 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_data_validation_number 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_accepted 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_from_coeditor 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_to_coeditor 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_printers_final 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_printers_first 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_proofs_in 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_proofs_out 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_recd_copyright 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_recd_electronic 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_date_recd_hard_copy 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_issue 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_language 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_name_full 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_page_first 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_page_last 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_paper_category 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_suppl_publ_number 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_suppl_publ_pages 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_address 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_code 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_email 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_fax 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_name 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_notes 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_techeditor_phone 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_volume 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_year 	{{cif_core_2.2.dic 261960 59} {c {} {} 0 {} journal 0}}
+	_journal_index_[] 	{{cif_core_2.2.dic 262925 220} {{} {} {} 0 {} category_overview 0}}
+	_journal_index_subterm 	{{cif_core_2.2.dic 263430 58} {c {} {} 0 {} journal_index 0}}
+	_journal_index_term 	{{cif_core_2.2.dic 263430 58} {c {} {} 0 {} journal_index 0}}
+	_journal_index_type 	{{cif_core_2.2.dic 263430 58} {c {} {} 0 {} journal_index 0}}
+	_publ_[] 	{{cif_core_2.2.dic 265103 628} {{} {} {} 0 {} category_overview 0}}
+	_publ_contact_author 	{{cif_core_2.2.dic 266185 307} {c {} {} 0 {} publ 0}}
+	_publ_contact_author_address 	{{cif_core_2.2.dic 266901 175} {c {} {} 0 {} publ 0}}
+	_publ_contact_author_email 	{{cif_core_2.2.dic 267364 80} {c {} {} 0 {} publ 0}}
+	_publ_contact_author_fax 	{{cif_core_2.2.dic 267732 442} {c {} {} 0 {} publ 0}}
+	_publ_contact_author_name 	{{cif_core_2.2.dic 268417 172} {c {} {} 0 {} publ 0}}
+	_publ_contact_author_phone 	{{cif_core_2.2.dic 268934 489} {c {} {} 0 {} publ 0}}
+	_publ_contact_letter 	{{cif_core_2.2.dic 269596 80} {c {} {} 0 {} publ 0}}
+	_publ_manuscript_creation 	{{cif_core_2.2.dic 269939 185} {c {} {} 0 {} publ 0}}
+	_publ_manuscript_processed 	{{cif_core_2.2.dic 270309 303} {c {} {} 0 {} publ 0}}
+	_publ_manuscript_text 	{{cif_core_2.2.dic 270787 137} {c {} {} 0 {} publ 0}}
+	_publ_requested_category 	{{cif_core_2.2.dic 272029 253} {c {} {{FA {Full article]}} {FI {Full submission - inorganic (Acta C)]}} {FO {Full submission - organic (Acta C)]}} {FM {Full submission - metal-organic (Acta C)]}} {CI {CIF-access paper - inorganic (Acta C)]}} {CO {CIF-access paper - organic (Acta C)]}} {CM {CIF-access paper - metal-organic (Acta C)]}} {EI {Electronic submission - inorganic (Acta E)]}} {EO {Electronic submission - organic (Acta E)]}} {EM {Electronic submission - metal-organic (Acta E)]}} {AD {Addenda & Errata (Acta C, Acta E)]}} {SC {Short Communication]}}} 0 {} publ 0}}
+	_publ_requested_coeditor_name 	{{cif_core_2.2.dic 272473 122} {c {} {} 0 {} publ 0}}
+	_publ_requested_journal 	{{cif_core_2.2.dic 272774 99} {c {} {} 0 {} publ 0}}
+	_publ_section_title 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_title_footnote 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_synopsis 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_abstract 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_comment 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_introduction 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_experimental 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_exptl_prep 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_exptl_refinement 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_exptl_solution 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_discussion 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_acknowledgements 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_references 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_figure_captions 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_section_table_legends 	{{cif_core_2.2.dic 273876 465} {c {} {} 0 {} publ 0}}
+	_publ_author_[] 	{{cif_core_2.2.dic 275146 143} {{} {} {} 0 {} category_overview 0}}
+	_publ_author_address 	{{cif_core_2.2.dic 275747 145} {c {} {} 0 {} publ_author 1}}
+	_publ_author_footnote 	{{cif_core_2.2.dic 276299 206} {c {} {} 0 {} publ_author 1}}
+	_publ_author_name 	{{cif_core_2.2.dic 277093 289} {c {} {} 0 {} publ_author 1}}
+	_publ_body_[] 	{{cif_core_2.2.dic 279464 493} {{} {} {} 0 {} category_overview 0}}
+	_publ_body_contents 	{{cif_core_2.2.dic 280220 53} {c {} {} 0 {} publ_body 1}}
+	_publ_body_element 	{{cif_core_2.2.dic 280773 68} {c {} {{section {}} {subsection {}} {subsubsection {}} {appendix {}} {footnote {}}} 0 {} publ_body 1}}
+	_publ_body_format 	{{cif_core_2.2.dic 281594 167} {c {} {{ascii {no coding for special symbols]}} {cif {CIF convention]}} {latex LaTeX\]} {rtf {Rich Text Format]}} {sgml {SGML (ISO 8879)]}} {tex TeX\]} {troff {troff or nroff]}}} 0 {} publ_body 1}}
+	_publ_body_label 	{{cif_core_2.2.dic 282106 133} {c {} {} 0 {} publ_body 1}}
+	_publ_body_title 	{{cif_core_2.2.dic 282496 57} {c {} {} 0 {} publ_body 1}}
+	_publ_manuscript_incl_[] 	{{cif_core_2.2.dic 284627 649} {{} {} {} 0 {} category_overview 0}}
+	_publ_manuscript_incl_extra_defn 	{{cif_core_2.2.dic 285937 157} {c {} {{no {not a standard CIF data name]}} {n {abbreviation for "no"]}} {yes {a standard CIF data name]}} {y {abbreviation for "yes"]}}} 0 {} publ_manuscript_incl 1}}
+	_publ_manuscript_incl_extra_info 	{{cif_core_2.2.dic 286410 197} {c {} {} 0 {} publ_manuscript_incl 1}}
+	_publ_manuscript_incl_extra_item 	{{cif_core_2.2.dic 286894 307} {c {} {} 0 {} publ_manuscript_incl 1}}
+	_refine_[] 	{{cif_core_2.2.dic 289109 123} {{} {} {} 0 {} category_overview 0}}
+	_refine_diff_density_max 	{{cif_core_2.2.dic 289668 540} {n {} {} 1 e_A^-3^ refine 0}}
+	_refine_diff_density_min 	{{cif_core_2.2.dic 289668 540} {n {} {} 1 e_A^-3^ refine 0}}
+	_refine_diff_density_rms 	{{cif_core_2.2.dic 289668 540} {n {} {} 1 e_A^-3^ refine 0}}
+	_refine_ls_abs_structure_details 	{{cif_core_2.2.dic 290407 80} {c {} {} 0 {} refine 0}}
+	_refine_ls_abs_structure_flack 	{{cif_core_2.2.dic 290760 645} {n 0.0:1.0 {} 1 {} refine 0}}
+	_refine_ls_abs_structure_rogers 	{{cif_core_2.2.dic 291681 444} {n -1.0:1.0 {} 1 {} refine 0}}
+	_refine_ls_d_res_high 	{{cif_core_2.2.dic 292418 179} {n 0.0: {} 0 A refine 0}}
+	_refine_ls_d_res_low 	{{cif_core_2.2.dic 292888 177} {n 0.0: {} 0 A refine 0}}
+	_refine_ls_extinction_coef 	{{cif_core_2.2.dic 293407 912} {n {} {} 1 {} refine 0}}
+	_refine_ls_extinction_expression 	{{cif_core_2.2.dic 294736 299} {c {} {} 0 {} refine 0}}
+	_refine_ls_extinction_method 	{{cif_core_2.2.dic 295375 1497} {c {} {} 0 {} refine 0}}
+	_refine_ls_goodness_of_fit_all 	{{cif_core_2.2.dic 297142 1064} {n 0.0: {} 1 {} refine 0}}
+	_refine_ls_goodness_of_fit_gt 	{{cif_core_2.2.dic 298581 1134} {n 0.0: {} 1 {} refine 0}}
+	_refine_ls_goodness_of_fit_obs 	{{cif_core_2.2.dic 300089 1112} {n 0.0: {} 1 {} refine 0}}
+	_refine_ls_goodness_of_fit_ref 	{{cif_core_2.2.dic 301471 1092} {n 0.0: {} 1 {} refine 0}}
+	_refine_ls_hydrogen_treatment 	{{cif_core_2.2.dic 303308 77} {c {} {{refall {refined all H parameters]}} {refxyz {refined H coordinates only]}} {refU {refined H U only]}} {noref {no refinement of H parameters]}} {constr {H parameters constrained]}} {mixed {some constrained, some independent]}} {undef {H-atom parameters not defined]}}} 0 {} refine 0}}
+	_refine_ls_matrix_type 	{{cif_core_2.2.dic 304031 81} {c {} {{full full\]} {fullcycle {full with fixed elements per cycle]}} {atomblock {block diagonal per atom]}} {userblock {user-defined blocks]}} {diagonal {diagonal elements only]}} {sparse {selected elements only]}}} 0 {} refine 0}}
+	_refine_ls_number_constraints 	{{cif_core_2.2.dic 304376 402} {n 0: {} 0 {} refine 0}}
+	_refine_ls_number_parameters 	{{cif_core_2.2.dic 305005 639} {n 0: {} 0 {} refine 0}}
+	_refine_ls_number_reflns 	{{cif_core_2.2.dic 305863 122} {n 0: {} 0 {} refine 0}}
+	_refine_ls_number_restraints 	{{cif_core_2.2.dic 306212 433} {n 0: {} 0 {} refine 0}}
+	_refine_ls_r_factor_all 	{{cif_core_2.2.dic 306864 604} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_r_factor_gt 	{{cif_core_2.2.dic 307785 843} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_r_factor_obs 	{{cif_core_2.2.dic 308944 742} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_r_fsqd_factor 	{{cif_core_2.2.dic 309908 852} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_r_i_factor 	{{cif_core_2.2.dic 310976 646} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_restrained_s_all 	{{cif_core_2.2.dic 311849 1629} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_restrained_s_gt 	{{cif_core_2.2.dic 313807 1704} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_restrained_s_obs 	{{cif_core_2.2.dic 315839 1636} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_shift/esd_max 	{{cif_core_2.2.dic 317794 217} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_shift/esd_mean 	{{cif_core_2.2.dic 318333 217} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_shift/su_max 	{{cif_core_2.2.dic 318870 135} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_shift/su_mean 	{{cif_core_2.2.dic 319328 135} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_structure_factor_coef 	{{cif_core_2.2.dic 319912 122} {c {} {{F {structure factor magnitude]}} {Fsqd {structure factor squared]}} {Inet {net intensity]}}} 0 {} refine 0}}
+	_refine_ls_weighting_details 	{{cif_core_2.2.dic 320511 253} {c {} {} 0 {} refine 0}}
+	_refine_ls_weighting_scheme 	{{cif_core_2.2.dic 321226 235} {c {} {{sigma {based on measured s.u.'s]}} {unit {unit or no weights applied]}} {calc {calculated weights applied]}}} 0 {} refine 0}}
+	_refine_ls_wr_factor_all 	{{cif_core_2.2.dic 321682 798} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_wr_factor_gt 	{{cif_core_2.2.dic 322800 917} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_wr_factor_obs 	{{cif_core_2.2.dic 324036 918} {n 0.0: {} 0 {} refine 0}}
+	_refine_ls_wr_factor_ref 	{{cif_core_2.2.dic 325175 842} {n 0.0: {} 0 {} refine 0}}
+	_refine_special_details 	{{cif_core_2.2.dic 326198 74} {c {} {} 0 {} refine 0}}
+	_refine_ls_class_[] 	{{cif_core_2.2.dic 327155 200} {{} {} {} 0 {} category_overview 0}}
+	_refine_ls_class_code 	{{cif_core_2.2.dic 327743 123} {c {} {} 0 {} refine_ls_class 1}}
+	_refine_ls_class_d_res_high 	{{cif_core_2.2.dic 328274 214} {n 0.0: {} 0 A refine_ls_class 1}}
+	_refine_ls_class_d_res_low 	{{cif_core_2.2.dic 328894 214} {n 0.0: {} 0 A refine_ls_class 1}}
+	_refine_ls_class_r_factor_all 	{{cif_core_2.2.dic 329499 835} {n 0.0: {} 0 {} refine_ls_class 1}}
+	_refine_ls_class_r_factor_gt 	{{cif_core_2.2.dic 329499 835} {n 0.0: {} 0 {} refine_ls_class 1}}
+	_refine_ls_class_r_fsqd_factor 	{{cif_core_2.2.dic 330668 957} {n 0.0: {} 0 {} refine_ls_class 1}}
+	_refine_ls_class_r_i_factor 	{{cif_core_2.2.dic 331953 739} {n 0.0: {} 0 {} refine_ls_class 1}}
+	_refine_ls_class_wr_factor_all 	{{cif_core_2.2.dic 333026 890} {n 0.0: {} 0 {} refine_ls_class 1}}
+	_refln_[] 	{{cif_core_2.2.dic 336199 412} {{} {} {} 0 {} category_overview 0}}
+	_refln_a_calc 	{{cif_core_2.2.dic 336898 159} {n {} {} 0 {} refln 1}}
+	_refln_a_meas 	{{cif_core_2.2.dic 336898 159} {n {} {} 0 {} refln 1}}
+	_refln_b_calc 	{{cif_core_2.2.dic 337344 159} {n {} {} 0 {} refln 1}}
+	_refln_b_meas 	{{cif_core_2.2.dic 337344 159} {n {} {} 0 {} refln 1}}
+	_refln_class_code 	{{cif_core_2.2.dic 337807 581} {c {} {} 0 {} refln 1}}
+	_refln_d_spacing 	{{cif_core_2.2.dic 338754 205} {n 0.0: {} 0 A refln 1}}
+	_refln_crystal_id 	{{cif_core_2.2.dic 339262 160} {c {} {} 0 {} refln 1}}
+	_refln_f_calc 	{{cif_core_2.2.dic 339757 186} {n {} {} 0 {} refln 1}}
+	_refln_f_meas 	{{cif_core_2.2.dic 339757 186} {n {} {} 0 {} refln 1}}
+	_refln_f_sigma 	{{cif_core_2.2.dic 339757 186} {n {} {} 0 {} refln 1}}
+	_refln_f_squared_calc 	{{cif_core_2.2.dic 340310 208} {n {} {} 0 {} refln 1}}
+	_refln_f_squared_meas 	{{cif_core_2.2.dic 340310 208} {n {} {} 0 {} refln 1}}
+	_refln_f_squared_sigma 	{{cif_core_2.2.dic 340310 208} {n {} {} 0 {} refln 1}}
+	_refln_include_status 	{{cif_core_2.2.dic 341857 161} {c {} {{o { (lower-case letter o for 'observed')
+ satisfies _refine_ls_d_res_high
+ satisfies _refine_ls_d_res_low
+ exceeds _reflns_threshold_expression]}} {< { satisfies _refine_ls_d_res_high
+ satisfies _refine_ls_d_res_low
+ does not exceed
+ _reflns_threshold_expression]}} {- {systematically absent reflection]}} {x {unreliable measurement -- not used]}} {h {does not satisfy _refine_ls_d_res_high]}} {l {does not satisfy _refine_ls_d_res_low]}}} 0 {} refln 1}}
+	_refln_index_h 	{{cif_core_2.2.dic 342349 225} {n {} {} 0 {} refln 1}}
+	_refln_index_k 	{{cif_core_2.2.dic 342349 225} {n {} {} 0 {} refln 1}}
+	_refln_index_l 	{{cif_core_2.2.dic 342349 225} {n {} {} 0 {} refln 1}}
+	_refln_intensity_calc 	{{cif_core_2.2.dic 342941 149} {n {} {} 0 {} refln 1}}
+	_refln_intensity_meas 	{{cif_core_2.2.dic 342941 149} {n {} {} 0 {} refln 1}}
+	_refln_intensity_sigma 	{{cif_core_2.2.dic 342941 149} {n {} {} 0 {} refln 1}}
+	_refln_mean_path_length_tbar 	{{cif_core_2.2.dic 343483 104} {n 0.0: {} 0 mm refln 1}}
+	_refln_observed_status 	{{cif_core_2.2.dic 344808 161} {c {} {{o { satisfies _refine_ls_d_res_high
+ satisfies _refine_ls_d_res_low
+ observed by _reflns_observed_criterion]}} {< { satisfies _refine_ls_d_res_high
+ satisfies _refine_ls_d_res_low
+ unobserved by _reflns_observed_criterion]}} {- {systematically absent reflection]}} {x {unreliable measurement -- not used]}} {h {does not satisfy _refine_ls_d_res_high]}} {l {does not satisfy _refine_ls_d_res_low]}}} 0 {} refln 1}}
+	_refln_phase_calc 	{{cif_core_2.2.dic 345299 66} {n {} {} 0 deg refln 1}}
+	_refln_phase_meas 	{{cif_core_2.2.dic 345732 64} {n {} {} 1 deg refln 1}}
+	_refln_refinement_status 	{{cif_core_2.2.dic 346327 74} {c {} {{incl {included in ls process]}} {excl {excluded from ls process]}} {extn {excluded due to extinction]}}} 0 {} refln 1}}
+	_refln_scale_group_code 	{{cif_core_2.2.dic 346778 149} {c {} {} 0 {} refln 1}}
+	_refln_sint/lambda 	{{cif_core_2.2.dic 347312 105} {n 0.0: {} 0 A^-1^ refln 1}}
+	_refln_symmetry_epsilon 	{{cif_core_2.2.dic 347719 208} {n 1:48 {} 0 {} refln 1}}
+	_refln_symmetry_multiplicity 	{{cif_core_2.2.dic 348239 382} {n 1:48 {} 0 {} refln 1}}
+	_refln_wavelength 	{{cif_core_2.2.dic 348989 229} {n 0.0: {} 0 A refln 1}}
+	_refln_wavelength_id 	{{cif_core_2.2.dic 349541 132} {c {} {} 0 {} refln 1}}
+	_reflns_[] 	{{cif_core_2.2.dic 350694 413} {{} {} {} 0 {} category_overview 0}}
+	_reflns_d_resolution_high 	{{cif_core_2.2.dic 351462 187} {n 0.0: {} 0 A reflns 0}}
+	_reflns_d_resolution_low 	{{cif_core_2.2.dic 351462 187} {n 0.0: {} 0 A reflns 0}}
+	_reflns_friedel_coverage 	{{cif_core_2.2.dic 351873 1833} {n 0.0:1.0 {} 0 {} reflns 0}}
+	_reflns_limit_h_max 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_limit_h_min 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_limit_k_max 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_limit_k_min 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_limit_l_max 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_limit_l_min 	{{cif_core_2.2.dic 354139 147} {n {} {} 0 {} reflns 0}}
+	_reflns_number_gt 	{{cif_core_2.2.dic 354591 661} {n 0: {} 0 {} reflns 0}}
+	_reflns_number_observed 	{{cif_core_2.2.dic 355561 600} {n 0: {} 0 {} reflns 0}}
+	_reflns_number_total 	{{cif_core_2.2.dic 356372 554} {n 0: {} 0 {} reflns 0}}
+	_reflns_observed_criterion 	{{cif_core_2.2.dic 357258 187} {c {} {} 0 {} reflns 0}}
+	_reflns_special_details 	{{cif_core_2.2.dic 357626 296} {c {} {} 0 {} reflns 0}}
+	_reflns_threshold_expression 	{{cif_core_2.2.dic 358258 327} {c {} {} 0 {} reflns 0}}
+	_reflns_class_[] 	{{cif_core_2.2.dic 359326 196} {{} {} {} 0 {} category_overview 0}}
+	_reflns_class_code 	{{cif_core_2.2.dic 359900 65} {c {} {} 0 {} reflns_class 1}}
+	_reflns_class_description 	{{cif_core_2.2.dic 360377 54} {c {} {} 0 {} reflns_class 1}}
+	_reflns_class_d_res_high 	{{cif_core_2.2.dic 360827 205} {n 0.0: {} 0 A reflns_class 1}}
+	_reflns_class_d_res_low 	{{cif_core_2.2.dic 361426 203} {n 0.0: {} 0 A reflns_class 1}}
+	_reflns_class_number_gt 	{{cif_core_2.2.dic 361943 647} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_number_total 	{{cif_core_2.2.dic 362910 579} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_r_factor_all 	{{cif_core_2.2.dic 363865 826} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_r_factor_gt 	{{cif_core_2.2.dic 363865 826} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_r_fsqd_factor 	{{cif_core_2.2.dic 365013 951} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_r_i_factor 	{{cif_core_2.2.dic 366280 739} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_class_wr_factor_all 	{{cif_core_2.2.dic 367341 885} {n 0.0: {} 0 {} reflns_class 1}}
+	_reflns_scale_[] 	{{cif_core_2.2.dic 368946 216} {{} {} {} 0 {} category_overview 0}}
+	_reflns_scale_group_code 	{{cif_core_2.2.dic 369482 234} {c {} {} 0 {} reflns_scale 1}}
+	_reflns_scale_meas_f 	{{cif_core_2.2.dic 370190 65} {n 0.0: {} 1 {} reflns_scale 1}}
+	_reflns_scale_meas_f_squared 	{{cif_core_2.2.dic 370190 65} {n 0.0: {} 1 {} reflns_scale 1}}
+	_reflns_scale_meas_intensity 	{{cif_core_2.2.dic 370190 65} {n 0.0: {} 1 {} reflns_scale 1}}
+	_reflns_shell_[] 	{{cif_core_2.2.dic 371370 207} {{} {} {} 0 {} category_overview 0}}
+	_reflns_shell_d_res_high 	{{cif_core_2.2.dic 371919 159} {n 0.0: {} 0 A reflns_shell 1}}
+	_reflns_shell_d_res_low 	{{cif_core_2.2.dic 372418 157} {n 0.0: {} 0 A reflns_shell 1}}
+	_reflns_shell_meani_over_sigi_all 	{{cif_core_2.2.dic 372925 225} {n {} {} 0 {} reflns_shell 1}}
+	_reflns_shell_meani_over_sigi_gt 	{{cif_core_2.2.dic 373497 334} {n {} {} 0 {} reflns_shell 1}}
+	_reflns_shell_meani_over_sigi_obs 	{{cif_core_2.2.dic 374182 324} {n {} {} 0 {} reflns_shell 1}}
+	_reflns_shell_meani_over_ui_all 	{{cif_core_2.2.dic 374856 225} {n {} {} 0 {} reflns_shell 1}}
+	_reflns_shell_meani_over_ui_gt 	{{cif_core_2.2.dic 375499 334} {n {} {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_measured_all 	{{cif_core_2.2.dic 376116 99} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_measured_gt 	{{cif_core_2.2.dic 376605 165} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_measured_obs 	{{cif_core_2.2.dic 377159 166} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_possible 	{{cif_core_2.2.dic 377597 116} {n 0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_unique_all 	{{cif_core_2.2.dic 377989 178} {n 0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_unique_gt 	{{cif_core_2.2.dic 378549 241} {n 0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_number_unique_obs 	{{cif_core_2.2.dic 379171 242} {n 0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_percent_possible_all 	{{cif_core_2.2.dic 379702 166} {n 0.0:100.0 {} 0 {} reflns_shell 1}}
+	_reflns_shell_percent_possible_gt 	{{cif_core_2.2.dic 380266 234} {n 0.0:100.0 {} 0 {} reflns_shell 1}}
+	_reflns_shell_percent_possible_obs 	{{cif_core_2.2.dic 380897 235} {n 0.0:100.0 {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_f_all 	{{cif_core_2.2.dic 381400 560} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_f_gt 	{{cif_core_2.2.dic 382329 628} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_f_obs 	{{cif_core_2.2.dic 383325 629} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_i_all 	{{cif_core_2.2.dic 384222 561} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_i_gt 	{{cif_core_2.2.dic 385152 629} {n 0.0: {} 0 {} reflns_shell 1}}
+	_reflns_shell_rmerge_i_obs 	{{cif_core_2.2.dic 386150 630} {n 0.0: {} 0 {} reflns_shell 1}}
+	_symmetry_[] 	{{cif_core_2.2.dic 387484 114} {{} {} {} 0 {} category_overview 0}}
+	_symmetry_cell_setting 	{{cif_core_2.2.dic 388126 65} {c {} {{triclinic {}} {monoclinic {}} {orthorhombic {}} {tetragonal {}} {rhombohedral {}} {trigonal {}} {hexagonal {}} {cubic {}}} 0 {} symmetry 0}}
+	_symmetry_int_tables_number 	{{cif_core_2.2.dic 388421 112} {n 1:230 {} 0 {} symmetry 0}}
+	_symmetry_space_group_name_hall 	{{cif_core_2.2.dic 388870 268} {c {} {} 0 {} symmetry 0}}
+	_symmetry_space_group_name_h-m 	{{cif_core_2.2.dic 389486 667} {c {} {} 0 {} symmetry 0}}
+	_symmetry_equiv_[] 	{{cif_core_2.2.dic 391535 133} {{} {} {} 0 {} category_overview 0}}
+	_symmetry_equiv_pos_as_xyz 	{{cif_core_2.2.dic 391948 433} {c {} {} 0 {} symmetry_equiv 1}}
+	_symmetry_equiv_pos_site_id 	{{cif_core_2.2.dic 392675 284} {n {} {} 0 {} symmetry_equiv 1}}
+	_valence_param_[] 	{{cif_core_2.2.dic 394122 320} {{} {} {} 0 {} category_overview 0}}
+	_valence_param_atom_1 	{{cif_core_2.2.dic 394714 143} {c {} {} 0 {} valence_param 1}}
+	_valence_param_atom_1_valence 	{{cif_core_2.2.dic 395146 135} {n {} {} 0 {} valence_param 1}}
+	_valence_param_atom_2 	{{cif_core_2.2.dic 395553 144} {c {} {} 0 {} valence_param 1}}
+	_valence_param_atom_2_valence 	{{cif_core_2.2.dic 395985 136} {n {} {} 0 {} valence_param 1}}
+	_valence_param_b 	{{cif_core_2.2.dic 396460 172} {n {} {} 0 A valence_param 1}}
+	_valence_param_details 	{{cif_core_2.2.dic 396906 68} {c {} {} 0 {} valence_param 1}}
+	_valence_param_id 	{{cif_core_2.2.dic 397187 107} {c {} {} 0 {} valence_param 1}}
+	_valence_param_ref_id 	{{cif_core_2.2.dic 397620 201} {c {} {} 0 {} valence_param 1}}
+	_valence_param_ro 	{{cif_core_2.2.dic 398162 184} {n {} {} 0 A valence_param 1}}
+	_valence_ref_[] 	{{cif_core_2.2.dic 398577 146} {{} {} {} 0 {} category_overview 0}}
+	_valence_ref_id 	{{cif_core_2.2.dic 399034 137} {c {} {} 0 {} valence_ref 1}}
+	_valence_ref_reference 	{{cif_core_2.2.dic 399441 130} {c {} {} 0 {} valence_ref 1}}
+}
+set definednames {
+	{_atom_site_[]}
+	_atom_site_adp_type
+	_atom_site_aniso_b_11
+	_atom_site_aniso_b_12
+	_atom_site_aniso_b_13
+	_atom_site_aniso_b_22
+	_atom_site_aniso_b_23
+	_atom_site_aniso_b_33
+	_atom_site_aniso_label
+	_atom_site_aniso_ratio
+	_atom_site_aniso_type_symbol
+	_atom_site_aniso_u_11
+	_atom_site_aniso_u_12
+	_atom_site_aniso_u_13
+	_atom_site_aniso_u_22
+	_atom_site_aniso_u_23
+	_atom_site_aniso_u_33
+	_atom_site_attached_hydrogens
+	_atom_site_b_equiv_geom_mean
+	_atom_site_b_iso_or_equiv
+	_atom_site_calc_attached_atom
+	_atom_site_calc_flag
+	_atom_site_cartn_x
+	_atom_site_cartn_y
+	_atom_site_cartn_z
+	_atom_site_chemical_conn_number
+	_atom_site_constraints
+	_atom_site_description
+	_atom_site_disorder_assembly
+	_atom_site_disorder_group
+	_atom_site_fract_x
+	_atom_site_fract_y
+	_atom_site_fract_z
+	_atom_site_label
+	_atom_site_label_component_0
+	_atom_site_label_component_1
+	_atom_site_label_component_2
+	_atom_site_label_component_3
+	_atom_site_label_component_4
+	_atom_site_label_component_5
+	_atom_site_label_component_6
+	_atom_site_occupancy
+	_atom_site_refinement_flags
+	_atom_site_restraints
+	_atom_site_symmetry_multiplicity
+	_atom_site_thermal_displace_type
+	_atom_site_type_symbol
+	_atom_site_u_equiv_geom_mean
+	_atom_site_u_iso_or_equiv
+	_atom_site_wyckoff_symbol
+	{_atom_sites_[]}
+	_atom_sites_cartn_tran_matrix_11
+	_atom_sites_cartn_tran_matrix_12
+	_atom_sites_cartn_tran_matrix_13
+	_atom_sites_cartn_tran_matrix_21
+	_atom_sites_cartn_tran_matrix_22
+	_atom_sites_cartn_tran_matrix_23
+	_atom_sites_cartn_tran_matrix_31
+	_atom_sites_cartn_tran_matrix_32
+	_atom_sites_cartn_tran_matrix_33
+	_atom_sites_cartn_tran_vector_1
+	_atom_sites_cartn_tran_vector_2
+	_atom_sites_cartn_tran_vector_3
+	_atom_sites_cartn_transform_axes
+	_atom_sites_fract_tran_matrix_11
+	_atom_sites_fract_tran_matrix_12
+	_atom_sites_fract_tran_matrix_13
+	_atom_sites_fract_tran_matrix_21
+	_atom_sites_fract_tran_matrix_22
+	_atom_sites_fract_tran_matrix_23
+	_atom_sites_fract_tran_matrix_31
+	_atom_sites_fract_tran_matrix_32
+	_atom_sites_fract_tran_matrix_33
+	_atom_sites_fract_tran_vector_1
+	_atom_sites_fract_tran_vector_2
+	_atom_sites_fract_tran_vector_3
+	_atom_sites_solution_hydrogens
+	_atom_sites_solution_primary
+	_atom_sites_solution_secondary
+	{_atom_type_[]}
+	_atom_type_analytical_mass_%
+	_atom_type_description
+	_atom_type_number_in_cell
+	_atom_type_oxidation_number
+	_atom_type_radius_bond
+	_atom_type_radius_contact
+	_atom_type_scat_cromer_mann_a1
+	_atom_type_scat_cromer_mann_a2
+	_atom_type_scat_cromer_mann_a3
+	_atom_type_scat_cromer_mann_a4
+	_atom_type_scat_cromer_mann_b1
+	_atom_type_scat_cromer_mann_b2
+	_atom_type_scat_cromer_mann_b3
+	_atom_type_scat_cromer_mann_b4
+	_atom_type_scat_cromer_mann_c
+	_atom_type_scat_dispersion_imag
+	_atom_type_scat_dispersion_real
+	_atom_type_scat_dispersion_source
+	_atom_type_scat_length_neutron
+	_atom_type_scat_source
+	_atom_type_scat_versus_stol_list
+	_atom_type_symbol
+	{_audit_[]}
+	{_audit_author_[]}
+	_audit_author_address
+	_audit_author_name
+	_audit_block_code
+	{_audit_conform_[]}
+	_audit_conform_dict_location
+	_audit_conform_dict_name
+	_audit_conform_dict_version
+	{_audit_contact_author_[]}
+	_audit_contact_author_address
+	_audit_contact_author_email
+	_audit_contact_author_fax
+	_audit_contact_author_name
+	_audit_contact_author_phone
+	_audit_creation_date
+	_audit_creation_method
+	{_audit_link_[]}
+	_audit_link_block_code
+	_audit_link_block_description
+	_audit_update_record
+	{_cell_[]}
+	_cell_angle_alpha
+	_cell_angle_beta
+	_cell_angle_gamma
+	_cell_formula_units_z
+	_cell_length_a
+	_cell_length_b
+	_cell_length_c
+	_cell_measurement_pressure
+	_cell_measurement_radiation
+	{_cell_measurement_refln_[]}
+	_cell_measurement_refln_index_h
+	_cell_measurement_refln_index_k
+	_cell_measurement_refln_index_l
+	_cell_measurement_refln_theta
+	_cell_measurement_reflns_used
+	_cell_measurement_temperature
+	_cell_measurement_theta_max
+	_cell_measurement_theta_min
+	_cell_measurement_wavelength
+	_cell_special_details
+	_cell_volume
+	{_chemical_[]}
+	_chemical_absolute_configuration
+	_chemical_compound_source
+	{_chemical_conn_atom_[]}
+	_chemical_conn_atom_charge
+	_chemical_conn_atom_display_x
+	_chemical_conn_atom_display_y
+	_chemical_conn_atom_nca
+	_chemical_conn_atom_nh
+	_chemical_conn_atom_number
+	_chemical_conn_atom_type_symbol
+	{_chemical_conn_bond_[]}
+	_chemical_conn_bond_atom_1
+	_chemical_conn_bond_atom_2
+	_chemical_conn_bond_type
+	{_chemical_formula_[]}
+	_chemical_formula_analytical
+	_chemical_formula_iupac
+	_chemical_formula_moiety
+	_chemical_formula_structural
+	_chemical_formula_sum
+	_chemical_formula_weight
+	_chemical_formula_weight_meas
+	_chemical_melting_point
+	_chemical_name_common
+	_chemical_name_mineral
+	_chemical_name_structure_type
+	_chemical_name_systematic
+	_chemical_optical_rotation
+	{_citation_[]}
+	_citation_abstract
+	_citation_abstract_id_cas
+	{_citation_author_[]}
+	_citation_author_citation_id
+	_citation_author_name
+	_citation_author_ordinal
+	_citation_book_id_isbn
+	_citation_book_publisher
+	_citation_book_publisher_city
+	_citation_book_title
+	_citation_coordinate_linkage
+	_citation_country
+	_citation_database_id_medline
+	{_citation_editor_[]}
+	_citation_editor_citation_id
+	_citation_editor_name
+	_citation_editor_ordinal
+	_citation_id
+	_citation_journal_abbrev
+	_citation_journal_full
+	_citation_journal_id_astm
+	_citation_journal_id_csd
+	_citation_journal_id_issn
+	_citation_journal_issue
+	_citation_journal_volume
+	_citation_language
+	_citation_page_first
+	_citation_page_last
+	_citation_special_details
+	_citation_title
+	_citation_year
+	{_computing_[]}
+	_computing_cell_refinement
+	_computing_data_collection
+	_computing_data_reduction
+	_computing_molecular_graphics
+	_computing_publication_material
+	_computing_structure_refinement
+	_computing_structure_solution
+	{_database_[]}
+	_database_code_cas
+	_database_code_csd
+	_database_code_icsd
+	_database_code_mdf
+	_database_code_nbs
+	_database_code_pdb
+	_database_code_pdf
+	_database_journal_astm
+	_database_journal_csd
+	{_diffrn_[]}
+	_diffrn_ambient_environment
+	_diffrn_ambient_pressure
+	_diffrn_ambient_temperature
+	{_diffrn_attenuator_[]}
+	_diffrn_attenuator_code
+	_diffrn_attenuator_material
+	_diffrn_attenuator_scale
+	_diffrn_crystal_treatment
+	_diffrn_detector
+	{_diffrn_detector_[]}
+	_diffrn_detector_area_resol_mean
+	_diffrn_detector_details
+	_diffrn_detector_dtime
+	_diffrn_detector_type
+	_diffrn_measured_fraction_theta_full
+	_diffrn_measured_fraction_theta_max
+	{_diffrn_measurement_[]}
+	_diffrn_measurement_details
+	_diffrn_measurement_device
+	_diffrn_measurement_device_details
+	_diffrn_measurement_device_type
+	_diffrn_measurement_method
+	_diffrn_measurement_specimen_support
+	{_diffrn_orient_matrix_[]}
+	_diffrn_orient_matrix_type
+	_diffrn_orient_matrix_ub_11
+	_diffrn_orient_matrix_ub_12
+	_diffrn_orient_matrix_ub_13
+	_diffrn_orient_matrix_ub_21
+	_diffrn_orient_matrix_ub_22
+	_diffrn_orient_matrix_ub_23
+	_diffrn_orient_matrix_ub_31
+	_diffrn_orient_matrix_ub_32
+	_diffrn_orient_matrix_ub_33
+	{_diffrn_orient_refln_[]}
+	_diffrn_orient_refln_angle_chi
+	_diffrn_orient_refln_angle_kappa
+	_diffrn_orient_refln_angle_omega
+	_diffrn_orient_refln_angle_phi
+	_diffrn_orient_refln_angle_psi
+	_diffrn_orient_refln_angle_theta
+	_diffrn_orient_refln_index_h
+	_diffrn_orient_refln_index_k
+	_diffrn_orient_refln_index_l
+	{_diffrn_radiation_[]}
+	_diffrn_radiation_collimation
+	_diffrn_radiation_detector
+	_diffrn_radiation_detector_dtime
+	_diffrn_radiation_filter_edge
+	_diffrn_radiation_inhomogeneity
+	_diffrn_radiation_monochromator
+	_diffrn_radiation_polarisn_norm
+	_diffrn_radiation_polarisn_ratio
+	_diffrn_radiation_probe
+	_diffrn_radiation_source
+	_diffrn_radiation_type
+	_diffrn_radiation_wavelength
+	{_diffrn_radiation_wavelength_[]}
+	_diffrn_radiation_wavelength_id
+	_diffrn_radiation_wavelength_wt
+	_diffrn_radiation_xray_symbol
+	{_diffrn_refln_[]}
+	_diffrn_refln_angle_chi
+	_diffrn_refln_angle_kappa
+	_diffrn_refln_angle_omega
+	_diffrn_refln_angle_phi
+	_diffrn_refln_angle_psi
+	_diffrn_refln_angle_theta
+	_diffrn_refln_attenuator_code
+	_diffrn_refln_class_code
+	_diffrn_refln_counts_bg_1
+	_diffrn_refln_counts_bg_2
+	_diffrn_refln_counts_net
+	_diffrn_refln_counts_peak
+	_diffrn_refln_counts_total
+	_diffrn_refln_crystal_id
+	_diffrn_refln_detect_slit_horiz
+	_diffrn_refln_detect_slit_vert
+	_diffrn_refln_elapsed_time
+	_diffrn_refln_index_h
+	_diffrn_refln_index_k
+	_diffrn_refln_index_l
+	_diffrn_refln_intensity_net
+	_diffrn_refln_intensity_sigma
+	_diffrn_refln_intensity_u
+	_diffrn_refln_scale_group_code
+	_diffrn_refln_scan_mode
+	_diffrn_refln_scan_mode_backgd
+	_diffrn_refln_scan_rate
+	_diffrn_refln_scan_time_backgd
+	_diffrn_refln_scan_width
+	_diffrn_refln_sint/lambda
+	_diffrn_refln_standard_code
+	_diffrn_refln_wavelength
+	_diffrn_refln_wavelength_id
+	{_diffrn_reflns_[]}
+	_diffrn_reflns_av_r_equivalents
+	_diffrn_reflns_av_sigmai/neti
+	_diffrn_reflns_av_uneti/neti
+	{_diffrn_reflns_class_[]}
+	_diffrn_reflns_class_av_r_eq
+	_diffrn_reflns_class_av_sgi/i
+	_diffrn_reflns_class_av_ui/i
+	_diffrn_reflns_class_code
+	_diffrn_reflns_class_d_res_high
+	_diffrn_reflns_class_d_res_low
+	_diffrn_reflns_class_description
+	_diffrn_reflns_class_number
+	_diffrn_reflns_limit_h_max
+	_diffrn_reflns_limit_h_min
+	_diffrn_reflns_limit_k_max
+	_diffrn_reflns_limit_k_min
+	_diffrn_reflns_limit_l_max
+	_diffrn_reflns_limit_l_min
+	_diffrn_reflns_number
+	_diffrn_reflns_reduction_process
+	_diffrn_reflns_theta_full
+	_diffrn_reflns_theta_max
+	_diffrn_reflns_theta_min
+	_diffrn_reflns_transf_matrix_11
+	_diffrn_reflns_transf_matrix_12
+	_diffrn_reflns_transf_matrix_13
+	_diffrn_reflns_transf_matrix_21
+	_diffrn_reflns_transf_matrix_22
+	_diffrn_reflns_transf_matrix_23
+	_diffrn_reflns_transf_matrix_31
+	_diffrn_reflns_transf_matrix_32
+	_diffrn_reflns_transf_matrix_33
+	{_diffrn_scale_group_[]}
+	_diffrn_scale_group_code
+	_diffrn_scale_group_i_net
+	_diffrn_source
+	{_diffrn_source_[]}
+	_diffrn_source_current
+	_diffrn_source_details
+	_diffrn_source_power
+	_diffrn_source_size
+	_diffrn_source_target
+	_diffrn_source_type
+	_diffrn_source_voltage
+	_diffrn_special_details
+	{_diffrn_standard_refln_[]}
+	_diffrn_standard_refln_code
+	_diffrn_standard_refln_index_h
+	_diffrn_standard_refln_index_k
+	_diffrn_standard_refln_index_l
+	{_diffrn_standards_[]}
+	_diffrn_standards_decay_%
+	_diffrn_standards_interval_count
+	_diffrn_standards_interval_time
+	_diffrn_standards_number
+	_diffrn_standards_scale_sigma
+	_diffrn_standards_scale_u
+	_diffrn_symmetry_description
+	{_exptl_[]}
+	_exptl_absorpt_coefficient_mu
+	_exptl_absorpt_correction_t_max
+	_exptl_absorpt_correction_t_min
+	_exptl_absorpt_correction_type
+	_exptl_absorpt_process_details
+	{_exptl_crystal_[]}
+	_exptl_crystal_colour
+	_exptl_crystal_density_diffrn
+	_exptl_crystal_density_meas
+	_exptl_crystal_density_meas_temp
+	_exptl_crystal_density_method
+	_exptl_crystal_description
+	_exptl_crystal_f_000
+	{_exptl_crystal_face_[]}
+	_exptl_crystal_face_diffr_chi
+	_exptl_crystal_face_diffr_kappa
+	_exptl_crystal_face_diffr_phi
+	_exptl_crystal_face_diffr_psi
+	_exptl_crystal_face_index_h
+	_exptl_crystal_face_index_k
+	_exptl_crystal_face_index_l
+	_exptl_crystal_face_perp_dist
+	_exptl_crystal_id
+	_exptl_crystal_preparation
+	_exptl_crystal_pressure_history
+	_exptl_crystal_size_length
+	_exptl_crystal_size_max
+	_exptl_crystal_size_mid
+	_exptl_crystal_size_min
+	_exptl_crystal_size_rad
+	_exptl_crystal_thermal_history
+	_exptl_crystals_number
+	_exptl_special_details
+	{_geom_[]}
+	_geom_angle
+	{_geom_angle_[]}
+	_geom_angle_atom_site_label_1
+	_geom_angle_atom_site_label_2
+	_geom_angle_atom_site_label_3
+	_geom_angle_publ_flag
+	_geom_angle_site_symmetry_1
+	_geom_angle_site_symmetry_2
+	_geom_angle_site_symmetry_3
+	{_geom_bond_[]}
+	_geom_bond_atom_site_label_1
+	_geom_bond_atom_site_label_2
+	_geom_bond_distance
+	_geom_bond_publ_flag
+	_geom_bond_site_symmetry_1
+	_geom_bond_site_symmetry_2
+	_geom_bond_valence
+	{_geom_contact_[]}
+	_geom_contact_atom_site_label_1
+	_geom_contact_atom_site_label_2
+	_geom_contact_distance
+	_geom_contact_publ_flag
+	_geom_contact_site_symmetry_1
+	_geom_contact_site_symmetry_2
+	{_geom_hbond_[]}
+	_geom_hbond_angle_dha
+	_geom_hbond_atom_site_label_a
+	_geom_hbond_atom_site_label_d
+	_geom_hbond_atom_site_label_h
+	_geom_hbond_distance_da
+	_geom_hbond_distance_dh
+	_geom_hbond_distance_ha
+	_geom_hbond_publ_flag
+	_geom_hbond_site_symmetry_a
+	_geom_hbond_site_symmetry_d
+	_geom_hbond_site_symmetry_h
+	_geom_special_details
+	_geom_torsion
+	{_geom_torsion_[]}
+	_geom_torsion_atom_site_label_1
+	_geom_torsion_atom_site_label_2
+	_geom_torsion_atom_site_label_3
+	_geom_torsion_atom_site_label_4
+	_geom_torsion_publ_flag
+	_geom_torsion_site_symmetry_1
+	_geom_torsion_site_symmetry_2
+	_geom_torsion_site_symmetry_3
+	_geom_torsion_site_symmetry_4
+	{_journal_[]}
+	_journal_coden_astm
+	_journal_coden_cambridge
+	_journal_coeditor_address
+	_journal_coeditor_code
+	_journal_coeditor_email
+	_journal_coeditor_fax
+	_journal_coeditor_name
+	_journal_coeditor_notes
+	_journal_coeditor_phone
+	_journal_data_validation_number
+	_journal_date_accepted
+	_journal_date_from_coeditor
+	_journal_date_printers_final
+	_journal_date_printers_first
+	_journal_date_proofs_in
+	_journal_date_proofs_out
+	_journal_date_recd_copyright
+	_journal_date_recd_electronic
+	_journal_date_recd_hard_copy
+	_journal_date_to_coeditor
+	{_journal_index_[]}
+	_journal_index_subterm
+	_journal_index_term
+	_journal_index_type
+	_journal_issue
+	_journal_language
+	_journal_name_full
+	_journal_page_first
+	_journal_page_last
+	_journal_paper_category
+	_journal_suppl_publ_number
+	_journal_suppl_publ_pages
+	_journal_techeditor_address
+	_journal_techeditor_code
+	_journal_techeditor_email
+	_journal_techeditor_fax
+	_journal_techeditor_name
+	_journal_techeditor_notes
+	_journal_techeditor_phone
+	_journal_volume
+	_journal_year
+	{_publ_[]}
+	{_publ_author_[]}
+	_publ_author_address
+	_publ_author_footnote
+	_publ_author_name
+	{_publ_body_[]}
+	_publ_body_contents
+	_publ_body_element
+	_publ_body_format
+	_publ_body_label
+	_publ_body_title
+	_publ_contact_author
+	_publ_contact_author_address
+	_publ_contact_author_email
+	_publ_contact_author_fax
+	_publ_contact_author_name
+	_publ_contact_author_phone
+	_publ_contact_letter
+	_publ_manuscript_creation
+	{_publ_manuscript_incl_[]}
+	_publ_manuscript_incl_extra_defn
+	_publ_manuscript_incl_extra_info
+	_publ_manuscript_incl_extra_item
+	_publ_manuscript_processed
+	_publ_manuscript_text
+	_publ_requested_category
+	_publ_requested_coeditor_name
+	_publ_requested_journal
+	_publ_section_abstract
+	_publ_section_acknowledgements
+	_publ_section_comment
+	_publ_section_discussion
+	_publ_section_experimental
+	_publ_section_exptl_prep
+	_publ_section_exptl_refinement
+	_publ_section_exptl_solution
+	_publ_section_figure_captions
+	_publ_section_introduction
+	_publ_section_references
+	_publ_section_synopsis
+	_publ_section_table_legends
+	_publ_section_title
+	_publ_section_title_footnote
+	{_refine_[]}
+	_refine_diff_density_max
+	_refine_diff_density_min
+	_refine_diff_density_rms
+	_refine_ls_abs_structure_details
+	_refine_ls_abs_structure_flack
+	_refine_ls_abs_structure_rogers
+	{_refine_ls_class_[]}
+	_refine_ls_class_code
+	_refine_ls_class_d_res_high
+	_refine_ls_class_d_res_low
+	_refine_ls_class_r_factor_all
+	_refine_ls_class_r_factor_gt
+	_refine_ls_class_r_fsqd_factor
+	_refine_ls_class_r_i_factor
+	_refine_ls_class_wr_factor_all
+	_refine_ls_d_res_high
+	_refine_ls_d_res_low
+	_refine_ls_extinction_coef
+	_refine_ls_extinction_expression
+	_refine_ls_extinction_method
+	_refine_ls_goodness_of_fit_all
+	_refine_ls_goodness_of_fit_gt
+	_refine_ls_goodness_of_fit_obs
+	_refine_ls_goodness_of_fit_ref
+	_refine_ls_hydrogen_treatment
+	_refine_ls_matrix_type
+	_refine_ls_number_constraints
+	_refine_ls_number_parameters
+	_refine_ls_number_reflns
+	_refine_ls_number_restraints
+	_refine_ls_r_factor_all
+	_refine_ls_r_factor_gt
+	_refine_ls_r_factor_obs
+	_refine_ls_r_fsqd_factor
+	_refine_ls_r_i_factor
+	_refine_ls_restrained_s_all
+	_refine_ls_restrained_s_gt
+	_refine_ls_restrained_s_obs
+	_refine_ls_shift/esd_max
+	_refine_ls_shift/esd_mean
+	_refine_ls_shift/su_max
+	_refine_ls_shift/su_mean
+	_refine_ls_structure_factor_coef
+	_refine_ls_weighting_details
+	_refine_ls_weighting_scheme
+	_refine_ls_wr_factor_all
+	_refine_ls_wr_factor_gt
+	_refine_ls_wr_factor_obs
+	_refine_ls_wr_factor_ref
+	_refine_special_details
+	{_refln_[]}
+	_refln_a_calc
+	_refln_a_meas
+	_refln_b_calc
+	_refln_b_meas
+	_refln_class_code
+	_refln_crystal_id
+	_refln_d_spacing
+	_refln_f_calc
+	_refln_f_meas
+	_refln_f_sigma
+	_refln_f_squared_calc
+	_refln_f_squared_meas
+	_refln_f_squared_sigma
+	_refln_include_status
+	_refln_index_h
+	_refln_index_k
+	_refln_index_l
+	_refln_intensity_calc
+	_refln_intensity_meas
+	_refln_intensity_sigma
+	_refln_mean_path_length_tbar
+	_refln_observed_status
+	_refln_phase_calc
+	_refln_phase_meas
+	_refln_refinement_status
+	_refln_scale_group_code
+	_refln_sint/lambda
+	_refln_symmetry_epsilon
+	_refln_symmetry_multiplicity
+	_refln_wavelength
+	_refln_wavelength_id
+	{_reflns_[]}
+	{_reflns_class_[]}
+	_reflns_class_code
+	_reflns_class_d_res_high
+	_reflns_class_d_res_low
+	_reflns_class_description
+	_reflns_class_number_gt
+	_reflns_class_number_total
+	_reflns_class_r_factor_all
+	_reflns_class_r_factor_gt
+	_reflns_class_r_fsqd_factor
+	_reflns_class_r_i_factor
+	_reflns_class_wr_factor_all
+	_reflns_d_resolution_high
+	_reflns_d_resolution_low
+	_reflns_friedel_coverage
+	_reflns_limit_h_max
+	_reflns_limit_h_min
+	_reflns_limit_k_max
+	_reflns_limit_k_min
+	_reflns_limit_l_max
+	_reflns_limit_l_min
+	_reflns_number_gt
+	_reflns_number_observed
+	_reflns_number_total
+	_reflns_observed_criterion
+	{_reflns_scale_[]}
+	_reflns_scale_group_code
+	_reflns_scale_meas_f
+	_reflns_scale_meas_f_squared
+	_reflns_scale_meas_intensity
+	{_reflns_shell_[]}
+	_reflns_shell_d_res_high
+	_reflns_shell_d_res_low
+	_reflns_shell_meani_over_sigi_all
+	_reflns_shell_meani_over_sigi_gt
+	_reflns_shell_meani_over_sigi_obs
+	_reflns_shell_meani_over_ui_all
+	_reflns_shell_meani_over_ui_gt
+	_reflns_shell_number_measured_all
+	_reflns_shell_number_measured_gt
+	_reflns_shell_number_measured_obs
+	_reflns_shell_number_possible
+	_reflns_shell_number_unique_all
+	_reflns_shell_number_unique_gt
+	_reflns_shell_number_unique_obs
+	_reflns_shell_percent_possible_all
+	_reflns_shell_percent_possible_gt
+	_reflns_shell_percent_possible_obs
+	_reflns_shell_rmerge_f_all
+	_reflns_shell_rmerge_f_gt
+	_reflns_shell_rmerge_f_obs
+	_reflns_shell_rmerge_i_all
+	_reflns_shell_rmerge_i_gt
+	_reflns_shell_rmerge_i_obs
+	_reflns_special_details
+	_reflns_threshold_expression
+	{_symmetry_[]}
+	_symmetry_cell_setting
+	{_symmetry_equiv_[]}
+	_symmetry_equiv_pos_as_xyz
+	_symmetry_equiv_pos_site_id
+	_symmetry_int_tables_number
+	_symmetry_space_group_name_h-m
+	_symmetry_space_group_name_hall
+	{_valence_param_[]}
+	_valence_param_atom_1
+	_valence_param_atom_1_valence
+	_valence_param_atom_2
+	_valence_param_atom_2_valence
+	_valence_param_b
+	_valence_param_details
+	_valence_param_id
+	_valence_param_ref_id
+	_valence_param_ro
+	{_valence_ref_[]}
+	_valence_ref_id
+	_valence_ref_reference
+}

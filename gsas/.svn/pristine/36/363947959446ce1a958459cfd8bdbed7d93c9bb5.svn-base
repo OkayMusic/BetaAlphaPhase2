@@ -1,0 +1,1377 @@
+#!/bin/sh
+# the next line restarts this script using wish found in the path\
+exec wish "$0" "$@"
+# If this does not work, change the #!/usr/bin/wish line below
+# to reflect the actual wish location and delete all preceeding lines
+#
+# (delete here and above)
+#!/usr/bin/wish
+# $Id$
+set Revision {$Revision$ $Date$}
+package require Tk
+bind all <Control-KeyPress-c> {destroy .}
+
+set expnam [lindex $argv 0]
+if {$expnam != ""} {
+    if {[string toupper [file extension $expnam]] != ".EXP"} {
+	append expnam ".EXP"
+    }
+}
+# get name of script
+set expgui(script) [info script]
+# what are we running here?
+set program [file tail $argv0]
+# fix up problem with starkit tcl
+if {$program != "absplt" && $program != "widplt"} {
+	set program [file tail $expgui(script)]
+}
+
+if [catch {package require BLT} errmsg] {
+    tk_dialog .err "BLT Error" "Error -- Unable to load the BLT package" \
+	    error 0 Quit
+    destroy .
+}
+
+# handle Tcl/Tk v8+ where BLT is in a namespace
+#  use the command so that it is loaded
+catch {blt::graph}
+catch {
+    namespace import blt::graph
+    namespace import blt::vector
+}
+# old versions of blt don't report a version number
+if [catch {set blt_version}] {set blt_version 0}
+
+set expgui(debug) 0
+catch {if $env(DEBUG) {set expgui(debug) 1}}
+#set expgui(debug) 1
+
+proc waitmsg {message} {
+    set w .wait
+    # kill any window/frame with this name
+    catch {destroy $w}
+    pack [frame $w]
+    frame $w.bot -relief raised -bd 1
+    pack $w.bot -side bottom -fill both
+    frame $w.top -relief raised -bd 1
+    pack $w.top -side top -fill both -expand 1
+    label $w.msg -justify left -text $message -wrap 3i
+    catch {$w.msg configure -font \
+                -Adobe-Times-Medium-R-Normal--*-180-*-*-*-*-*-*
+    }
+    pack $w.msg -in $w.top -side right -expand 1 -fill both -padx 3m -pady 3m
+    label $w.bitmap -bitmap info
+    pack $w.bitmap -in $w.top -side left -padx 3m -pady 3m
+    update 
+}
+
+proc donewaitmsg {} {
+    catch {destroy .wait}
+    update
+}
+
+if {$expnam != ""} {waitmsg "Loading $expnam, Please wait"}
+
+# get profile/absorption information out from an EXP file
+proc getprofiles {expnam} {
+    global WidSetList absSetList wave XY UVWP lblarr ttrange
+    global expmap 
+
+    if {$expnam != ""} {
+	if {[expload $expnam] == -1} {
+	    tk_dialog .err "EXP Error" "Warning -- Unable to read $expnam" \
+		error 0 OK
+	    return
+	}
+	mapexp
+    } else {
+	set expmap(powderlist) {}
+    }
+    foreach hist $expmap(powderlist) {
+	# wavelength
+	set lambda1 [histinfo $hist lam1]
+	# data range
+	set drange [string trim [readexp "HST  $hist TRNGE"]]
+	global program
+	if {$program == "absplt"} {
+	    global ABS
+	    set ABS($hist) [list \
+				[histinfo $hist abscor1] \
+				[histinfo $hist abscor2] \
+				[histinfo $hist abstype] \
+				$drange \
+				"Hist $hist" \
+				$expmap(htype_$hist)]
+	    lappend absSetList $hist
+	} else {
+	    foreach phase $expmap(phaselist_$hist) {
+		set ptype [hapinfo $hist $phase proftype]
+		set pterms  [hapinfo $hist $phase profterms]
+		set key "H${hist}P${phase}"
+		# make sure the key is not present already
+		if {[lsearch $WidSetList $key] == -1} {
+		    lappend WidSetList $key
+		}
+		set lblarr($key) "Histogram $hist Phase $phase"
+		set wave($key) $lambda1
+		set ttrange($key) $drange
+		if {$ptype == 1} {
+		    set UVWP($key) [list [hapinfo $hist $phase pterm1] \
+					[hapinfo $hist $phase pterm2] \
+					[hapinfo $hist $phase pterm3] 0]
+		    set XY($key) {0 0}
+		} elseif {$ptype == 2} {
+		    set UVWP($key) [list [hapinfo $hist $phase pterm1] \
+					[hapinfo $hist $phase pterm2] \
+					[hapinfo $hist $phase pterm3] \
+					[hapinfo $hist $phase pterm9]]
+		    set XY($key) [list [hapinfo $hist $phase pterm4] \
+				      [hapinfo $hist $phase pterm5]]
+		} elseif {$ptype == 3 || $ptype == 4 || $ptype == 5} {
+		    set UVWP($key) [list [hapinfo $hist $phase pterm1] \
+					[hapinfo $hist $phase pterm2] \
+					[hapinfo $hist $phase pterm3] \
+					[hapinfo $hist $phase pterm4]]
+		    if {$ptype == 3 || $ptype == 5} {
+			set XY($key) [list [hapinfo $hist $phase pterm5] \
+					  [hapinfo $hist $phase pterm6]]
+		    } else {
+			set XY($key) [list [hapinfo $hist $phase pterm5] 0]
+		    }
+		}
+	    }
+	}
+    }
+    MakeCascadeMenus
+}
+
+proc makepostscriptout {} {
+    global graph box
+    if !$graph(printout) {
+	set out [open "| $graph(outcmd) >& widplt.msg" w]
+	catch {
+	    puts $out [$box postscript output -landscape 1 \
+		-decorations no -height 7.i -width 9.5i]
+	    close $out
+	} msg
+	catch {
+	    set out [open widplt.msg r]
+	    if {$msg != ""} {append msg "\n"}
+	    append msg [read $out]
+	    close $out
+	    file delete widplt.msg
+	}
+	if {$msg != ""} {
+	    tk_dialog .msg "file created" \
+		    "Postscript file processed with command \
+		    $graph(outcmd). Result: $msg" "" 0 OK
+	} else {
+	    tk_dialog .msg "file created" \
+		    "Postscript file processed with command \
+		    $graph(outcmd)" "" 0 OK
+	}
+    } else {
+	$box postscript output $graph(outname) -landscape 1 \
+		-decorations no -height 7.i -width 9.5i    
+	tk_dialog .msg "file created" \
+		"Postscript file $graph(outname) created" "" 0 OK
+    }
+}
+
+proc setprintopt {page} {
+    global graph
+    if $graph(printout) { 
+	$page.4.1 config -fg black
+	$page.4.2 config -fg black -state normal
+	$page.6.1 config -fg #888 
+	$page.6.2 config -fg #888 -state disabled
+    } else {
+	$page.4.1 config -fg #888 
+	$page.4.2 config -fg #888 -state disabled
+	$page.6.1 config -fg black
+	$page.6.2 config -fg black -state normal
+    }
+}
+
+proc seteqwave {top} {
+    global graph
+    set box .wave
+    catch {destroy $box}
+    toplevel $box
+    focus $box
+    grab $box
+    pack [frame $box.1] -side top 
+    pack [label $box.1.a -text "Equivalent wavelength:"] -side top 
+    pack [entry $box.1.b -textvariable graph(equivwave)] -side top 
+    pack [frame $box.2] -side top 
+    pack [button $box.2.c -text Clear -command "set graph(equivwave) {}; destroy $box"]
+    pack [button $box.2.u -text Use -command "destroy $box"]
+    tkwait window $box
+    plotdata $top
+}
+
+proc setpostscriptout {} {
+    global graph tcl_platform
+    set box .out
+    catch {destroy $box}
+    toplevel $box
+    focus $box
+    grab $box
+    pack [frame $box.4] -side top -anchor w -fill x
+    pack [checkbutton $box.4.a -text "Write PostScript files" \
+	    -variable graph(printout) -offvalue 0 -onvalue 1 \
+	    -command "setprintopt $box"] -side left -anchor w
+    pack [entry $box.4.2 -textvariable graph(outname)] -side right -anchor w
+    pack [label $box.4.1 -text "PostScript file name:"] -side right -anchor w
+    pack [frame $box.6] -side top -anchor w -fill x
+    pack [checkbutton $box.6.a -text "Print PostScript files" \
+	    -variable graph(printout) -offvalue 1 -onvalue 0 \
+	    -command "setprintopt $box" ] -side left -anchor w
+    pack [entry $box.6.2 -textvariable graph(outcmd)] -side right -anchor w
+    pack [label $box.6.1 -text "Command to print files:"] -side right -anchor w
+
+    pack [button $box.a -text "Close" -command "destroy $box"] -side top    
+    if {$tcl_platform(platform) == "windows"} {
+	set graph(printout) 1
+	$box.4.a config -state disabled
+	$box.6.a config -fg #888 -state disabled
+    }
+    setprintopt $box
+}
+
+proc aboutwidplot {} {
+    global Revision
+    tk_dialog .warn About "
+GSAS\n\
+R. B. Von Dreele, Argonne National Lab\n
+and A. C. Larson, Los Alamos (retired)\n\n\
+WIDPLT/ABSPLT\nB. H. Toby, Argonne National Lab\n\n\
+$Revision\n\
+" {} 0 OK
+}
+
+proc nextcolor {var} {
+    set num [uplevel "incr $var"]
+    return [lindex {red green blue cyan magenta yellow} [expr $num % 6]]
+}
+
+proc NewProfileValues {} {
+    global newmenu datanum
+    incr datanum
+    set base .edit
+    catch {destroy $base}
+    toplevel $base
+    focus $base
+    grab $base
+    wm title $base {Enter a new profile}
+    MakeEditProfileBox $base
+    grid [button $base.bttn1 -text Add \
+	    -command "AddProfileValues; destroy $base"] -row 6 -column 6 
+    grid [button $base.bttn2 -text Quit \
+	    -command "destroy $base"] -row 6 -column 7 
+    set newmenu(U) 0
+    set newmenu(V) 0
+    set newmenu(W) 0
+    set newmenu(P) 0
+    set newmenu(X) 0
+    set newmenu(Y) 0
+    set newmenu(min) 5
+    set newmenu(max) 100
+    set newmenu(label) "Curve #$datanum"
+    set newmenu(wave) 1.5418
+}
+
+proc AddProfileValues {} {
+    global newmenu datanum lblarr WidDisplay UVWP XY WidSetList ttrange wave
+    set key new$datanum
+    set UVWP($key) [list $newmenu(U) $newmenu(V) $newmenu(W) $newmenu(P)]
+    set XY($key) [list $newmenu(X) $newmenu(Y)]
+    set lblarr($key) $newmenu(label)
+    set ttrange($key) "$newmenu(min) $newmenu(max)"
+    set wave($key) $newmenu(wave)
+    lappend WidSetList $key
+    MakeCascadeMenus
+}
+
+proc editProfileValues {key} {
+    global newmenu WidSetList lblarr
+
+    set base .edit
+    catch {destroy $base}
+    toplevel $base
+    wm title $base {Edit a profile}
+    MakeEditProfileBox $base
+    grid [button $base.bttn1 -text Apply \
+	    -command "SaveProfileEdits $key"] -row 6 -column 6 
+    grid [button $base.bttn2 -text Close \
+	    -command "destroy $base"] -row 6 -column 7 
+
+    global UVWP XY ttrange wave lblarr
+    set newmenu(label) $lblarr($key)
+    set newmenu(U) [lindex $UVWP($key) 0]
+    set newmenu(V) [lindex $UVWP($key) 1]
+    set newmenu(W) [lindex $UVWP($key) 2]
+    set newmenu(P) [lindex $UVWP($key) 3]
+    set newmenu(X) [lindex $XY($key) 0]
+    set newmenu(Y) [lindex $XY($key) 1]
+    set newmenu(min) [lindex $ttrange($key) 0]
+    set newmenu(max) [lindex $ttrange($key) 1]
+    set newmenu(wave) $wave($key)
+}
+
+proc SaveProfileEdits {key} {
+    global newmenu datanum lblarr WidDisplay UVWP XY WidSetList ttrange wave box
+    set UVWP($key) [list $newmenu(U) $newmenu(V) $newmenu(W) $newmenu(P)]
+    set XY($key) [list $newmenu(X) $newmenu(Y)]
+    set ttrange($key) [list $newmenu(min) $newmenu(max)]
+    set wave($key) $newmenu(wave)
+    set lblarr($key) $newmenu(label)
+    MakeCascadeMenus
+    plotdata $box 
+}
+
+proc MakeEditProfileBox {base} {
+    grid [label $base.lb7 -text Gaussian] -row 2 -column 1  -columnspan 4
+    grid [label $base.lb8 -text Lorentz] -row 2 -column 6  -columnspan 2
+    grid [label $base.lb1 -text U] -row 3 -column 1
+    grid [label $base.lb2 -text V] -row 3 -column 2 
+    grid [label $base.lb3 -text W] -row 3 -column 3 
+    grid [label $base.lb4 -text P] -row 3 -column 4 
+    grid [label $base.lb5 -text X] -row 3 -column 6 
+    grid [label $base.lb6 -text Y] -row 3 -column 7
+    grid [entry $base.ent1 -textvariable newmenu(U) -width 12] \
+	    -row 4 -column 1
+    grid [entry $base.ent2 -textvariable newmenu(V) -width 12] \
+	    -row 4 -column 2 
+    grid [entry $base.ent3 -textvariable newmenu(W) -width 12] \
+	    -row 4 -column 3 
+    grid [entry $base.ent4 -textvariable newmenu(P) -width 12] \
+	    -row 4 -column 4 
+    grid [entry $base.ent5 -textvariable newmenu(X) -width 12] \
+	    -row 4 -column 6 
+    grid [entry $base.ent6 -textvariable newmenu(Y) -width 12] \
+	    -row 4 -column 7
+
+    grid [label $base.lb9 -text label] -row 5 -column 1  -sticky e
+    grid [entry $base.ent7 -textvariable newmenu(label)]\
+	    -row 5 -column 2  -columnspan 3 -sticky ew
+
+    grid [label $base.lb13 -text Wavelength] -row 5 -column 5 -columnspan 2
+    grid [entry $base.ent11 -textvariable newmenu(wave) -width 8] \
+	    -row 5 -column 7
+
+    grid [label $base.lb11 -text {2Theta Min}] -row 6 -column 1 
+    grid [entry $base.ent9 -textvariable newmenu(min) -width 9] \
+	    -row 6 -column 2
+    grid [label $base.lb12 -text {2Theta Max}] -row 6 -column 3
+    grid [entry $base.ent10 -textvariable newmenu(max) -width 9] \
+	    -row 6 -column 4
+    grid rowconfigure $base 5 -weight 0 -pad 40
+    grid columnconfigure $base 5 -weight 0 -minsize 25
+}
+
+proc editAbsValues {key} {
+    global newmenu absSetList lblarr
+
+    set base .edit
+    catch {destroy $base}
+    toplevel $base
+    wm title $base {Edit Absorption Values}
+    MakeEditAbsBox $base
+    grid [button $base.bttn1 -text Apply \
+	    -command "SaveAbsorptionEdits $key"] -row 8 -column 6 
+    grid [button $base.bttn2 -text Close \
+	    -command "destroy $base"] -row 8 -column 7 
+
+    global ABS
+    foreach v {1 2 opt range label htype} val $ABS($key) {
+	set newmenu($v) $val
+    }
+    foreach {newmenu(min) newmenu(max)} $newmenu(range) {}
+    if {[string range $newmenu(htype) 2 2] == "T"} {
+	set newmenu(units) "TOF (ms):"
+    } elseif {[string range $newmenu(htype) 2 2] == "C"} {
+	set newmenu(units) "2-Theta (deg):"
+    } elseif {[string range $newmenu(htype) 2 2] == "E"} {
+	set newmenu(units) "Energy (KeV):"
+    }
+}
+
+proc SaveAbsorptionEdits {key} {
+    global ABS newmenu box
+    set ABS($key) [list \
+	    $newmenu(1) $newmenu(2) $newmenu(opt) \
+	    [list $newmenu(min) $newmenu(max)] \
+	    $newmenu(label) \
+	    [lindex $ABS($key) 5]]
+    plotdata $box 
+}
+
+proc MakeEditAbsBox {base} {
+    grid [label $base.lb1 -text "Absorption Coefficients"] \
+	    -row 2 -column 1  -columnspan 2
+    grid [label $base.lb1a -text "1"] -row 3 -column 1
+    grid [label $base.lb2a -text "2"] -row 3 -column 2
+    grid [label $base.lb3 -text Absorption\nFunction] \
+	    -row 2 -column 6 -rowspan 2 -columnspan 2
+    grid [entry $base.ent1 -textvariable newmenu(1) -width 12] \
+	    -row 4 -column 1
+    grid [entry $base.ent2 -textvariable newmenu(2) -width 12] \
+	    -row 4 -column 2 
+    eval tk_optionMenu $base.m1 newmenu(opt) 0 1 2 3 4
+    grid $base.m1 -row 4 -column 6 -columnspan 2
+
+    grid [label $base.lb8 -textvariable newmenu(opttxt) \
+	  -wrap 180 -justify left] -row 5 -column 1  -sticky e -columnspan 7
+    grid [label $base.lb9 -text label] -row 7 -column 1  -sticky e
+    grid [entry $base.ent7 -textvariable newmenu(label)]\
+	    -row 7 -column 2  -columnspan 3 -sticky ew
+
+    grid [frame $base.f] -row 8 -column 1 -columnspan 4
+    grid [label $base.f.1 -textvariable newmenu(units)] -row 0 -column 1 
+    grid [label $base.f.2 -text {Min}] -row 0 -column 2
+    grid [entry $base.f.3 -textvariable newmenu(min) -width 9] \
+	    -row 0 -column 3
+    grid [label $base.f.4 -text {Max}] -row 0 -column 4
+    grid [entry $base.f.5 -textvariable newmenu(max) -width 9] \
+	    -row 0 -column 5
+    grid rowconfigure $base 6 -min 15
+}
+
+proc plotdata {top} {
+    global program graph 
+    global UVWP XY wave lblarr WidSetList WidDisplay ttrange 
+    global ABS absSetList AbsDisplay
+    if {$program == "absplt"} {
+	$top yaxis config -title {Abs. Corr.} 
+    } else {
+	$top yaxis config -title {FWHM} 
+    }
+    if {$graph(plotunits) == "d"} {
+	$top xaxis configure -title "d (A)"
+    } elseif {$graph(plotunits) == "deltad"} {
+	$top xaxis configure -title "d (A)"
+	$top yaxis configure -title "delta-d/d"
+    } elseif {$graph(plotunits) == "q"} {
+	$top xaxis configure -title "Q (A-1)"
+    } elseif {$graph(equivwave) == ""} {
+	$top xaxis configure -title "2Theta"
+    } else {
+	$top xaxis configure -title "2Theta @ $graph(equivwave)"
+    }
+    $top yaxis configure -min 0 
+    $top xaxis configure -min 0
+    # delete all graphs
+    eval $top element delete [$top element names]
+    set num -1
+    if {$program == "absplt"} {
+	foreach item $absSetList {
+	    if {$AbsDisplay($item)} {
+		set ttlist {}
+		set abscor1 [lindex $ABS($item) 0]
+		set abscor2 [lindex $ABS($item) 1]
+		set abstype [lindex $ABS($item) 2]
+		set abslbl [lindex $ABS($item) 4]
+		set htype [lindex $ABS($item) 5]
+		set ttmin [lindex [lindex $ABS($item) 3] 0]
+		set ttmax [lindex [lindex $ABS($item) 3] 1]
+		set ttstep [expr {($ttmax - $ttmin)/50.}]
+		if {$graph(equivwave) == ""} {
+		    if {[string range $htype 2 2] == "T"} {
+			$top xaxis configure -title "TOF (ms)"
+		    } elseif {[string range $htype 2 2] == "E"} {
+			$top xaxis configure -title "Energy (KeV)"
+		    }
+		}
+		for     {set tt $ttmin} \
+			{$tt <= $ttmax} \
+			{set tt [expr {$tt + $ttstep}]} {
+		    catch {
+			lappend abslist [AbsorbCalc \
+				$item $tt $abscor1 $abscor2 $abstype]
+			lappend ttlist $tt
+		    }
+		}
+		if {[llength $ttlist] == 0} continue
+		if {$graph(plotunits) == "d"} {
+		    set ttlist [tod $ttlist $item]
+		} elseif {$graph(plotunits) == "deltad"} {
+		    set ttlist [tod $ttlist $item]
+		} elseif {$graph(plotunits) == "q"} {
+		    set ttlist [toQ $ttlist $item]
+		}
+		catch {
+		    $top element create $item
+		}
+		$top element config $item -label $abslbl \
+			-xdata $ttlist -ydata $abslist -linewidth 3 \
+			-color [nextcolor num]
+	    }
+	}
+    } else {
+	foreach item $WidSetList {
+	    if {$WidDisplay($item)} {
+		if {[expr [lindex $XY($item) 0] + [lindex $XY($item) 1]] != 0} {
+		    set lflag 1
+		} else {
+		    set lflag 0
+		}
+		set ttlist {}
+		set fwhmlist {}
+		set lfwhmlist {}
+		set tfwhmlist {}
+		# loop over two-theta
+		for     {set tt [lindex $ttrange($item) 0]} \
+			{$tt <= [lindex $ttrange($item) 1]} \
+			{set tt [expr $tt + 4]} {
+		    set lfwhm 0
+		    catch {
+			if {$graph(plotunits) == "d"} {
+			    lappend ttlist [tt2d $wave($item) $tt ]
+			    set gfwhm [deltad $wave($item) $tt \
+				    [eval FWHM $tt $UVWP($item)]]
+			    lappend fwhmlist $gfwhm
+			    if $lflag {
+				set lfwhm [deltad $wave($item) $tt \
+					[eval LFWHM $tt $XY($item)]]
+				lappend lfwhmlist $lfwhm
+			    }
+			} elseif {$graph(plotunits) == "deltad"} {
+			    set d [tt2d $wave($item) $tt ]
+			    lappend ttlist $d
+			    set gfwhm [deltad $wave($item) $tt \
+				    [eval FWHM $tt $UVWP($item)]]
+			    lappend fwhmlist [expr {$gfwhm/$d}]
+			    if $lflag {
+				set lfwhm [deltad $wave($item) $tt \
+					[eval LFWHM $tt $XY($item)]]
+				lappend lfwhmlist [expr {$lfwhm/$d}]
+			    }
+			} elseif {$graph(plotunits) == "q"} {
+			    lappend ttlist [tt2Q $wave($item) $tt ]
+			    set gfwhm [deltaQ $wave($item) $tt \
+				    [eval FWHM $tt $UVWP($item)]]
+			    lappend fwhmlist $gfwhm
+			    if $lflag {
+				set lfwhm [deltaQ $wave($item) $tt \
+					[eval LFWHM $tt $XY($item)]]
+				lappend lfwhmlist $lfwhm
+			    }
+			} elseif {$graph(equivwave) == ""} {
+			    lappend ttlist $tt
+			    set gfwhm [eval FWHM $tt $UVWP($item)]
+			    lappend fwhmlist $gfwhm
+			    if $lflag {
+				set lfwhm [eval LFWHM $tt $XY($item)]
+				lappend lfwhmlist $lfwhm
+			    }
+			} else {
+			    set tteq [ttequiv $wave($item) $tt $graph(equivwave)]
+			    if {$tteq != ""} {
+				lappend ttlist $tteq
+				set gfwhm [delta2teq $wave($item) $tt \
+					[eval FWHM $tt $UVWP($item)] $graph(equivwave)]
+				lappend fwhmlist $gfwhm
+				if $lflag {
+				    set lfwhm [delta2teq $wave($item) $tt \
+					    [eval LFWHM $tt $XY($item)] $graph(equivwave)]
+				    lappend lfwhmlist $lfwhm
+				}
+			    }
+			}
+			# Use polynomial of P. Thompson, D.E. Cox & J.B. Hastings,  
+			# J. Appl. Cryst.,20,79-83, 1987 (GSAS manual 9/26/04 p157)
+			# to compute composite FWHM
+			lappend tfwhmlist \
+			    [expr {
+				   pow(
+				       pow($gfwhm,5) + 
+				       2.69269*pow($gfwhm,4)*$lfwhm + 
+				       2.42843*pow($gfwhm,3)*pow($lfwhm,2) +
+				       4.47163*pow($gfwhm,2)*pow($lfwhm,3) + 
+				       0.07842*$gfwhm*pow($lfwhm,4) + 
+				       pow($lfwhm,5)
+				       , 0.2)
+			       }]
+		    }
+			}
+		if $lflag {
+		    catch {
+			$top element create ${item}G -label "$lblarr($item) G" 
+		    }
+		    $top element config ${item}G \
+			    -xdata $ttlist -ydata $fwhmlist -linewidth 3 \
+			    -color [nextcolor num]
+		    catch {
+			$top element create ${item}L -label "$lblarr($item) L"
+		    }
+		    $top element config ${item}L \
+			    -xdata $ttlist -ydata $lfwhmlist -linewidth 3 \
+			    -color [nextcolor num]
+		}
+		catch {
+		    $top element create $item -label $lblarr($item) 
+		}
+		$top element config $item \
+			-xdata $ttlist -ydata $tfwhmlist -linewidth 3 \
+			-color [nextcolor num]
+	    }
+	}
+    }
+}
+proc AbsorbCalc {hst ttof abscor1 abscor2 mode} {
+    global expmap
+    set htype $expmap(htype_$hst)
+    set pi [expr {2.*acos(0.)}]
+    # determine sin(theta) & lambda
+    if {[string range $htype 2 2] == "T"} {
+	set sth [expr {sin($pi * abs([histinfo $hst tofangle])/360.)}]
+	set lamb [expr {2 * [toftod $ttof $hst] * $sth}]
+    } elseif {[string range $htype 2 2] == "C"} {
+	set lamb [histinfo $hst lam1]
+	set sth [expr {sin($pi * ($ttof - [histinfo $hst zero]/100.)/360.)}]
+    } elseif {[string range $htype 2 2] == "E"} {
+	set lamb [expr { 12.398 / $ttof}]
+	set sth [expr {sin($pi * [histinfo $hst lam1] / 360.)}]
+    }
+    set sth2 [expr $sth*$sth]
+    set cth2 [expr {1 - $sth2}]
+    set cth  [expr {sqrt($cth2)}]
+
+    if {$mode == 0} { 
+	set murl [expr {$abscor1 * $lamb}]; # Lobanov & Alte da Veiga
+	if {$murl <= 3} {
+	    set TERM0 [expr { 16.0/(3*$pi) }]
+	    set TERM1 [expr { (25.99978-0.01911*pow($sth2,0.25)) * \
+		    exp(-0.024551*$sth2) + 0.109561*sqrt($sth2)-26.04556 }]
+	    set TERM2 [expr {-0.02489 - 0.39499*$sth2 + \
+		    1.219077*pow($sth2,1.5) - 1.31268*pow($sth2,2) + \
+		    0.871081*pow($sth2,2.5) - 0.2327*pow($sth2,3) }]
+	    set TERM3 [expr { 0.003045+0.018167*$sth2 - 0.03305*pow($sth2,2) }]
+	    set TRANS [expr { -$TERM0*$murl - $TERM1*pow($murl,2) - \
+		    $TERM2*pow($murl,3) - $TERM3*pow($murl,4) }]
+	    if {$TRANS <= -20.0} {
+		set TRANS 2.06E-9
+	    } elseif {$TRANS >= 20.0} {
+		set TRANS 4.85E8
+	    } else {
+		set TRANS [expr {exp($TRANS)}]
+	    }
+	} else {
+	    set TERM1 [expr { 1.433902 + 11.07504*$sth2 - \
+		    8.77629*pow($sth2,2) + 10.02088*pow($sth2,3) - \
+		    3.36778*pow($sth2,4) }]
+	    set TERM2 [expr { (0.013869 - 0.01249*$sth2) * \
+		    exp(3.27094*$sth2) + \
+		    (0.337894 + 13.77317*$sth2) / \
+		    pow((1.0+11.53544*$sth2),1.555039) }]
+	    set TERM3 [expr { 1.933433 / pow((1.0+23.12967*$sth2),1.686715) - \
+		    0.13576*sqrt($sth2) + 1.163198}]
+	    set TERM4 [expr { 0.044365 - 0.4259 / \
+		    pow((1.0+0.41051*$sth2),148.4202) }]
+	    set TRANS [expr { ($TERM1-$TERM4) / \
+		    pow((1.0+$TERM2*($murl-3.0)),$TERM3) + $TERM4 }]
+	    set TRANS [expr { $TRANS/100.0}]
+	}
+    } elseif {$mode == 1} { 
+	#!Simple linear absorption
+        set TRANS [expr { -$abscor1*$lamb }]
+        set TRANS [expr { exp($TRANS) }]
+    } elseif {$mode == 2} { 
+	#!Pitschke, Hermann & Muttern - surface roughness
+        set TERM1 [expr { 1.0/$sth-$abscor2/$sth2 }]
+        set TERM2 [expr { 1.0-$abscor1*(1.0+$abscor2) }]
+        set TRANS [expr { (1.0-$abscor1*$TERM1)/$TERM2 }]
+    } elseif {$mode == 3} { 
+	#!Suortti - surface roughness
+        set TERM1 [expr { exp(-$abscor2/$sth) }]
+        set TERM2 [expr { $abscor1 + (1.0-$abscor1) * exp(-$abscor2) }]
+        set TRANS [expr { ($abscor1 +(1.0-$abscor1) * $TERM1)/$TERM2 }]
+    } elseif {$mode == 4} { 
+	#!Plate transmission absorption
+        if {abs($abscor2) < 1} {
+	    #!Use symmetric fxn. if phi 1 deg or less
+	    set TRANS [expr { -$abscor1*$lamb/$cth }]
+	    set TRANS [expr { exp($TRANS) }]
+        } else {
+	    #!Bigger tilts
+	    set SPH [expr { sin($pi/180. * $abscor2) }]
+	    set CPH [expr { cos($pi/180. * $abscor2) }]
+	    set CTPP [expr { $CPH*$cth - $SPH*$sth }]
+	    set CTMP [expr { $CPH*$cth + $SPH*$sth }]
+	    set T [expr { -$abscor1*$lamb }]
+	    set T1 [expr { $T / $CTPP }]
+	    set TRANS1 [expr { exp($T1) }]
+	    set T2 [expr { $T/$CTMP }]
+	    set TRANS2 [expr { exp($T2) }]
+	    set TB [expr { $T * (1.0 - $CTMP / $CTPP) }]
+	    set TRANS [expr { ($TRANS1 - $TRANS2) / $TB }]
+	}
+    }
+    return $TRANS
+}
+
+# save some of the global options in ~/.gsas_config
+proc SaveOptions {} {
+    global graph  tcl_platform
+    if {$tcl_platform(platform) == "windows"} {
+	set fp [open c:/gsas.config a]
+    } else {
+	set fp [open [file join ~ .gsas_config] a]
+    }
+    puts $fp "# WIDPLT saved options from [clock format [clock ticks]]"
+    puts $fp "set graph(legend) [list $graph(legend)]"
+    puts $fp "set graph(printout) [list $graph(printout)]"
+    puts $fp "set graph(outname) [list $graph(outname)]"
+    puts $fp "set graph(outcmd) [list $graph(outcmd)]"
+    puts $fp "set graph(plotunits) [list $graph(plotunits)]"
+    puts $fp "set graph(equivwave) [list $graph(equivwave)]"
+    close $fp
+}
+
+proc MakeCascadeMenus {} {
+    global WidSetList lblarr box absSetList ABS
+    .a.plot.menu delete 0 end
+    .a.file.menu.edit delete 0 end
+    global program 
+    if {$program != "absplt"} {
+	foreach item $WidSetList {
+	    .a.plot.menu add checkbutton -label $lblarr($item) \
+		    -command "plotdata $box" -variable WidDisplay($item)
+	    .a.file.menu.edit add command -label $lblarr($item) \
+		    -command "editProfileValues $item"
+	}
+    } else {
+	foreach item $absSetList {
+	    .a.plot.menu add checkbutton -label [lindex $ABS($item) 4] \
+		    -command "plotdata $box" -variable AbsDisplay($item)
+	    .a.file.menu.edit add command -label [lindex $ABS($item) 4] \
+		    -command "editAbsValues $item"
+	}
+    }
+}
+#-------------------------------------------------------------------------
+# converts 2theta(deg) to Q (A-1)
+proc tt2Q {lambda twotheta} {
+    set pi 3.14159
+    set torad [expr $pi / 360.]
+    return [expr 4 * $pi / ($lambda) * sin (($twotheta) * $torad)]
+}
+
+# converts Q (A-1) to 2theta(deg)
+proc Q2tt {lambda Q} {
+    set pi 3.14159
+    set todeg [expr 360. / $pi]
+    set asinarg [expr ($lambda) * $Q * 0.25 / $pi]
+    if {$asinarg <= 1} {
+	return [expr $todeg * asin ($asinarg)]
+    }
+    return {}
+}
+
+# converts a FWHM in 2theta(deg) to a FWHM in Q (A-1)
+proc deltaQ {lambda twotheta FWHM} {
+    return [expr [tt2Q $lambda $twotheta+($FWHM/2.)] - \
+	         [tt2Q $lambda $twotheta-($FWHM/2.)] ]
+}
+
+# converts 2theta(deg) to d (A)
+proc tt2d {lambda twotheta} {
+    set pi 3.14159
+    set torad [expr $pi / 360.]
+    return [expr 0.5 * ($lambda) / sin (($twotheta) * $torad)]
+}
+
+# converts d (A) to 2theta(deg)
+proc d2tt {lambda d} {
+    set pi 3.14159
+    set todeg [expr 360. / $pi]
+    set asinarg [expr ($lambda) * 0.5 / $d]
+    if {$asinarg <= 1} {
+	return [expr $todeg * asin ($asinarg)]
+    }
+    return {}
+}
+
+# converts a FWHM in 2theta(deg) to a FWHM in Q (A-1)
+proc deltad {lambda twotheta FWHM} {
+    return [expr [tt2d $lambda $twotheta-($FWHM/2.)] - \
+	         [tt2d $lambda $twotheta+($FWHM/2.)] ]
+}
+
+# computes an equivalent 2theta at a different wavelength
+proc ttequiv {lambda twotheta lambda_eq} {
+    return [Q2tt $lambda_eq [tt2Q $lambda $twotheta]]
+}
+
+# converts a FWHM in 2theta(deg) to a FWHM at in 2theta 
+# at a different wavelength
+proc delta2teq {lambda twotheta FWHM lambda_eq} {
+    return [expr [Q2tt $lambda_eq [tt2Q $lambda $twotheta+($FWHM/2.)]] - \
+	         [Q2tt $lambda_eq [tt2Q $lambda $twotheta-($FWHM/2.)]] ]
+}
+
+# convert x values to d-space
+proc tod {xlist hst} {
+    global expmap
+    if {[string range $expmap(htype_$hst) 2 2] == "T"} {
+	return [toftod $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "C"} {
+	return [tttod $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "E"} {
+	return [engtod $xlist $hst]
+    } else {
+	return {}
+    }
+}
+
+# convert tof to d-space
+proc toftod {toflist hst} {
+    set difc [expr {[histinfo $hst difc]/1000.}]
+    set difc2 [expr {$difc*$difc}]
+    set difa [expr {[histinfo $hst difa]/1000.}]
+    set zero [expr {[histinfo $hst zero]/1000.}]
+    set ans {}
+    foreach tof $toflist {
+	if {$tof == 0.} {
+	    lappend ans 0.
+	} elseif {$tof == 1000.} {
+	    lappend ans 1000.
+	} else {
+	    set td [expr {$tof-$zero}]
+	    lappend ans [expr {$td*($difc2+$difa*$td)/ \
+		    ($difc2*$difc+2.0*$difa*$td)}]
+	}
+    }
+    return $ans
+}
+
+# convert two-theta to d-space
+proc tttod {twotheta hst} {
+    set lamo2 [expr {0.5 * [histinfo $hst lam1]}]
+    set zero [expr [histinfo $hst zero]/100.]
+    set ans {}
+    set cnv [expr {acos(0.)/180.}]
+    foreach tt $twotheta {
+	if {$tt == 0.} {
+	    lappend ans 99999.
+	} elseif {$tt == 1000.} {
+	    lappend ans 0.
+	} else {
+	    lappend ans [expr {$lamo2 / sin($cnv*($tt-$zero))}]
+	}
+    }
+    return $ans
+}
+
+# convert energy (edx-ray) to d-space 
+# (note that this ignores the zero correction)
+proc engtod {eng hst} {
+    set lam [histinfo $hst lam1]
+    set zero [histinfo $hst zero]
+    set ans {}
+    set v [expr {12.398/(2.0*[sind[expr ($lam/2.0)]])}]
+    foreach e $eng {
+	if {$e == 0.} {
+	    lappend ans 1000.
+	} elseif {$e == 1000.} {
+	    lappend ans 0.
+	} else {
+	    lappend ans [expr {$v/$e}]
+	}
+    }
+    return $ans
+}
+
+# convert x values to Q
+proc toQ {xlist hst} {
+    global expmap
+    if {[string range $expmap(htype_$hst) 2 2] == "T"} {
+	return [toftoQ $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "C"} {
+	return [tttoQ $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "E"} {
+	return [engtoQ $xlist $hst]
+    } else {
+	return {}
+    }
+}
+# convert tof to Q
+proc toftoQ {toflist hst} {
+    set difc [expr {[histinfo $hst difc]/1000.}]
+    set difc2 [expr {$difc*$difc}]
+    set difa [expr {[histinfo $hst difa]/1000.}]
+    set zero [expr {[histinfo $hst zero]/1000.}]
+    set 2pi [expr {4.*acos(0.)}]
+    set ans {}
+    foreach tof $toflist {
+	if {$tof == 0.} {
+	    lappend ans 99999.
+	} elseif {$tof == 1000.} {
+	    lappend ans 0.
+	} else {
+	    set td [expr {$tof-$zero}]
+	    lappend ans [expr {$2pi * \
+		    ($difc2*$difc+2.0*$difa*$td)/($td*($difc2+$difa*$td))}]
+	}
+    }
+    return $ans
+}
+
+# convert two-theta to Q
+proc tttoQ {twotheta hst} {
+    set lamo2 [expr {0.5 * [histinfo $hst lam1]}]
+    set zero [expr [histinfo $hst zero]/100.]
+    set ans {}
+    set cnv [expr {acos(0.)/180.}]
+    set 2pi [expr {4.*acos(0.)}]
+    foreach tt $twotheta {
+	if {$tt == 0.} {
+	    lappend ans 0.
+	} elseif {$tt == 1000.} {
+	    lappend ans 1000.
+	} else {
+	    lappend ans [expr {$2pi * sin($cnv*($tt-$zero)) / $lamo2}]
+	}
+    }
+    return $ans
+}
+# convert energy (edx-ray) to Q 
+# (note that this ignores the zero correction)
+proc engtoQ {eng hst} {
+    set lam [histinfo $hst lam1]
+    set zero [histinfo $hst zero]
+    set ans {}
+    set v [expr {12.398/(2.0*[sind[expr ($lam/2.0)]])}]
+    set 2pi [expr {4.*acos(0.)}]
+    foreach e $eng {
+	if {$e == 0.} {
+	    lappend ans 0.
+	} elseif {$e == 1000.} {
+	    lappend ans 1000.
+	} else {
+	    lappend ans [expr {$2pi * $e / $v}]
+	}
+    }
+    return $ans
+}
+proc sind {angle} {
+    return [expr {sin($angle*acos(0.)/90.)}]
+}
+
+proc FWHM {tt U V W P} {
+    set pi 3.14159
+    set torad [expr $pi / 360.]
+    # tan theta
+    set tantt [expr tan($tt * $torad ) ]
+    set costt [expr cos($tt * $torad ) ]
+    return [expr {
+		  sqrt (8.* log(2) * 
+			($U * $tantt * $tantt + $V * $tantt + $W + 
+			 $P / ($costt * $costt))
+			) / 100.}]
+}
+
+proc LFWHM {tt X Y} {
+    set pi 3.14159
+    set torad [expr $pi / 360.]
+    # tan theta
+    set tantt [expr tan($tt * $torad ) ]
+    set costt [expr cos($tt * $torad ) ]
+    return [expr ($X / $costt + $Y * $tantt) / 100.]
+}
+
+proc setlegend {box legend} {
+    global blt_version
+    if {$blt_version >= 2.3 && $blt_version < 8.0} {
+	if $legend {
+	    $box legend config -hide no
+	} else {
+	    $box legend config -hide yes
+	}
+    } else {
+	if $legend {
+	    $box legend config -mapped yes
+	} else {
+	    $box legend config -mapped no
+	}
+    }
+}
+
+proc BLTmanualZoom {} {
+    global graph box
+    catch {toplevel .zoom}
+    eval destroy [grid slaves .zoom]
+    raise .zoom
+    wm title .zoom {Manual Scaling}
+    grid [label .zoom.l1 -text minimum] -row 1 -column 2 
+    grid [label .zoom.l2 -text maximum] -row 1 -column 3 
+    grid [label .zoom.l3 -text x] -row 2 -column 1 
+    grid [label .zoom.l4 -text y] -row 3 -column 1 
+    grid [entry .zoom.xmin -textvariable graph(xmin) -width 10] -row 2 -column 2 
+    grid [entry .zoom.xmax -textvariable graph(xmax) -width 10] -row 2 -column 3 
+    grid [entry .zoom.ymin -textvariable graph(ymin) -width 10] -row 3 -column 2 
+    grid [entry .zoom.ymax -textvariable graph(ymax) -width 10] -row 3 -column 3 
+    grid [frame .zoom.b] -row 4 -column 1 -columnspan 3
+    grid [button .zoom.b.1 -text "Set Scaling" \
+	     -command "SetManualZoom set"]  -row 4 -column 1 -columnspan 2
+    grid [button .zoom.b.2 -text Reset \
+	    -command "SetManualZoom clear"] -row 4 -column 3
+    grid [button .zoom.b.3 -text Close -command "destroy .zoom"] -row 4 -column 4 
+    grid rowconfigure .zoom 1 -weight 1 -pad 5
+    grid rowconfigure .zoom 2 -weight 1 -pad 5
+    grid rowconfigure .zoom 3 -weight 1 -pad 5
+    grid rowconfigure .zoom 4 -weight 0 -pad 5
+    grid columnconfigure .zoom 1 -weight 1 -pad 20
+    grid columnconfigure .zoom 1 -weight 1 
+    grid columnconfigure .zoom 3 -weight 1 -pad 10
+    foreach item {min min max max} \
+	    format {3   2   3   2} \
+	    axis   {x   y   x   y} {
+	set val [$box ${axis}axis cget -${item}]
+	set graph(${axis}${item}) {(auto)}
+	catch {set graph(${axis}${item}) [format %.${format}f $val]}
+    }
+    bind .zoom <Return> "SetManualZoom set"
+}
+
+proc SetManualZoom {mode} {
+    global graph box
+    if {$mode == "clear"} {
+	foreach item {xmin ymin xmax ymax} {
+	    set graph($item) {(auto)}
+	}
+    }
+    foreach item {xmin ymin xmax ymax} {
+	if {[catch {expr $graph($item)}]} {
+	    set $item ""
+	} else {
+	    set $item $graph($item)
+	}
+    }
+    # reset the zoomstack
+    catch {Blt_ZoomStack $box}
+    catch {$box xaxis config -min $xmin -max $xmax}
+    catch {$box yaxis config -min $ymin -max $ymax}
+    #global program
+    #if {$program == "bkgedit"} {bkgEditMode ""}
+}
+
+#-------------------------------------------------------------------------
+# export current plot to Grace
+#-------------------------------------------------------------------------
+if {$tcl_platform(platform) == "unix"} {
+    set graph(GraceFile) /tmp/grace_out.agr
+} else {
+    set graph(GraceFile) C:/graceout.agr
+}
+proc exportgrace {} {
+    global graph box
+    global tcl_platform graph
+    catch {toplevel .export}
+    raise .export
+    eval destroy [grid slaves .export]
+    set col 5
+    grid [label .export.1a -text Title:] -column 1 -row 1
+    set graph(title) [$box cget -title]
+    grid [entry .export.1b -width 60 -textvariable graph(title)] \
+	    -column 2 -row 1 -columnspan 4
+    grid [label .export.2a -text Subtitle:] -column 1 -row 2
+    grid [entry .export.2b -width 60 -textvariable graph(subtitle)] \
+	    -column 2 -row 2 -columnspan 4
+    grid [label .export.3a -text "File name:"] -column 1 -row 3
+    grid [entry .export.3b -width 60 -textvariable graph(GraceFile)] \
+	    -column 2 -row 3 -columnspan 4
+    grid [button .export.help -text Help -bg yellow \
+	    -command "MakeWWWHelp liveplot.html grace"] \
+	    -column [incr col -1] -row 4
+    grid [button .export.c -text "Close" \
+	    -command "set graph(export) 0; destroy .export"] \
+	    -column [incr col -1] -row 4
+    if {$tcl_platform(platform) == "unix" && [auto_execok xmgrace] != ""} {
+	grid [button .export.d -text "Export & \nstart grace" \
+	    -command "set graph(export) 1; destroy .export"] \
+		-column [incr col -1] -row 4
+    }
+    grid [button .export.e -text "Export" \
+	    -command "set graph(export) 2; destroy .export"] \
+	    -column [incr col -1] -row 4
+    tkwait window .export
+    if {$graph(export) == 0} return
+    if {[catch {
+	set fp [open $graph(GraceFile) w]
+	puts $fp [output_grace $box $graph(title) $graph(subtitle)]
+	close $fp
+    } errmsg]} {
+	MyMessageBox -parent . -title "Export Error" \
+		-message "An error occured during the export: $errmsg" \
+		-icon error -type Ignore -default ignore
+	return
+    }
+
+    if {$graph(export) == 1} {
+	set err [catch {exec xmgrace $graph(GraceFile) &} errmsg]
+	if $err {
+	MyMessageBox -parent . -title "Grace Error" \
+		-message "An error occured launching grace (xmgrace): $errmsg" \
+		-icon error -type Ignore -default ignore
+	}
+    } else {
+	MyMessageBox -parent . -title "OK" \
+		-message "File $graph(GraceFile) created" \
+		-type OK -default ok
+    }
+}
+#-------------------------------------------------------------------------
+# export current plot as .csv file
+#-------------------------------------------------------------------------
+proc makecsvfile {} {
+    global graph box expnam program
+    global tcl_platform graph
+    set typelist {
+	{{Comma separated} {.csv}        }
+	{{Text File}       {.txt}        }
+    }
+    set file [tk_getSaveFile -filetypes $typelist \
+	    -initialfile ${expnam}_$program.csv]
+    if {$file == ""} return
+    set varlist {}
+    set line {}
+    foreach element_name [$box element names] {
+	lappend varlist ${element_name}_x
+	set ${element_name}_x [$box element cget $element_name -xdata]
+	lappend varlist ${element_name}_y
+	set ${element_name}_y [$box element cget $element_name -ydata]
+	append line [$box element cget $element_name -label] "-X, "
+	append line [$box element cget $element_name -label] "-Y, "
+    }
+    set fp [open $file w]
+    # get x and y axis limits
+    foreach v {x y} {
+	foreach "${v}min ${v}max" [$box ${v}axis limits] {}
+	puts $fp "\"$v axis range [set ${v}min] to [set ${v}max]\""
+	puts $fp "\"$v axis label [$box ${v}axis cget -title]\""
+    }
+    puts $fp $line
+    set i 0
+    set done 1
+    while {$done} {
+	set line {}
+	set done 0
+	foreach var $varlist {
+	    set val [lindex [set $var] $i]
+	    if {$val != ""} {set done 1}
+	    append line "$val, "
+	}
+	if {$done} {puts $fp $line}
+	incr i
+    }
+    close $fp
+}
+
+
+set graph(legend) 0
+set graph(equivwave) {}
+set graph(plotunits) tt
+if {$tcl_platform(platform) == "windows"} {
+    set graph(printout) 1
+} else {
+    set graph(printout) 0
+}
+set graph(outname) out.ps
+set graph(outcmd) lpr
+set WidSetList {}
+set absSetList {}
+
+#----------------------------------------------------------------
+# find location of other files relative to the current script
+# 1st, translate links -- go six levels deep
+foreach i {1 2 3 4 5 6} {
+    if {[file type $expgui(script)] == "link"} {
+	set link [file readlink $expgui(script)]
+	if { [file  pathtype  $link] == "absolute" } {
+h	    set expgui(script) $link
+	} {
+	    set expgui(script) [file dirname $expgui(script)]/$link
+	}
+    } else {
+	break
+    }
+}
+# fixup relative paths
+if {[file pathtype $expgui(script)] == "relative"} {
+    set expgui(script) [file join [pwd] $expgui(script)]
+}
+set expgui(scriptdir) [file dirname $expgui(script) ]
+set expgui(docdir) [file join $expgui(scriptdir) doc]
+# location for web pages, if not found locally
+set expgui(website) 11bm.xor.aps.anl.gov/expguidoc/
+
+# fetch EXP file processing routines 
+source [file join $expgui(scriptdir) readexp.tcl]
+source [file join $expgui(scriptdir) gsascmds.tcl]
+
+# override options with locally defined values
+set filelist [file join $expgui(scriptdir) localconfig]
+if {$tcl_platform(platform) == "windows"} {
+    lappend filelist "c:/gsas.config"
+} else {
+    lappend filelist [file join ~ .gsas_config]
+}
+if {[catch {
+    foreach file $filelist {
+	if [file exists $file] {source $file}
+    }
+} errmsg]} {
+    set msg "Error reading file $file (aka [file nativename $file]): $errmsg"
+    MyMessageBox -parent . -title "Customize warning" \
+	-message $msg -icon warning -type Ignore -default ignore \
+	-helplink "expguierr.html Customizewarning"
+}
+#----------------------------------------------------------------
+
+set datalist {}
+if {$program != "absplt"} {
+    foreach file [glob -nocomplain [file join [pwd] widplt_*]] {
+	source $file
+    }
+    foreach file [glob -nocomplain [file join $expgui(scriptdir) widplt_*]] {
+	source $file
+    }
+    set WidSetList $datalist
+}
+
+# create the graph
+if [catch {
+    set box [graph .g]
+} errmsg] {
+    tk_dialog .err "BLT Error" \
+"BLT Setup Error: could not create a graph (msg: $errmsg). \
+There is a problem with the setup of BLT on your system.
+See the expgui.html file for more info." \
+	    error 0 "Quit"
+exit
+}
+if [catch {
+    Blt_ZoomStack $box
+    Blt_ActiveLegend $box
+    Blt_ClosestPoint $box
+} errmsg] {
+    tk_dialog .err "BLT Error" \
+"BLT Setup Error: could not access a Blt_ routine (msg: $errmsg). \
+The pkgIndex.tcl is probably not loading bltGraph.tcl.
+See the expgui.html file for more info." \
+	    error 0 "Limp ahead"
+}
+$box config -title {}
+setlegend $box $graph(legend)
+
+#frame .a -bd 8 -relief groove
+frame .a -bd 2 -relief groove
+
+pack [menubutton .a.file -text File -underline 0 -menu .a.file.menu] -side left
+menu .a.file.menu
+pack [menubutton .a.plot -text "Plot Contents" -underline 0 -menu .a.plot.menu] -side left
+menu .a.plot.menu
+#.a.file.menu add cascade -label Tickmarks -menu .a.file.menu.tick
+if {$expnam != ""} {
+    .a.file.menu add command -label "Reload from EXP" \
+	    -command "getprofiles $expnam; plotdata $box"
+}
+if {$program == "absplt"} {
+    .a.file.menu add cascade -label "Edit Abs Params" -menu .a.file.menu.edit
+} else {
+    .a.file.menu add command -label "Add New Curve" -command NewProfileValues
+    .a.file.menu add cascade -label "Edit Curve" -menu .a.file.menu.edit
+}
+#.a.file.menu add command -label "Make PostScript" -command makepostscriptout
+menu .a.file.menu.edit
+.a.file.menu add cascade -label "Export plot" -menu .a.file.menu.export
+menu .a.file.menu.export
+.a.file.menu.export add command -label "Make PostScript" \
+    -command makepostscriptout
+if {$blt_version > 2.3 && $blt_version != 8.0} {
+    source [file join $expgui(scriptdir) graceexport.tcl]
+    .a.file.menu.export add command -label "to Grace" -command exportgrace
+}
+.a.file.menu.export add command -label "as .csv file" \
+	-command makecsvfile
+.a.file.menu add command -label Quit -command "destroy ."
+pack [menubutton .a.options -text Options -underline 0 -menu .a.options.menu] \
+	-side left    
+menu .a.options.menu
+if {$program == "absplt"} {
+    .a.options.menu add radiobutton -label "2Theta/Tof/Eng" -value tt \
+	    -variable graph(plotunits) \
+	    -command "plotdata $box"
+} else {
+    .a.options.menu add radiobutton -label "2Theta" -value tt \
+	    -variable graph(plotunits) \
+	    -command "plotdata $box"
+    .a.options.menu add command -label "Set Equiv. Wavelength" \
+	    -command "seteqwave $box"
+}
+.a.options.menu add radiobutton -label "d-space" -value d \
+	-variable graph(plotunits) \
+	-command "plotdata $box"
+.a.options.menu add radiobutton -label "Q" -value q \
+	-variable graph(plotunits) \
+	-command "plotdata $box"
+.a.options.menu add radiobutton -label "delta-d/d" -value deltad \
+	-variable graph(plotunits) \
+	-command "plotdata $box"
+.a.options.menu add checkbutton -label "Include legend" \
+	-variable graph(legend) \
+	-command {setlegend $box $graph(legend)}
+.a.options.menu add command -label "Set PS output" \
+	-command setpostscriptout
+.a.options.menu add command -label "Save Options" -underline 1 \
+	-command "SaveOptions"
+
+pack [menubutton .a.help -text Help -underline 0 -menu .a.help.menu] -side right
+menu .a.help.menu -tearoff 0
+if {$program == "absplt"}  {
+    .a.help.menu add command -command "MakeWWWHelp expgui.html ABSPLT" \
+	    -label "Web page"
+} else {
+    .a.help.menu add command -command "MakeWWWHelp expgui.html WIDPLT" \
+	    -label "Web page"
+}
+if {![catch {package require tkcon} errmsg]} {
+    .a.help.menu add command -label "Open console" -command {tkcon show}
+} elseif {$tcl_platform(platform) == "windows"} {
+    .a.help.menu add command -label "Open console" -command {console show}
+}
+.a.help.menu add command -command aboutwidplot -label About
+
+pack .a -side top -fill both
+pack $box -fill both -expand yes
+
+#----------------------------------------------------------------
+# OK now go get the profile info
+getprofiles $expnam
+#----------------------------------------------------------------
+
+trace variable newmenu(opt) w setoptmsg
+
+bind . <Key-z> {BLTmanualZoom}
+bind . <Key-Z> {BLTmanualZoom}
+
+proc setoptmsg {args} {
+    global newmenu
+    array set opttxt {
+	0 "Cylindrical samples, Lobanov & Alte da Veiga (TOF, CW, synch.)"
+	1 "Simple linear (TOF)"
+	2 "Surface Roughness, Pitschke, Hermann & Muttern (Bragg-Brentano)"
+	3 "Surface Roughness, Suortti (Bragg-Brentano)"
+	4 "Flat plate, transmission mode"
+    }
+    set newmenu(opttxt) ""
+    catch {set newmenu(opttxt) [set opttxt($newmenu(opt))]}
+}
+set datanum 0
+# seems to be needed in OSX
+update
+wm geom . [winfo reqwidth .]x[winfo reqheight .]
+#
+donewaitmsg

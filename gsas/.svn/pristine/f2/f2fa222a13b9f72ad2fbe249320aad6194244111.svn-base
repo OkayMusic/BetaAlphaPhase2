@@ -1,0 +1,190 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui2.html">Next page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 1
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+<P>
+<h3>A.1 Least Squares (LS) Controls Panel</h3>
+<DL><DL>
+<p>The LS Controls panel shows information about the 
+current experiment, typically found in the EXPEDT "Least 
+Squares Controls" options. 
+<P>
+Note that the order that histograms appear in this 
+panel is determined by the 
+<a href="expguic.html#sorthist">"Sort histograms by"</a> option in 
+the Options Menu.
+</DL>
+<img SRC="1.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+</DL>
+<DL><DL>
+The entries on the upper part of this panel are overall options for the
+entire experiment.
+<P>
+<DT><B>Last History</B><DD>
+This shows the last history record written into 
+the experiment file, showing the last program that modified the file
+and when it was run.
+<DT><B>Title</B><DD>
+This is a title for the refinement. users can specify any information
+they want saved in the experiment file.
+<DT><B>Number of Cycles</B><DD>
+This is the number of refinement cycles to be performed in GENLES. 
+If this number is zero when GENLES is run, 
+powder diffraction intensities are computed and, when requested
+(<a href="#extract">see below</a>) reflection intensities are estimated
+but parameters are not refined. Note that when a 
+<a href="#lebail">LeBail extraction</a> is performed
+with the cycles set at zero, reflection
+intensities are optimized even when though no cycles of refinement are
+performed.
+<DT><B>Print Options</B><DD>
+<img SRC="1a.gif" align=right alt="EXPGUI Screen snapshot">
+This allows you to control what types of output GENLES provides. The menu of 
+options is shown to the right. I recommend including the summary of shifts and
+in most cases the correlation matrix in the output.
+<DT><B>Convergence Criterion</B><DD>
+GENLES stops refinements when the sum of the squares of each
+parameter shifts divided by its standard uncertainty is less than 
+this "Convergence Criterion." Since this quantity is the <I>total</I>
+sum of squares, it is reasonable to raise this value for refinements 
+where large numbers of parameters will be refined.
+<DT><B>Marquardt Damping</B><DD>
+Marquardt damping increases the weighting of the diagonal elements
+in the Hessian matrix, reducing the impact of parameter correlation
+on the refinement. It increases refinement stability at the cost 
+of requiring additional cycles of refinement. A Marquardt term of 1.0 
+corresponds to a standard least-squares refinement with no Marquardt 
+damping. The value 1.2 has been recommended to me by Lachlan Cranswick as
+a good choice.
+<P>
+</DL>
+<br clear=all>
+<DL>
+The lower section, labeled "Reflection Intensity Extraction" has options
+for each histogram that determine if reflection intensities will be estimated,
+and if so, how.
+<P>
+<DT><B>Extract Fobs</B><DD>
+When the Extract Fobs option is on, reflection intensities are computed
+using the method developed by Hugo Rietveld. In this method
+the intensity for each reflection is determined by summing the 
+appropriate data points, weighed by the ratio of the computed intensity
+from that reflection to the total computed intensity at that point. This means
+that in the case of severely overlapped reflections, "observed" 
+intensities are apportioned according to the relative computed reflection 
+intensities. This is clearly biased since it invokes the crystallographic
+model, but is about the best that can be done. Turning this option off
+saves a very small amount of computer time.
+<a name="extract">
+</a><DT><B>Intensity Extraction Methods</B><DD>
+There are two approaches to reflection intensity determination. In the 
+conventional <B>Rietveld</B> approach, if the "Extract Fobs" flag is on, 
+reflection intensities are determined
+as part of the Rietveld refinement, reflection R-factors are
+computed, and the reflection intensities 
+are saved on disk file for use in Fourier or other computations.
+<P>
+In the extraction method developed by Armel <B>LeBail</B>, 
+reflection intensities are "optimized" by treating the setting the F<sub>calc</sub> value
+for each reflection to the F<sub>obs</sub> value extracted 
+during the previous cycle.
+By iterating, the F<sub>calc</sub> values slowly converge to a 
+set of reflection 
+intensities that yields a best fit to the pattern. 
+The F<sub>obs</sub> values are determined every time GENLES is run, 
+or a least squares
+refinement cycle is run. This it is possible to improve the LeBail fit, by
+running GENLES with the "Number of Cycles" set to zero.
+<P>
+Note that due to reflection
+overlap, there are usually many different ways to apportion intensities with  
+fits of comparable quality, depending on what starting values are used for
+F<sub>obs</sub>. Any time POWPREF is run, the reflection list 
+is regenerated and the first time that GENLES is run, the 
+starting F<sub>calc</sub> values are set one of two ways:
+<P><DL>
+<a name="lebail">
+<DT><B>F(calc) weighted</B><DD>
+In a "F(calc) weighted" LeBail extraction the initial F<sub>calc</sub> values are computed
+from the crystal structure model. If the model is fairly close to being
+correct, it will likely apportion intensity for overlapping reflections in 
+a manner that is fairly close to correct. Thus, the F<sub>calc</sub> values obtained
+from a "F(calc) weighted" LeBail extraction are about as good as can be 
+done for the case where the structure is pretty close to correct.
+<DT><B>Equally weighted</B><DD>
+On the other hand, if one has no good structural model, but would like to 
+use LeBail extraction as a way to obtain F<sub>obs</sub> values for use in structure
+solution, for example, by direct methods, then it is best to assume that all
+reflections are equally likely to contain intensity. In the "Equally weighted"
+mode, all reflections are given an identical F<sub>obs</sub> starting value. Thus, if
+two reflections are completely overlapped, in this methods, they will
+be assigned equal F<sub>obs</sub> values through the LeBail fit.
+</DL>
+<P>
+It is possible to refine unit cell, background, profile and other 
+non-structural parameters at the same time as a LeBail extraction is
+performed. I often do this, for two reasons. One is that the final LeBail 
+R<sub>wp</sub> and Chi<sup>2</sup> provides a better measure of the 
+best possible fit
+than the statistical values, particularly if the material has non-ideal 
+peak shapes or other factors that cannot modeled. The second reason is the 
+LeBail fit provides excellent starting values for the unit cell, background
+and profile parameters, so these terms need not be refined again 
+until all structural terms have been fit well.
+<P>
+These LeBail refinements, alas, are prone to diverge
+if the the extracted intensities are changing rapidly and 
+other parameters, such as unit cell parameters are compensating. It is 
+a good practice to run GENLES several times with 
+the "Number of Cycles" set to zero each time POWPREF is run -- to allow the
+reflection intensities to converge before refining parameters.
+<P>
+Note that extraction different methods can be used for different phases
+in a histogram.
+It can be convenient to use LeBail extraction for an impurity phase, 
+in the case where the impurity has preferred orientation or has a known
+unit cell, but an unknown structure. I have also used LeBail fits to 
+obtain precise lattice constants via profile fits of materials where the 
+exact structure is not known, so a Rietveld refinement cannot be performed.
+<DT><B>LeBail Damping</B><DD>
+The shifts to the reflection intensities can damped. This is useful when 
+refining lattice constants or other terms that might otherwise cause the
+reflection intensities to shift dramatically and in turn cause the refinement
+to diverge.
+</DL></DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui2.html">Next page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

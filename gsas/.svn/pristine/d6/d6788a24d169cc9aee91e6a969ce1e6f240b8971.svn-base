@@ -1,0 +1,86 @@
+# a sample coordinate export utility for EXPGUI
+#
+# To make this file useful, one will need to modify the lines containing
+# "example" and then rewrite the "section that will need changing" below.
+# Finally save it as file named export_<something>.tcl
+#
+# set local variables that define the proc to execute and the menu label
+set label "export test format"
+set action export_example
+proc export_example {} {
+    global expmap expgui
+    # don't bother if there are no phases to write
+    if {[llength $expmap(phaselist)] == 0} {
+	MyMessageBox -parent . -title "No phases" \
+		-message "Sorry, no phases are present to write" \
+		-icon warning
+	return
+    }
+    MakeExportBox .export "Export coordinates in <example> format" \
+	    "MakeWWWHelp expgui.html export"
+    # note, change export in the line above to the name anchor for a 
+    # section documenenting the format added to expgui.html, if added
+    #
+    # force the window to stay on top
+    putontop .export
+    # Wait for the Write or Quit button to be pressed
+    tkwait window .export
+    afterputontop
+    # test for Quit
+    if {$expgui(export_phase) == 0} {return}
+
+    # now open the file and write it
+    set phase $expgui(export_phase)
+    if [catch {
+	set filnam [file rootname $expgui(expfile)]_${phase}.example
+	set fp [open $filnam w]
+	# deal with macromolecular phases
+	if {[lindex $expmap(phasetype) [expr {$phase - 1}]] == 4} {
+	    set mm 1
+	    set cmd mmatominfo
+	} else {
+	    set mm 0
+	    set cmd atominfo
+	}
+	#==============================================================
+	# v v v v v v v v v v Section that will need changing v v v v v 
+	# title info from GSAS title & phase title
+	puts $fp "TITLE: [expinfo title]"
+	puts $fp "phase = [phaseinfo $phase name]"
+	# write out cell parameters
+	foreach p {a b c alpha beta gamma} {
+	    puts $fp "$p = [phaseinfo $phase $p]"
+	}
+	# write out GSAS spacegroup
+	puts $fp "Space Group = [phaseinfo $phase spacegroup]"
+	# write a header
+	puts $fp "label \t type \t x       \t y      \t z        \t Uiso     \t frac"
+	# now loop over atoms
+	foreach atom $expmap(atomlist_$phase) {
+	    set uiso [$cmd $phase $atom Uiso]
+	    # are there anisotropic atoms? If so convert them to Uequiv
+	    if {!$mm} {
+		if {[atominfo $phase $atom temptype] == "A"} {
+		    set uiso [expr \
+			    ([atominfo $phase $atom U11] + \
+			    [atominfo $phase $atom U22] + \
+			    [atominfo $phase $atom U33]) / 3.]
+		}
+	    }
+	    foreach var {x y z frac label type} {
+		set $var [$cmd $phase $atom $var]
+	    }
+	    #write out the atom, tab delimited
+	    puts $fp "$label \t $type \t $x \t $y \t $z \t $uiso \t $frac"
+	}
+	# ^ ^ ^ ^ ^ ^ ^ end of Section that will need changing ^ ^ ^ ^ 
+	#==============================================================
+	close $fp
+    } errmsg] {
+	MyMessageBox -parent . -title "Export error" \
+		-message "Export error: $errmsg" -icon warning
+    } else {
+	MyMessageBox -parent . -title "Done" \
+		-message "File [file tail $filnam] was written"
+    }
+}

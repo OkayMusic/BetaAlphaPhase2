@@ -1,0 +1,213 @@
+<HTML>
+<HEAD>
+   <title>GSAS Notes</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<blockquote><font face="arial, helvetica, sans-serif">
+<CENTER>
+<HR noshade width="75%" size="2" align="center">
+<H1>
+GSAS/EXPGUI Self-Installer for Windows</H1>
+<HR noshade width="75%" size="2" align="center">
+</CENTER>
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=CENTER><TR><TH>
+<B>Please note:</B>
+A new mechanism for installing GSAS & EXPGUI is now recommended. See
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallWindows">
+this link</a>. If this method is used, EXPGUI or a batch file can
+be used to update GSAS & EXPGUI quickly and easily.
+The installer described below will be updated for the foreseeable
+   future, but likely with less frequency.
+</TH>
+</TR></TABLE><BR CLEAR=ALL>
+
+
+<P>A self-installing version of 
+<a href="http://www.ncnr.nist.gov/xtal/software/gsas.html">GSAS (General Structure Analysis System)</a>
+and 
+<a href="https://subversion.xray.aps.anl.gov/EXPGUI/trunk/doc/expgui.html">EXPGUI</a>
+is available. This program uncompresses itself, copies the required files
+(including the Tcl/Tk files used in EXPGUI)
+to a selected directory and either modifies the <TT>AUTOEXEC.BAT</TT> file
+and/or creates the appropriate registry entries needed to run GSAS, 
+optionally with EXPGUI. This web page documents the screens displayed by the 
+self-installer.
+<P>
+The self-installer can be downloaded as file gsas+expgui.exe from 
+<a href="http://11bm.xray.aps.anl.gov/downloads/gsas/windows/">Argonne</a>
+(http://11bm.xray.aps.anl.gov/downloads/gsas/windows/)
+or 
+<a href="http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/">
+CCP14 </A>
+(http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/
+<P>
+<B>Mailing List.</B>
+If you would like to get news about about new features 
+& bug fixes in EXPGUI, as well as have input into develop goals
+please join the EXPGUI mailing list at 
+<a href="http://www.aps.anl.gov/mailman/listinfo/expgui">
+http://www.aps.anl.gov/mailman/listinfo/expgui</a>.
+
+<P><B>Previous GSAS/EXPGUI versions.</B>
+If you already have GSAS & EXPGUI loaded on your computer, 
+with this installer, you can simply run the new gsas+expgui.exe file. You
+will get a message reminding you are upgrading and you will not be 
+offered a choice of where to install -- files will be placed in the same 
+directory as before. 
+<P>
+If you previously installed using the gsaskit.exe file, you can probably 
+do fine if you ignore the old version and follow the directions below. However,
+it is perhaps safer to either delete these files from your computer, or else
+move them into a new directory (like c:\oldgsas or c:\1999gsas) so there is
+no possibility that you will access any of the old programs by accident.
+Also, in Windows-95, -95 and -ME, remove previous references to GSAS from 
+your AUTOEXEC.BAT file 
+(<a href="#AUTOEXEC">see notes about <tt>AUTOEXEC.BAT</tt></a>
+and <a href="#oldTcl">old Tcl/Tk files</a> following this paragraph.)
+Note that it is possible to run multiple versions of GSAS using EXPGUI
+(by setting up shortcuts to the different copies of the expgui files
+in the different locations), but PC-GSAS will run the first version of the GSAS
+programs found in the path, and thus will run only the most recently 
+installed version.
+
+<P><a name="AUTOEXEC"></a><B>Previous <tt>AUTOEXEC.BAT</tt> modifications.</B>
+Note that if you are using Windows-95, -98 or -ME, and had older versions 
+of GSAS installed,
+you have references to GSAS in your <tt>AUTOEXEC.BAT</tt> file. 
+You should edit this file in 
+NOTEPAD (or SYSEDIT) to remove the references in your PATH definition. 
+You do not need to define the GSAS environment variable anymore, unless 
+you are using Windows-95, -98 or -ME and install the software in a 
+location other than c:\GSAS.
+<P><a name="oldTcl"></a><B>Previous Tcl/Tk versions</B>.
+The previous instructions for EXPGUI recommended installing the Tcl/Tk programs
+in a directory <tt>C:\TCL</TT> or <tt>C:\TCL823</tt>. These files are
+no longer needed by this version of EXPGUI, as the self-installer now places 
+these files in the GSAS directory. Thus, the 
+old <tt>C:\TCL</TT> or <tt>C:\TCL823</tt> directories can be deleted to save
+disk space.
+<P>
+<HR noshade width="50%" size="2" align="center">
+
+<P>
+<img src="s1.gif" alt="setup in progress window" ALIGN=LEFT>
+After downloading the program, start it either from the Run entry in the 
+Start menu, or by double-clicking on the icon for the downloaded file. The 
+"Setup in progress..." screen will appear for the minute or two 
+(perhaps as much as fifteen minutes on a very slow computer) while 
+the file uncompresses itself. This step has failed on some computers 
+with previous versions of the self-installer. If you get an error message, please sent it to <A HREF="MAILTO:Brian.Toby@ANL.GOV">me</a>.
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s2.gif" alt="Installer Intro screen" ALIGN=RIGHT>
+The first screen shows the program version. 
+
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s3.gif" alt="Installer Copyright Intro screen"  ALIGN=RIGHT>
+The copyright information is shown, so that all the lawyers can be happy.
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s4.gif" alt="Screen to select default .EXP association" ALIGN=RIGHT>
+On this screen and the next you actually get to make some choices! 
+You can decide what 
+shortcuts will be provided for accessing EXPGUI and various GSAS programs.
+The options are explained immediately below.
+
+<DL><DT><img src="s11.gif" alt="Example of .EXP associations"><DD>
+If ".EXP association" is selected on the next screen, 
+registry entries are created so that if 
+one <I>right-clicks</I> on a .EXP file, a set of choices are offered for
+acting on the file, as shown above. 
+For example, selecting EXPEDT from the pop-up menu, 
+invokes the EXPEDT program to edit options in the file. 
+Double-clicking (with the right mouse button) invokes the
+default action. The choices on the current screen, allow the 
+selection of the 
+which program will be invoked upon a double-click.
+</DL>
+<BR clear=all><P>
+<img src="s4a.gif" alt="Screen to select shortcut options" ALIGN=RIGHT>
+
+<DL>
+<DT><img src="s9.gif" alt="Example of Desktop icons"><DD>
+If desktop icons are selected, these two icons are placed on your desktop, 
+as above. 
+Clicking on them will start EXPGUI and PC-GSAS. Note that the default
+directory for these shortcuts will be MyWork in the directory selected
+for GSAS installation (typically C:\GSAS\MyWork). This can be changed by 
+editing the shortcut properties.
+<P><P>
+<DT><img src="s10.gif" alt="Example of Start menu entries"><DD>
+If the "Start menu" option is selected, a "GSAS + EXPGUI" menu folder
+ is placed in your Start menu, with two items, to start EXPGUI and PC-GSAS.
+See above. The default directory is set as described for the 
+desktop shortcuts. This can also be changed by right-clicking on the
+start menu to open it and then setting the properties for the
+menu entries.
+</DL>
+<P><P>
+The last option, if selected, causes the files described in the training 
+section of the GSAS manual (for example, the Nickel and Garnet data files)
+to be placed in the GSAS work directory (typically C:\GSAS\MyWork). This
+makes it a bit easier to follow the examples given in the manual or
+on the EXPGUI tutorial web pages.
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s5.gif" alt="Screen to select install folder" ALIGN=RIGHT>
+In this screen you select where the software will be installed. The default, 
+<tt>C:\GSAS</tt> is a good choice. You can use another drive, such as 
+<tt>G:\GSAS</tt> or
+another directory, such as <tt>C:\SHAREDFILES\GSAS</tt>, but there have been problems 
+noted by people trying to directories with spaces in them, such as 
+<tt>C:\Program Files\GSAS</tt>,
+so it is suggested that you do your own debugging 
+if you do this. Note that it is acceptable to use a directory on another 
+computer (such as a file server) but the directory must be mapped as a drive
+(<I>e.g.</I> <tt>S:\GSAS</tt>, not <tt>\\server\GSAS</tt>).
+Note that all files installed by the program are placed in this directory
+or subdirectories below. No files are placed in windows system directories,
+other than registry information that allows the program to be uninstalled
+from the control panel.
+
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s6.gif" alt="Screen to confirm options" ALIGN=RIGHT>
+This screen summarizes the input you have supplied. Use the "Back" button 
+to change any selections. Note that at this time, the GSAS work directory 
+is set automatically from the location where the software will be installed.
+
+<BR clear=all><P>
+<HR noshade width="50%" size="2" align="center"><P>
+<img src="s7.gif" alt="Please wait screen" ALIGN=LEFT>
+This screen is displayed as the files are copied to the selected locations.
+
+<BR clear=all>
+<P>
+After all installation steps have been completed, the screen that says 
+"Setup complete" is shown. After pressing "Finish" all is done. 
+A reboot is no longer 
+performed.
+
+<BR clear=all><P>
+<HR noshade width="75%" size="2" align="center"><P>
+Please note that unexpected behavior in Windows seems to be the rule
+rather than the exception, so report problems to: 
+<A HREF="MAILTO:Brian.Toby@ANL.GOV">tell Brian Toby</a>. 
+Corrections are far less likely without your feedback.
+
+<P>
+<font size=-1><? lastmod(); ?></font>
+<BR>$Revision: 1.10 $ $Date: 2007/01/25 22:44:45 $
+</font></blockquote>
+
+</BODY>
+</HTML>
+

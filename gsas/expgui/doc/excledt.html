@@ -1,0 +1,287 @@
+<html>
+<head>
+   <title>EXPGUI -- EXCLEDT</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="gsas2cif.html">Next page<BR>(CIF export)</A>
+</TH><TH><A Href="liveplot.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI Utilities (2), EXCLEDT
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+This page documents the EXCLEDT utility program
+in the EXPGUI package. The purpose of this tool is to select graphically
+regions of data that will not be included in the refinement. 
+The EXCLEDT program is called from the Powder/excledt 
+menu item or from the "Data Limits/Exclude" button on the Histogram pane.
+<P>
+A common use for this is 
+to adjust the lower 2theta/Q limit (maximum d-space/TOF) so that
+data where no reflections occur can be ignored. It 
+is also common to start refinements with
+a somewhat limited range of data, raising the upper 2theta/Q limit 
+(minimum d-space/TOF) later. (The ideal is to include all data where 
+any peaks can be resolved in the final stages of refinement.)
+Note that there is a disadvantage to changing the data range, 
+if one is using the Chebyschev polynomial
+(type 1 background function) to fit the background, as this function 
+is scaled over the range of data. If the data range is changed, the
+background function will shift and thus must be refit each time the 
+data range is changed.
+<P>
+A second purpose of EXCLEDT is to set and change excluded regions within the 
+pattern. When a region is set as excluded, the data within that region 
+are ignored with respect to the Rietveld refinement. Note that data should
+be removed only where there is a good explanation why the region cannot be 
+accurately modeled. This is sometimes needed to deal with 
+scattering from a sample
+container (although this can frequently be modeled as an additional 
+phase, using Le Bail extraction for that phase when 
+the container is badly textured). Excluded regions are also used occasionally
+when an impurity manifests itself with only a few minor peaks, although it is 
+usually much better to model the impurity intensity as an additional phase 
+(again using Le Bail extraction for that phase when the structure is unknown or
+the material has severe preferred orientation). Excluded regions are sometime
+needed when a section of pattern is affected by stacking faults. Another 
+occasional appropriate use is to eliminate spurious intensity that is due 
+instrumental malfunctions.
+It is important not to exclude peaks simply because they cannot be indexed. 
+Such peaks may indicate a difference in symmetry or unit cell from the 
+structural model, or some other error.
+It is also important that excluded regions be documented in the paper
+which describes the study.
+<P>
+<img SRC="exc1.gif" alt="EXCLEDT Screen snapshot">
+<br clear=all>
+The EXCLEDT program displays the data in a graph, (see the example above)
+with the observed data as data points (black X's by default) 
+and the computed values as a line (red by default). Any excluded data points
+are shown in a different color (orange, by default). 
+Lines (again orange, by default) at the 
+bottom of the plot show the allowed data range as well as any excluded regions.
+Note that if POWPREF has been run more recently then GENLES, the calculated 
+values are zero. 
+The EXCLEDT program can plot data in the native units (2-theta, TOF, energy),
+converted to d-space units, or in the most ideal unit for 
+diffraction analysis, Q (2 pi/d).
+<P>
+<br clear=all>
+
+<H3>Mouse use</H3>
+The mouse can be used in three ways depending on the button pressed
+in the lower portion of the window. 
+<P>
+<img SRC="exc2.gif" BORDER=3 align=right alt="EXCLEDT Screen snapshot">
+In <B>Zoom mode</B>, 
+the cursor appears as 
+cross hairs, and the mouse is used to select a region to be magnified by 
+clicking on diagonal points in the region with the left mouse button 
+(see below) or "zoomed out" with the right mouse button.
+Note that is is also possible to set the range manually, 
+<a href="#manualzoom">see below.</a>
+<P>
+<a name="AddRegion"></a>
+In <B>Add Region mode</B>, the mouse is used to map out a region which that 
+will be excluded from the refinement. When this button is selected, the 
+mouse cursor changes to an arrow. After the left mouse is pressed once, 
+a yellow background is shown for the excluded region, as is seen below. 
+When the left mouse
+button is pressed a second time, the region is selected.
+If the right mouse button is pressed instead, it resets the region selection.
+<br clear=all>
+<img SRC="exc3.gif" alt="EXCLEDT Screen snapshot">
+<br clear=all>
+<img SRC="exc3a.gif" align=RIGHT alt="EXCLEDT Screen snapshot">
+Before the region is added to the excluded list, a message is
+displayed to confirm this. This 
+confirmation message can optionally be eliminated (See 
+<a href="#prompt">Options/Prompt on add/del</a>.)
+<br clear=all>
+<P>
+In <B>Delete Region mode</B>, the mouse is used to select a region to be 
+deleted, causing the data in that region to be included in the refinement.
+The cursor appears as a circle in the graph section of the window. After 
+a region has been selected to delete,  a message is
+displayed to confirm the region to be deleted from the exclusion list.
+This confirmation message can optionally be eliminated (See 
+<a href="#prompt">Options/Prompt on add/del</a>.)<br clear=all>
+<P>
+<br clear=all>
+<H3>Keypad Shortcuts</H3>
+<a name="manualzoom"></a>
+<img SRC="mzoom.gif" align=RIGHT alt="EXCLEDT manual zoom">
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+Zoom settings can also be entered manually by pressing the "Z" key. This 
+opens a dialog, as is shown to the right, where the x- or y-axis range
+can be specified. Any value that is not specified is set to the maximum 
+or minimum for the entire dataset. It is possible to zoom further in using
+the mouse, but to zoom out beyond the manual zoom limits, the "reset" button
+on the manual zoom menu must be used.
+<P>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+If more than one histogram is available to plot, it is possible to cycle 
+between the histograms by pressing the "n" or "N" (for next) key.
+<P>
+<IMG SRC="new.gif" alt="New!">
+Tickmarks can be toggled on or off by pressing the
+"1" key for phase 1, "2" for phase 2,... 
+<P>
+<IMG SRC="new.gif" alt="New!">
+To shift the zoom region around, 
+the right and left arrow keys can be used to shift the 
+region 10 % to the left or right. 
+Likewise, 
+the up and down arrow keys can be used to shift the region up or down by 10 %.
+Holding down the control key down while pressing these keys increases
+the amount of the shift to 100 %.
+<P>
+<br clear=all>
+<P>
+<H3>Excluded Region/Simulation Range Buttons</H3>
+<img SRC="exc4.gif" BORDER=3 align=right alt="EXCLEDT excluded regions snapshot">
+At the bottom of the window is a set of buttons with the minimum and maximum 
+limit on the data as well as a button for every excluded region. Pressing 
+a button causes a window to be opened to edit that region by manually entering
+values.
+<P>where the data range can be set
+<br clear=all>
+<img SRC="exc4a.gif" BORDER=3 align=right alt="EXCLEDT excluded regions snapshot">
+In the case where a dummy histogram will be edited, the information presented 
+in this box is formatted slightly differently (as shown to the right).
+Pressing the set button creates a dialog box where the data range can be set, 
+see <a href="#editdummy">Editing Dummy Range</a>.
+
+<br clear=all>
+<P>
+<img SRC="exc5.gif" align=right alt="EXCLEDT informational message">
+If the upper data limit is raised (or d-min is lowered) this message is
+displayed. The reason is that EXCLEDT cannot display data above the
+upper data limit until the changed limit has been processed in POWPREF.
+If you also want to see the computed intensities in this region,
+you will need to run GENLES as well, so this is also offered as an option.
+<br clear=all>
+<P>
+<a name="LimitTooHigh"></a>
+<img SRC="exc7.gif" align=right alt="EXCLEDT informational message">
+Note that it is possible to set the upper data limit (lower d-min limit)
+well outside the range of data. If this is done, POWPREF will run slower
+because many unneeded reflections are being included in the computation.
+If this occurs and POWPREF is run inside EXCLEDT, a message such as 
+that to the right is shown. Unless there is some specific reason
+(I do not know of one) it is probably best to accept this suggestion.
+<br clear=all>
+<P>
+<a name="editdummy"></a>
+<H3>Editing Dummy Range</H3>
+<img SRC="exc8.gif" align=right alt="EXCLEDT informational message">
+When the data range is edited, a box such as the one to the right will appear
+to set the data limits and step size. Note that these values are always
+displayed in the native units for the histogram (degrees, microseconds or Kev)
+regardless of the setting for the x-axis units, since the step size is constant
+in these native units. The data range is also shown in d-space and Q.
+<P>
+Note that it is not possible to edit the data range for 
+histograms with varying steps. At this time, this only affects 
+dummy TOF histograms simulated with logarithmic steps. The range can be
+changed in the EXPEDT program.
+<br clear=all>
+<P>
+<H3>Exiting EXCLEDT</H3>
+<img SRC="exc6.gif" align=right alt="EXCLEDT informational message">
+EXCLEDT can be exited using the File/Exit menu item or by pressing the 
+"Save & Exit" button, or by pressing Control-C. If the excluded regions or
+data limits are changed, a message to reminding you to run POWPREF is
+shown. Note that you <I>must</I> run POWPREF before GENLES, if these 
+items are changed.
+<br clear=all>
+<P>
+<H3>File Menu Commands</H3>
+<img SRC="excm1.gif" BORDER=3 align=right alt="EXCLEDT menu snapshot">
+<DL><DL>
+<DT>Tickmarks<DD>Invokes a submenu where tickmarks can be displayed or removed
+for each phase present in the histogram.
+Alternately, tickmarks can be displayed or removed
+<IMG SRC="new.gif" alt="New!">by pressing the
+"1" key for phase 1, "2" for phase 2,... 
+See the Options/"Configure Tickmarks"menu item for information
+on tickmarks
+<DT>Histogram
+<DD>This allows a different histogram to be displayed.
+<DT>Set Min/Max Range
+<DD>This opens a window where the usable data range may be changed.
+<DT>Update Plot
+<DD>The causes EXCLEDT to read read the current histogram again from 
+the datafile. If excluded region or data range 
+changes have been made, POWPREF & GENLES may be run first.
+<DT>Make PostScript
+<DD>Creates a low quality PostScript file containing the LIVEPLOT 
+output. See the Options/"Set PS output" button for where the file is created.
+<DT>Exit<DD>Saves any changes to the excluded regions or data range.
+If changes have been made, POWPREF & GENLES may be run. 
+</DL></DL>
+
+<br clear=all>
+<img SRC="excm2.gif" BORDER=3 align=right alt="EXCLEDT menu snapshot">
+<H3>Options Menu</H3>
+<DL><DL>
+<DT>Configure Tickmarks
+<DD>Tickmarks can be placed automatically, similar to their
+ placement in POWPLOT or can be drawn one height to another. The default
+is for lines to be draw from "-Inf" to "Inf", which creates lines from the
+bottom to the top of the plot. The options for each phase allow the line to be changed between solid and dashed, color of the line can be specified and 
+the vertical placement of the tickmarks can be specified. The "show" flag, 
+set in the File/Tickmarks menu can also be changed here.
+<DT>Symbol Type
+<DD>This brings up a menu where the symbol type and size for the 
+observed and excluded data points can be selected.
+<DT>Symbol Color
+<DD>The colors for all the displayed lines and symbols can be changed here.
+<DT>X units
+<DD>The x units can be selected here. The choices are 
+"as collected" (2Theta/TOF/KeV), d-space (A) or Q (A<sup>-1</sup>)
+<DT>Include Legend
+<DD>The legend is the optional box in the upper left that defines the 
+plot entries
+<a name="prompt"></a><DT>Prompt on add/del
+<DD>If this option is set, a prompt will be generated when excluded regions
+are added or deleted.
+<DT>Set PS output
+<DD>For UNIX this allows the file to be sent directly to a printer
+or can be saved in a file. For Windows, a file must be written.
+</DL></DL>
+
+
+<br clear=all>
+
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="gsas2cif.html">Next page<BR>(CIF export)</A>
+</TH><TH><A Href="liveplot.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

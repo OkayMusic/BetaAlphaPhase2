@@ -1,0 +1,5 @@
+#!/bin/csh -f
+tr "[a-z]" "[A-Z]" << ++
+$argv
+++
+exit

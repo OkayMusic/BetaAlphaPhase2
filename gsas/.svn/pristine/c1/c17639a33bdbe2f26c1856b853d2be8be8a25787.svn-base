@@ -1,0 +1,112 @@
+     VERSION    6     Thu Dec 12 21:20:26 2002                                  
+      DESCR   silicon empirical functions                                       
+    HSTRY  1 EXPEDT  Win32  Dec 12 21:23:21 2002 P PH        LA                 
+    HSTRY  2 POWPREF Win32  Dec 12 21:23:30 2002                                
+    HSTRY  3 GENLES  Win32  Dec 12 21:23:35 2002 Sdsq= 0.813E+06 S/E= 0.829E-03 
+    HSTRY  4 EXPEDT  Win32  Dec 12 21:25:14 2002             L   O              
+    HSTRY  5 GENLES  Win32  Dec 12 21:25:18 2002 Sdsq= 0.181E+06 S/E= 0.478E+04 
+    HSTRY  6 POWPREF Win32  Dec 12 21:25:22 2002                                
+    HSTRY  7 EXPEDT  Win32  Dec 12 21:26:43 2002             L   O              
+    HSTRY  8 GENLES  Win32  Dec 12 21:26:54 2002 Sdsq= 0.362E+05 S/E= 0.589E-01 
+    HSTRY  9 EXPEDT  Win32  Dec 12 21:27:23 2002             L   O              
+    HSTRY 10 GENLES  Win32  Dec 12 21:27:27 2002 Sdsq= 0.362E+05 S/E= 0.911E-03 
+    HSTRY 11 POWPREF Win32  Dec 12 21:27:32 2002                                
+    HSTRY 12 GENLES  Win32  Dec 12 21:27:35 2002 Sdsq= 0.273E+05 S/E= 0.455E-02 
+    HSTRY 13 POWPREF Win32  Dec 12 21:27:51 2002                                
+    HSTRY 14 GENLES  Win32  Dec 12 21:27:55 2002 Sdsq= 0.273E+05 S/E= 0.730E-02 
+    HSTRY 15 EXPEDT  Win32  Dec 12 21:33:44 2002             LA                 
+    HSTRY 16 POWPREF Win32  Dec 12 21:33:55 2002                                
+  DSGL CDAT1  DRAD ARAD NOFO                                                    
+  GNLS  RUN on Dec 12 21:33:59 2002    Total cycles run  16       24412.        
+  GNLS CDAT1  MXCY  3                                                           
+  GNLS SHFTS      0.14      0.06                                                
+ AFAC SI     6.2915 2.4386 3.035332.3337 1.9891  .6785 1.541081.6937 1.1407 RHF 
+ AFAC SI_    28.086.41491        .171                                           
+ AFAC SI_SIZ      1.52      1.32 2.00  112                                      
+ AFAC SI_XAB   9456  5878  3047 304.7 151.8                                     
+ AFAC SI_XAN   .355  .693  .311  .509  .244  .330  .072  .071  .042  .043       
+ EXPR  HTYP1  PNT                                                               
+ EXPR  NATYP    1                                                               
+ EXPR  NHST     1                                                               
+ EXPR ATYP 1  SI          1      1.52      1.32 2.00  112                       
+ EXPR NPHAS     1    0    0    0    0    0    0    0    0                       
+ REFN GDNFT  Reduced CHI**2 =  4.615     for   12 variables                     
+ REFN RPOWD     0.0619    0.0422   5302  24412.                                 
+ REFN STATS  Cycle  16 There were  5302 observations. Total CHI**2 = 2.4412E+04 
+CRS1    PNAM  silicon                                                           
+CRS1   NATOM    1                                                               
+CRS1  ABC     5.440033  5.440033  5.440033    N    0                            
+CRS1  ANGLES   90.0000   90.0000   90.0000                                      
+CRS1  AT  1A  SI        0.125000  0.125000  0.125000  1.000000SI1        8 000  
+CRS1  AT  1B  0.007570                                                    I  U  
+CRS1  CELVOL        160.992                                                     
+CRS1  CHMF 1  SI            1.00                                                
+CRS1  SG SYM  F d 3 m                                                           
+CRS1  SPAXIS    0    0    1                                                     
+HAP1 1 ZONE     0    0    0    0                                                
+HAP1 1EXTPOW    0.00000E+00    N    0                                           
+HAP1 1NAXIS     1                                                               
+HAP1 1PHSFR      1.0000        N    0                                           
+HAP1 1PRCF      3   21   0.00500    0NNNNYNNYNNNNNNNNNNNNNNNNNNNNNNNNNNNN       
+HAP1 1PRCF 1   0.590000E+00   0.422100E-01   0.946200E-02   0.000000E+00        
+HAP1 1PRCF 2   0.369184E+02   0.000000E+00   0.000000E+00   0.184928E+01        
+HAP1 1PRCF 3   0.432000E+00   0.000000E+00   0.000000E+00   0.000000E+00        
+HAP1 1PRCF 4   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00        
+HAP1 1PRCF 5   0.000000E+00   0.000000E+00   0.000000E+00   0.000000E+00        
+HAP1 1PRCF 6   0.000000E+00                                                     
+HAP1 1PREFO1  1.000000  1.000000  0.000000  0.000000  1.000000   NN    0    0   
+HAP1 1RADDAM    0.00000E+00    N    0      0.00                                 
+HST  1  HFIL  si9737.gda                                                        
+HST  1  HNAM  si 9737                                                           
+HST  1  IFIL  sepdold.prm                                                       
+HST  1 BANK     1                                                               
+HST  1 BIGFO   0.556779E+04                                                     
+HST  1 CHANS       197         1      5302  97212623      5600    1             
+HST  1 EPHAS    0    0    0    0    0    0    0    0    0    Y                  
+HST  1 ICONR  7476.91      -1.54     -5.58                                      
+HST  1 ICONS   7462.02     -1.24     -5.08  CAZ    0                            
+HST  1 MAXRF    6                                                               
+HST  1 NEXC     2                                                               
+HST  1 NPHAS    1    0    0    0    0    0    0    0    0                       
+HST  1 NREF    87    0.4000    Y    Y                                           
+HST  1 R-FAC   87   0.08949   4.985166E+03                                      
+HST  1 RPOWD    0.0619    0.0422   5302  24412.                                 
+HST  1 TRNGE   2.98750  29.49250                                                
+HST  1 WREXP    0.0289                                                          
+HST  1ABSCOR   0.143513E-01   0.000000E+00    Y    0    0                       
+HST  1BAKGD     4    4    Y    0    Y                                           
+HST  1BAKGD1   0.515859E+00  -0.196140E-02   0.659059E-04  -0.540665E-06        
+HST  1BNKPAR    1.5000   144.845      0.00    .00000     .3000    1    1        
+HST  1CHI      90.0000                                                          
+HST  1EXC  1     0.000     2.985                                                
+HST  1EXC  2    29.495  1000.000                                                
+HST  1EXMNMX   1.00000   1.00000                                                
+HST  1HSCALE     262.83        Y    0                                           
+HST  1I HEAD    Vanadium rod (new) #4                                           
+HST  1I ITYP    2    2.0000   29.4950     35803                                 
+HST  1ICOFF1  -0.727359E+01   0.295705E+09   0.137550E+03  -0.564649E+03        
+HST  1ICOFF2   0.849450E-02   0.789431E+04   0.101253E-01  -0.346161E+04        
+HST  1ICOFF3   0.170964E-02  -0.123088E+04   0.105054E-02   0.000000E+00        
+HST  1IECOF1   0.602976E+00   0.133066E+08   0.202670E+01   0.436512E+02        
+HST  1IECOF2   0.152882E-03   0.360233E+03   0.409373E-03   0.288730E+03        
+HST  1IECOF3   0.130028E-03   0.123266E+03   0.931769E-04   0.000000E+00        
+HST  1IECOR1 1.000-0.947-0.794 0.924 0.417-0.533 0.652 0.357 0.451 0.408        
+HST  1IECOR2 0.364 0.000 1.000 0.908-0.887-0.621 0.589-0.745-0.410-0.535        
+HST  1IECOR3-0.464-0.432 0.000 1.000-0.622-0.841 0.616-0.878-0.448-0.706        
+HST  1IECOR4-0.560-0.555 0.000 1.000 0.207-0.444 0.484 0.278 0.286 0.299        
+HST  1IECOR5 0.239 0.000 1.000-0.475 0.699 0.388 0.579 0.430 0.462 0.000        
+HST  1IECOR6 1.000-0.363-0.923-0.268-0.464 0.134 0.000 1.000 0.113 0.941        
+HST  1IECOR7 0.714 0.816 0.000 1.000-0.034 0.103-0.423 0.000 1.000 0.847        
+HST  1IECOR8 0.860 0.000 1.000 0.654 0.000 1.000 0.000 0.000                    
+HST  1MNREF     0    1.0000                                                     
+HST  1ODMNMX   1.00000   1.00000                                                
+HST  1OMEGA     0.0000                                                          
+HST  1PHI       0.0000                                                          
+HST  1PRCF1     3   14   0.00500                                                
+HST  1PRCF11   5.900000E-01   4.221000E-02   9.462000E-03   0.000000E+00        
+HST  1PRCF12   3.699000E+01   0.000000E+00   0.000000E+00   1.742000E+00        
+HST  1PRCF13   4.320000E-01   0.000000E+00   0.000000E+00   0.000000E+00        
+HST  1PRCF14   0.000000E+00   0.000000E+00                                      
+HST  1TRMNMX   0.86875   0.98192                                                
+ZZZZZZZZZZZZ  Last EXP file record                                              
+    HSTRY 17 GENLES  Win32  Dec 12 21:33:59 2002 Sdsq= 0.244E+05 S/E= 0.744E-01 

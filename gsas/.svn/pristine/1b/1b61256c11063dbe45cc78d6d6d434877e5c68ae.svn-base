@@ -1,0 +1,316 @@
+<HTML>
+<HEAD>
+   <TITLE>Mac OS X Installation Notes for EXPGUI</TITLE>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI, Mac, OS X">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+<CENTER><H1>
+<HR noshade width="75%" size="2" align="center">
+Installing GSAS/EXPGUI under Mac OS X
+<HR noshade width="75%" size="2" align="center">
+</H1></CENTER>
+
+
+This page contains information on installing and running GSAS & EXPGUI
+on Macintosh OS X computers. 
+<P>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=CENTER><TR><TH>
+  <B>Please note:</B>
+A new mechanism for installing GSAS & EXPGUI is now recommended. See
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallOSX">
+this link</a>. If this method is used, EXPGUI or a python script can
+be used to update GSAS & EXPGUI quickly and easily.
+It is not clear how much longer the installation package described
+  below will continute to be updated.
+  </TH></TR></TABLE><BR CLEAR=ALL>
+
+<h2>Installation</H2>
+Both GSAS and EXPGUI require that X-windows (X11) be installed on your Mac.
+Since 10.3, X11 has been distributed as part of the operating system, but 
+for 10.3 and 10.4 must be loaded manually. The instructions below 
+describe how X11 is installed.
+
+<OL>
+<P><LI>Install X11 (<=10.4, only)
+<DL><DL><I>
+Before you can run the GSAS package (or, for that matter, 
+a large number of other Unix-derived graphics applications), 
+you need to load the X Windows system (X11) onto your computer. </I>
+<P>
+  For 10.5 (Leopard) or 10.6 (Snow Leopard), X11 is installed by
+  default. Nothing needs to be done.
+  <P>
+For 10.4, one can load the Mac OS X from the install disk.
+  Note that this requires 
+administrator access to the computer. The X11 installation procedure consist 
+of the following steps:
+<UL>
+<LI>On the finder window for the DVD, scroll down and double-click on the Optional Installs icon, which starts the installer. 
+<LI>Proceed through the 
+windows by pressing Continue (note that X11 must be installed on the boot 
+disk). 
+<LI>On the package list page, click on the arrow next to Applications 
+to open the list, then select X11 to be installed by clicking in the box 
+to the left and click Install. 
+<LI>The installation then begins. 
+<LI>When installation is complete, the X11 package can be run 
+from the utilities menu of the system Applications folder.
+</UL>
+<P>
+For 10.3 (Panther) I am pretty sure a similar process to 10.4 can be used, 
+but I don't have access to a machine that can boot that OS. Alternately, if you 
+have OS X 10.3 on CDROMs, insert CDROM #3 and 
+then click on the Packages folder and within that folder, 
+click on X11User.pkg. Read the 
+installation screens, click on the "next" button a few times, and 
+X11 is installed.
+<P>
+For 10.2 (Jaguar), X11 installation is not simple,
+so you will need to do some searching on the web, find a guru or 
+consult one of the many Mac OS X books that cover this subject.
+One should strongly consider an OS upgrade instead.
+</DL></DL>
+
+<P><LI>Download the GSAS & EXPGUI programs as a Mac disk image appropriate 
+for the CPU type of your computer (to find out what you have 
+click on the "About This Mac" item in the Apple menu) from 
+<a href="http://11bm.xray.aps.anl.gov/downloads/gsas/macOSX/">
+  http://11bm.xray.aps.anl.gov/downloads/gsas/macOSX/</A>
+<P>
+<DL><UL>
+<LI><I>Newer Macs with Intel (Pentium) CPUs should use the Intel
+  version of the .dmg file</I>
+<P>
+<LI><I>Older Macs with Power PC (G3, G4 or G5) should use the PPC
+  version of the .dmg file</I> (Note, as of 2010, this distribution has not
+  been updated for a while).
+<P>
+
+While you can run GSAS & EXPGUI from this location, you are strongly 
+suggested to instead copy the entire package to your computer by dragging the 
+gsas folder icon to another finder window, or by clicking on it and using 
+Copy and Paste.
+</UL>
+<LI>Install a "shortcut" to launch EXPGUI
+<DL><DL>
+<IMG SRC="expgui_osx.jpg" ALT="EXPGUI AppleScript icon" ALIGN="RIGHT">
+The OS X version of GSAS & EXPGUI has an EXPGUI AppleScript application 
+named <tt>expgui.app</tt> in the gsas folder with the icon shown 
+to the right. This AppleScript will start X11, 
+if needed and then lauch EXPGUI. (If you have ideas for improving the script, 
+the code can be found in file expgui_applescript.txt.)
+The EXPGUI AppleScript can be used in three ways:
+<UL>
+<P><LI>Double-clicking on the icon will launch EXPGUI so that it starts 
+with the "file open" window in your home directory. This 
+window can then be used to navigate to 
+access/create experiments in other folders.
+<P><LI>Dropping one or more GSAS Experiment (.EXP) files onto the EXPGUI icon
+will cause the experiment files to be opened. If more than one file is dropped,
+each file will open in a separate EXPGUI session. 
+<P><LI>Dropping one or more folders onto the EXPGUI icon will cause EXPGUI to be 
+started with the "file open" window in that folder.
+</UL>
+<P>
+If you will use GSAS a fair amount, you will likely 
+find it convenient to drag the EXPGUI icon to the dock
+for easy access.
+<P>
+Note, that this <B><U>EXPGUI app will not 
+work correctly if copied or moved to another folder</U></B>. 
+It must be located 
+in the gsas folder along with all the other files and 
+subdirectories needed by GSAS & EXPGUI -- you can instead 
+create an alias (by highlighting the AppleScript icon in the Finder 
+and using the File/"Make alias" menu item or the Command-L shortcut). An alias 
+created in this fashion can be moved wherever desired -- for example, to 
+the desktop or to the Application folder.
+</DL></DL>
+
+<LI>For Unix power users: Make a command line shortcut (optional)
+<DL><DL>
+<I>People who have not become completely enlighted to the Mac may wish to 
+set up a way to type something (gasp!) in a terminal window that will allow
+them to start EXPGUI. There are a number of ways this can be done,
+(see section 2.2 in the 
+<A Href="expgui_Unix_readme.html">Unix installation notes</A>.)
+Also, on the Mac it is possible to add applications to the X11 Applications 
+menu, by using the Applications/Customize menu option. 
+Note that the command used to start Tcl/Tk and EXPGUI will vary depending 
+on where you installed the package. I install the package in ~/Applications
+so the command string to start EXPGUI is:</I> 
+<PRE>
+          ~/Applications/gsas/ncnrpack-osx  ~/Applications/gsas/expgui/expgui
+</PRE>
+</DL></DL>
+
+</OL>
+
+<HR noshade><HR noshade>
+<h4>EXPGUI Enhancements specific to the Mac</H4>
+
+EXPGUI will automatically designate the EXPGUI AppleScript 
+as the "open with" application for every GSAS experiment (.EXP) file 
+that is read or written by EXPGUI. This is done with the 
+Development Tools program Rez, found in /Developer/Tools or in the gsas folder.
+At the same time, EXPGUI will also set an icon for the .EXP file. 
+After this has been done, EXPGUI can be invoked by simply double-clicking on 
+a GSAS experiment file (.EXP file) icon.
+<P>
+If for some reason you would prefer this not be done 
+(I would be interested to hear why) -- deselect the 
+"Assign app to .EXP files" checkbox in the Options menu.
+
+<HR noshade><HR noshade>
+<h4>Mac ideosyncracies</H4>
+<P>
+Unlike in the Windows & Unix versions of GSAS, Mac windows may not be updated
+until they are brought to the top of the screen by clicking on them
+(given focus). This is most noticible for PGPLOT 
+graphics (in POWPLOT, RAWPLOT,...). 
+When you type graphics commands in a terminal window, the plot does not 
+appear to change. However, click on the PGPLOT's window bar and the plot will 
+update.
+
+<HR noshade><HR noshade>
+<h4>The Tcl/Tk Starkit</H4>
+<P>
+The GSAS-EXPGUI distribution now includes a single file version of the 
+entire Tcl/Tk package, as well as a graphics package for Tcl/Tk, called
+BLT, that is used extensively within EXPGUI. The inclusion of this file
+within the package simplifies installation considerably. 
+This single 3 Mb file, 
+<tt>gsas/ncnrpack_osx</tt>, contains many other Tcl/Tk packages (that are 
+not used within EXPGUI) and may be of value for use with other applications.
+Note that the EXPGUI AppleScript will look for Tcl/Tk first as the
+<tt>ncnrpack_osx</tt> file in the same folder as where the <tt>expgui.app</tt> 
+script is located. If this <tt>ncnrpack_osx</tt> 
+file is deleted, renamed or moved, 
+then the script will look for the standard Tcl/Tk program (<tt>wish</tt>) in the
+<tt>/sw/bin</tt> directory.
+<HR noshade><HR noshade>
+
+<h4>Problems</H4>
+If you cannot get EXPGUI or the GSAS graphics programs to work, 
+you may have a setup problem with X-windows (X11). 
+One common reason for this is that X11 must be restarted any time 
+your computer's hostname changes, which may be caused by starting/stopping 
+networking, dialing in for e-mail or even by a change in 
+IP address initiated by the network DHCP server, if you are hardwired into 
+a network. 
+
+If exiting and restarting X11 does not address your problem, 
+the following paragraphs
+may help you diagnose problems.
+<OL><LI>
+One possible problem is the definition for the X11 display (shell
+environment variable DISPLAY). 
+On my machine, this variable seems to be set correctly in X11 xterm windows, 
+but is not set by default within an Aqua terminal window unless
+you make changes to your shell startup. 
+<P>
+A quick test for X11 problems is to type xclock at the shell prompt:
+
+<PRE>
+     bash-2.05a$ xclock
+</PRE>
+If you get a clock display -- great, X windows is working!
+<P>
+If you get the following error message
+the DISPLAY variable is not set: 
+<PRE>
+     bash-2.05a$ xclock
+     Error: Can't open display: 
+</PRE>
+
+If on the other hand, you get this error message, there is a 
+security problem with X windows:
+<PRE>
+     bash-2.05a$ xclock
+     Error: Can't open display: localhost:0.0
+</PRE>
+This will most likely be solved by exiting and restarting X11 (see above).
+<P>
+You can set the DISPLAY variable in bash/zsh, etc. using:
+<PRE>
+     bash-2.05a$ export DISPLAY=localhost:0.0
+</PRE>
+
+or in csh/tcsh, etc. using:
+
+<PRE>
+     [d120234:~] toby% setenv DISPLAY localhost:0.0
+</PRE>
+(For info on how to do this automatically, see step 2 in 
+<a href="http://www.chemistry.ucsc.edu/~wgscott/xtal/page1.html"
+>http://www.chemistry.ucsc.edu/~wgscott/xtal/page1.html</A>).
+<P><LI>
+A second possible problem relates to the installation of the 
+Tcl/Tk and BLT packages. This problem seems unlikely, now that 
+the Tcl/Tk package is included in the distribution, but if you have 
+removed the ncnrpack_osx file from the gsas folder, the expgui.app AppleScript
+will try to use wish installed in /sw/bin. If you are choosing to do this,
+you can test if Tcl/Tk and the BLT package are installed correctly using the 
+following commands:
+<PRE>
+     [d120234:~] toby% wish
+     % package require BLT
+     2.4
+     % pack [blt::graph .g]
+     % exit
+</PRE>
+When you type "wish" and press Enter, a new small blank window should appear.
+when you type the 2nd line, "package require BLT," there will be no change in
+the blank window, but the computer should respond "2.4". After the 
+"pack [blt::graph .g]" command is entered, a set of x- and y-axes should appear
+in this window. The window should disappear after "exit" is typed.
+</OL>
+<P>
+<HR>
+<P>
+  The EXPGUI icon, the original version of the EXPGUI AppleScript 
+  and help with this documentation was provided by 
+  Francois Farges -- many thanks!
+<P>Thanks to Paul Kienzle of the 
+<a href="http://www.ncnr.nist.gov/dave/">
+NCNR DAVE project</A> for providing the "all in one file" (starkit) 
+version of Tcl/Tk for OS X.
+
+<P>GSAS is Copyright, 1984-2000, by 
+the Regents of the University of California.
+The GSAS software was produced under a U.S. Government contract (W-7405-ENG-36)
+by the Los Alamos National Laboratory, which is operated by the University
+of California for the U.S. Department of Energy. The U.S. Government is
+licensed to use, reproduce, and distribute this software. Permission is
+granted to the public to copy and use this software without charge, provided
+that this notice and any statement of authorship are reproduced on all
+copies. Neither the Government nor the University makes any warranty, express
+or implied, or assumes any liability or responsibility for the use of this
+software.
+
+<P>EXPGUI was created by a (former) U.S. Government employee, which means that
+EXPGUI is not subject to copyright. Have fun with it. Modify it. Please write 
+new sections and make them available to the rest of the world. 
+
+<p>Neither the U.S. Government nor any author makes any warranty, 
+expressed or implied, or assumes any liability or responsibility 
+for the use of this information or the software described
+here. Brand names cited herein are used for
+identification purposes. 
+Mac computers are the best, but this does not 
+constitute an endorsement by NIST.
+</blockquote>
+<hr>
+<br>
+$Revision$ $Date$
+</BODY>
+</HTML>

@@ -1,0 +1,808 @@
+# $Id$
+
+# stuff to do
+#   might want to show error location for error in instSaveAs 
+#   (need to save rather than pass $box)
+
+source [file join $expgui(scriptdir) readinst.tcl]
+
+proc instMakeBankSel {box} {
+    global instdat instparms
+    eval destroy [winfo children [set topfr $box.a]]
+    pack [label $topfr.l1 -text "Select bank: "] -side left
+    pack [frame $topfr.fr] -side left
+    set col 0
+    set row 0
+    for {set i 1} {$i <= $instdat(lastbank)} {incr i} {
+	grid [radiobutton $topfr.fr.$i -text $i -value $i \
+		-command "instShowBank $box"\
+		-variable instparms(bank)] -row $row -column $col
+	if {[incr col] > 10} {set col 0; incr row}
+    }
+    pack [button $topfr.n -text "Add bank" -command "instNewBank $box"] -side left
+    pack [label $topfr.l2 -text "Data type: "] -side left    
+    set menu [tk_optionMenu $topfr.w instparms(banklabel) "     "]
+    set instparms(banklabel) {}
+    pack $topfr.w -side left
+    pack [button $topfr.quit -text "Close" \
+	    -command instConfirmQuit] -side right
+    pack [button $topfr.sa -text "Save as" -command instSaveAs] -side right
+    pack [button $topfr.s -text "Save" -state disabled \
+	    -command {instSaveAs $instparms(filename)}] -side right
+    set instparms(savebutton) $topfr.s
+    $menu delete 0 end
+    foreach lbl {TOF   "CW neutron" "CW X-ray" "ED X-ray"} \
+	    val {PNTR  PNCR         PXCR       PXER} {
+	$menu add radiobutton -value $val -label $lbl \
+		-variable instdat(banktype) \
+		-command "instShowBank $box"
+    }
+}
+
+proc instLoadAllBanks {} {
+    global instdat instparms
+    set instdat(lastbank) [instinfo bank]
+    set instdat(banktype) [instinfo type]
+    # loop over banks
+    for {set i 1} {$i <= $instdat(lastbank)} {incr i} {
+	set instdat(rad$i) [instbankinfo rad $i]
+	if {$instdat(rad$i) == ""} {set instdat(rad$i) 0}
+	set instdat(head$i) [instbankinfo head $i]
+	set instdat(name$i) [instbankinfo name $i]
+	foreach var {difc difa zero pola ipola kratio} \
+		val [instbankinfo icons $i] {
+	    if {$val == ""} {set val 0}
+	    set instdat(${var}$i) $val
+	}
+	# loop over the profile terms
+	set j 1
+	while {[set proflist [instprofinfo $i $j]] != ""} {
+	    set instdat(proftype${i}_$j) [lindex $proflist 0]
+	    set instdat(profcut${i}_$j) [lindex $proflist 1]
+	    set k 0
+	    foreach v [lindex $proflist 2] {
+		incr k
+		set instdat(prof${i}_${j}_$k) $v
+	    }
+	    set instparms(profterms${i}_${j}) $k
+	    set instparms(proftypes${i}) $j
+	    incr j
+	}
+    }
+    set instparms(changes) 0
+}
+
+proc instSaveAs {"filename {}"} {
+    global instdat instparms
+    instinfo type set $instdat(banktype)
+    # loop over banks
+    set msg {}
+    if {[catch {
+        for {set i 1} {$i <= $instdat(lastbank)} {incr i} {
+            instbankinfo rad $i set $instdat(rad$i) 
+            instbankinfo head $i set $instdat(head$i) 
+            if {[string trim $instdat(name$i)] == ""} {
+                append msg "\n  The instrument name may not be blank"
+            }
+            instbankinfo name $i set $instdat(name$i)
+            set l {}
+            foreach var {difc difa zero pola ipola kratio} {
+                lappend l $instdat(${var}$i)
+            }
+            if {[instbankinfo icons $i set $l] != 1} {
+                append msg "\n  There is an error in values for:\n    the wavelength, zero or polarization"
+            }
+            # loop over the profile terms
+            
+            for {set j 1} {$j <= $instparms(proftypes${i})} {incr j} {
+                set l {}
+                for {set k 1} {$k <= $instparms(profterms${i}_$j)} {incr k} {
+                    lappend l $instdat(prof${i}_${j}_$k)
+                }
+                if {[instprofinfo $i $j set [list \
+                                                 $instdat(proftype${i}_$j) $instdat(profcut${i}_$j) $l]\
+                        ] != 1} {
+                    append msg "\n  There is an error in the values for profile set $j."
+                }
+            }
+            if {$msg != ""} {
+                MyMessageBox -parent . -title "No save" \
+		    -message "Error in input for bank $i:$msg" -icon warning \
+		    -type Sorry -default sorry
+                return
+            }
+        }
+    } errmsg]} {
+        if {$errmsg == ""} return
+        MyMessageBox -parent . -title "No save" \
+            -message "Error in input (did you define data type, profile type, etc?):\n$errmsg" -icon warning \
+            -type Sorry -default sorry
+        return
+    }
+    if {$filename == ""} {
+	set instparms(filename) [tk_getSaveFile \
+		-title "Enter a file name for the instrument parameter file" \
+		-parent . -defaultextension .ins \
+		-filetypes {{"Instrument parameters file" ".ins .inst .prm"} {All *.*}}]
+    }
+    if {$instparms(filename) == ""} return
+    instwrite $instparms(filename)
+    MyMessageBox -parent . -title "File written" \
+		-message "File $instparms(filename) written." -type OK -default ok
+    global instparms
+    set instparms(changes) 0
+    $instparms(savebutton) config -state disabled
+    wm title $instparms(top) "Editing instrument parameter file $instparms(filename)"
+}
+
+
+proc instNewBank {box} {
+    global instdat instparms
+    # don't allow this for TOF
+    set i [incr instdat(lastbank)]
+    instMakeBankSel $box
+    set instparms(bank) $i
+    # initialize the bank values
+    set instdat(rad$i) ""
+    set instdat(name$i) ""
+    foreach var {difc difa zero pola ipola kratio} {
+	set instdat(${var}$i) ""
+    }
+    instbankinfo itype $i set "0 0 180 1"
+    set instparms(proftypes$i) 0
+    instShowBank $box
+    AddInstProfile $box $i
+    instShowBank $box
+}
+
+proc instShowBank {box} {
+    global instdat instparms
+    set instparms(profileframe) {}
+
+    set topfr $box.a
+    if {$instparms(bank) == 0} return
+    switch [string range $instdat(banktype) 0 2] {
+	PNT  {set instparms(banklabel) TOF}
+	PNC  {set instparms(banklabel) "CW neutron"}
+	PXC  {set instparms(banklabel) "CW X-ray"}
+	PXE  {set instparms(banklabel) "ED X-ray"}
+    }
+    if {$instparms(banklabel) == ""} {
+	return
+    }
+    eval destroy [winfo children [set bnkfr $box.b]]
+    set b $instparms(bank)
+    grid [label $bnkfr.l1 -text "Bank #$b" -relief raised -bd 2 \
+	    -anchor w -justify left] \
+	    -column 0 -row 0 -columnspan 99 -sticky ew
+    grid [label $bnkfr.l2 -text "Title: "] -column 0 -row 1 -sticky e
+    grid [entry $bnkfr.e2 -textvariable instdat(head$b) -width 60] \
+	    -column 1 -row 1 -sticky w -columnspan 99
+
+    grid [label $bnkfr.l3 -text "Instrument\nname: " -anchor e -justify r] \
+	    -column 0 -row 2 -sticky e
+    grid [entry $bnkfr.e3 -textvariable instdat(name$b) -width 30] \
+	    -column 1 -row 2 -sticky w -columnspan 3
+    grid [checkbutton $bnkfr.import -text "Import Diffractometer Constants"\
+	      -variable instparms(ImportDiffConst)] \
+	-column 4 -row 2 -sticky e -columnspan 3
+
+    if {$instparms(banklabel) == "TOF"} {
+	$topfr.n config -state disabled
+	set col 0
+	grid [label $bnkfr.l4 -text "DIFC:"] \
+	    -column [incr col] -row 4 -sticky e -rowspan 2
+	grid [entry $bnkfr.e4d -textvariable instdat(difc$b) -width 10] \
+	    -column [incr col] -row 4 -sticky ew 
+	grid [label $bnkfr.l5 -text "DIFA:"] \
+	    -column [incr col] -row 4 -sticky e -rowspan 2
+	grid [entry $bnkfr.e4e -textvariable instdat(difa$b) -width 10] \
+	    -column [incr col] -row 4 -sticky ew 
+	grid [label $bnkfr.l6 -text "Zero\nCorrection:" \
+		  -anchor e -justify r] \
+	    -column [incr col] -row 4 -sticky e
+	grid [entry $bnkfr.e6 -textvariable instdat(zero$b) -width 10] \
+	    -column [incr col] -row 4 -sticky ew
+
+	grid [frame [set prfrm $bnkfr.prof] -bd 2 -relief groove] \
+	    -column 0 -columnspan 99 -row 8
+	grid [label $prfrm.l1 -text "Select profile: "] -column 0 -row 0
+	grid [frame $prfrm.fr] -column 1 -columnspan 99 -row 0 -sticky w
+	grid [frame $prfrm.fr1] -column 0 -columnspan 99 -row 2
+	set instparms(profileframe) $prfrm.fr1
+	for {set j 1} {$j <= $instparms(proftypes${b})} {incr j} {
+	    grid [radiobutton $prfrm.fr.$j -text $j -value $j \
+		-command "ShowInstProfile $b" \
+		-variable instparms(profilenum)] -row 1 -column $j
+	}
+	grid [button $prfrm.fr.a -text "Add profile" \
+	    -command "AddInstProfile $box $b"] -row 1 -column 98
+	grid [button $prfrm.fr.n -text "Import profile" \
+	    -command "ImportInstProfile $box $prfrm.fr1 $b"] -row 1 -column 99
+ 	set instparms(profilenum) 1
+	ShowInstProfile $b
+	return
+    }
+    if {$instparms(banklabel) == "ED X-ray"} {
+	$topfr.n config -state disabled
+	set col 0
+	grid [label $bnkfr.l4 -text "2Theta:"] \
+	    -column [incr col] -row 4 -sticky e -rowspan 2
+	grid [entry $bnkfr.e4d -textvariable instdat(difc$b) -width 10] \
+	    -column [incr col] -row 4 -sticky ew 
+	grid [label $bnkfr.l5 -text "POLA:"] \
+	    -column [incr col] -row 4 -sticky e -rowspan 2
+	grid [entry $bnkfr.e4e -textvariable instdat(pola$b) -width 10] \
+	    -column [incr col] -row 4 -sticky ew 
+
+	grid [frame [set prfrm $bnkfr.prof] -bd 2 -relief groove] \
+	    -column 0 -columnspan 99 -row 8
+	grid [label $prfrm.l1 -text "Select profile: "] -column 0 -row 0
+	grid [frame $prfrm.fr] -column 1 -columnspan 99 -row 0 -sticky w
+	grid [frame $prfrm.fr1] -column 0 -columnspan 99 -row 2
+	set instparms(profileframe) $prfrm.fr1
+	for {set j 1} {$j <= $instparms(proftypes${b})} {incr j} {
+	    grid [radiobutton $prfrm.fr.$j -text $j -value $j \
+		-command "ShowInstProfile $b" \
+		-variable instparms(profilenum)] -row 1 -column $j
+	}
+	grid [button $prfrm.fr.a -text "Add profile" \
+	    -command "AddInstProfile $box $b"] -row 1 -column 98
+	#grid [button $prfrm.fr.n -text "Import profile" \
+	#    -command "ImportInstProfile $box $prfrm.fr1 $b"] -row 1 -column 99
+ 	set instparms(profilenum) 1
+	ShowInstProfile $b
+	return
+    }
+    $topfr.n config -state normal
+    set col 0
+    grid [label $bnkfr.l4a -text "Radiation\ntype:" -anchor e -justify r] \
+	    -column $col -row 4 -sticky e -rowspan 2
+    set menu [tk_optionMenu $bnkfr.rad instparms(irad) "     "]
+    $bnkfr.rad config -width 6
+    
+    grid $bnkfr.rad -column [incr col] -row 4 -sticky w -rowspan 2
+    grid [radiobutton $bnkfr.c4a -text Monochromatic \
+	    -command "disableWaveBoxes $bnkfr $b" \
+	    -variable instparms(wavemode) -value 1] \
+	    -column [incr col] -row 4 -sticky w
+    grid [radiobutton $bnkfr.c4b -text Dual \
+	    -command "disableWaveBoxes $bnkfr $b" \
+	    -variable instparms(wavemode) -value 2] \
+	    -column $col -row 5 -sticky w
+
+	   
+    grid [label $bnkfr.l4 -text "Wavelength: "] \
+	    -column [incr col] -row 4 -sticky e -rowspan 2
+    grid [entry $bnkfr.e4d -textvariable instdat(difc$b) -width 10] \
+	    -column [incr col] -row 5 -sticky ew 
+    grid [label $bnkfr.l4d -text Primary] -column $col -row 4 -sticky ew
+    grid [entry $bnkfr.e4e -textvariable instdat(difa$b) -width 10] \
+	    -column [incr col] -row 5 -sticky ew 
+    grid [label $bnkfr.l4e -text Secondary] -column $col -row 4 -sticky ew
+    # at present, the ratio is not read from the INST file, so 
+    # there is no point in allowing the use to change it.
+#    grid [entry $bnkfr.e4f -textvariable instdat(kratio$b) -width 10] \
+#	    -column [incr col] -row 5 -sticky ew 
+    grid [label $bnkfr.e4f -textvariable instdat(kratio$b) -width 10] \
+	    -column [incr col] -row 5 -sticky ew 
+    grid [label $bnkfr.l4f -text ratio] -column $col -row 4 -sticky ew
+
+    set col 0
+    grid [label $bnkfr.l6 -text "Zero\nCorrection:" \
+	    -anchor e -justify r] \
+	    -column $col -row 6 -sticky e
+    grid [entry $bnkfr.e6 -textvariable instdat(zero$b) -width 10] \
+	    -column [incr col] -row 6 -sticky ew
+
+    set col 0
+    grid [label $bnkfr.l7 -text "Polarization\nCorrection:" \
+	    -anchor e -justify r] \
+	    -column $col -row 7 -sticky e
+    grid [radiobutton $bnkfr.c7a -text "Diffracted Beam" \
+	    -variable instdat(ipola$b) -value 0] \
+	    -column [incr col] -row 7 -sticky w
+    grid [radiobutton $bnkfr.c7b -text "Incident Beam" \
+	    -variable instdat(ipola$b) -value 1] \
+	    -column [incr col] -row 7 -sticky w
+    grid [radiobutton $bnkfr.c7c -text "None" \
+	    -variable instdat(ipola$b) -value 2] \
+	    -column [incr col] -row 7 -sticky w
+    grid [label $bnkfr.l7a -text "Polarization\nFraction:" \
+	    -anchor e -justify r] \
+	    -column [incr col] -row 7 -sticky e
+    grid [entry $bnkfr.e7 -textvariable instdat(pola$b) -width 10] \
+	    -column [incr col] -row 7 -sticky ew
+
+    grid [frame [set prfrm $bnkfr.prof] -bd 2 -relief groove] \
+	    -column 0 -columnspan 99 -row 8
+    grid [label $prfrm.l1 -text "Select profile: "] -column 0 -row 0
+    grid [frame $prfrm.fr] -column 1 -columnspan 99 -row 0 -sticky w
+    grid [frame $prfrm.fr1] -column 0 -columnspan 99 -row 2
+    set instparms(profileframe) $prfrm.fr1
+    for {set j 1} {$j <= $instparms(proftypes${b})} {incr j} {
+	grid [radiobutton $prfrm.fr.$j -text $j -value $j \
+		-command "ShowInstProfile $b" \
+		-variable instparms(profilenum)] -row 1 -column $j
+    }
+    grid [button $prfrm.fr.a -text "Add profile" \
+	    -command "AddInstProfile $box $b"] -row 1 -column 98
+    grid [button $prfrm.fr.n -text "Import profile" \
+	    -command "ImportInstProfile $box $prfrm.fr1 $b"] -row 1 -column 99
+    $menu delete 0 end
+    foreach lbl {Cr Fe Cu Mo Ag Other} \
+	    val { 1  2  3  4  5     0} {
+	$menu add radiobutton -value $val -label $lbl \
+		-command "setRadLabel $b" \
+		-variable instdat(rad$b)
+    }
+    if {$instdat(difa$b) == 0.0} {
+	set instparms(wavemode) 1
+    } else {
+	set instparms(wavemode) 2
+    }
+    switch $instdat(rad$b) {
+	0 {set instparms(irad) Other}
+	1 {set instparms(irad) Cr}
+	2 {set instparms(irad) Fe}
+	3 {set instparms(irad) Cu}
+	4 {set instparms(irad) Mo}
+	5 {set instparms(irad) Ag}
+    }
+    setRadLabel $b
+    disableWaveBoxes $bnkfr $b
+    set instparms(profilenum) 1
+    ShowInstProfile $b
+}
+
+proc ImportInstProfile {box frame b} {
+    global instparms instdat
+    set j $instparms(profilenum)
+
+    set filename [tk_getOpenFile \
+	    -title "Select GSAS Experiment file\nor press Cancel." \
+	    -parent . -defaultextension EXP \
+	    -filetypes {{"GSAS Experiment file" ".EXP"}}]
+    if {$filename == ""} {return}
+    global wishshell expgui
+    set result {}
+    catch {
+	set result [exec $wishshell \
+		[file join $expgui(scriptdir) dumpprof.tcl] $filename]
+    } errmsg
+    if {[set nhist [llength $result]] == 0} {
+	set msg "No profile information was read from file $filename"
+	MyMessageBox -parent . -title "No histograms read" \
+		-message $msg -icon warning -type Sorry -default sorry 
+		#-helplink "expguierr.html Customizewarning"
+	return
+    }
+    set i -1
+    set hlist {}
+    set prlist {}
+    foreach histrec $result {
+	incr i
+	set h [lindex $histrec 0]
+	set type [string range [lindex $histrec 1] 0 3]
+	# instrument parameters
+	set instparms(hstcons$h) [string range [lindex $histrec 1] 4 end]
+	if {[string range $type 0 2] == \
+		[string range $instdat(banktype) 0 2]} {
+	    lappend hlist $h
+	    lappend prlist [lrange $histrec 2 end]
+	}
+    }
+    if {[llength $hlist] == 0} {
+	set msg "No histograms of type \"$instparms(banklabel)\" were found"
+	MyMessageBox -parent . -title "No matching histograms" \
+		-message $msg -icon warning -type Sorry -default sorry 
+		#-helplink "expguierr.html Customizewarning"
+	return
+    }
+
+    catch {destroy $instparms(top).sel}
+    toplevel [set top $instparms(top).sel]
+    wm title $top "Select histogram and phase to select"
+    grid [label $top.l1 -text "Histogram: "] -column 1 -row 1
+    set menu [tk_optionMenu $top.w instparms(histimport) ""]
+    $menu delete 0 end
+    if {[llength $hlist] > 10} {
+	set h [lrange $hlist 0 9]
+	set pr [lrange $prlist 0 9]
+	set hlist [lrange $hlist 10 end]
+	set prlist [lrange $prlist 10 end]
+	set j 0
+	while {[llength $h] > 0} {
+	    set label "[lindex $h 0]-[lindex $h end]"
+	    $menu add cascade -label $label -menu $menu.$j
+	    menu $menu.$j
+	    foreach val $h pl $pr {
+		$menu.$j add radiobutton -value $val -label $val \
+			-command "instSetPhaseList [list $pl]" \
+			-variable instparms(histimport)
+	    }
+	    set h [lrange $hlist 0 9]
+	    set pr [lrange $prlist 0 9]
+	    set hlist [lrange $hlist 10 end]
+	    set prlist [lrange $prlist 10 end]
+	    incr j
+	}
+    } else {
+	foreach val $hlist ph $prlist {
+	    $menu add radiobutton -value $val -label $val \
+		    -command "instSetPhaseList [list $ph]" \
+		    -variable instparms(histimport)
+	}
+    }
+    grid $top.w -column 2 -row 1 -columnspan 2 -sticky w
+    set instparms(histimport) [lindex $hlist 0]
+    grid [label $top.l2 -text "Phase: "] -column 1 -row 2
+    set col 1
+    foreach h {1 2 3 4 5 6 7 8 9} {
+	grid [radiobutton $top.r$h \
+		-variable instparms(phaseimport) -value $h -text $h \
+		] -column [incr col] -row 2
+    }
+    grid [frame $top.prof] -column 0 -columnspan 99 -row 3
+    grid [button $top.b1 -text Import -command "" -state disabled] \
+	    -column 0 -columnspan 2 -row 4
+    grid [button $top.b2 -text Cancel -command "destroy $top"] \
+	    -column 2 -columnspan 2 -row 4
+
+    # there a single histogram, select it
+    if {[llength $hlist] == 1} {
+	set instparms(histimport) $hlist
+	instSetPhaseList [lindex $prlist 0]
+    } else {
+	set instparms(histimport) {}
+    }
+    putontop $top
+    tkwait window $top
+    afterputontop 
+}
+
+proc instSetPhaseList {proflist} {
+    global instparms
+    set top $instparms(top).sel
+    set instparms(phaseimport) {}
+    $top.b1 config -state disabled -command ""
+    foreach h {1 2 3 4 5 6 7 8 9} {
+	$top.r$h config -state disabled -command ""
+    }
+    foreach item $proflist {
+	set h [lindex $item 0]
+	$top.r$h config -state normal \
+		-command "instSelectPhase [list $item]"
+    }
+    eval destroy [winfo children [set frame $top.prof]]
+    if {[llength $proflist] == 1} {$top.r$h invoke}
+}
+
+proc instSelectPhase {proflist} {
+    global instparms instdat expgui
+    set top $instparms(top).sel
+    eval destroy [winfo children [set frame $top.prof]]
+    set row 0
+    set col 0
+    set num [lindex $proflist 1]
+    set T [string range $instdat(banktype) 2 2]
+    set lbllst ""
+    catch {set lbllst $expgui(prof-${T}-names)}
+    set lbl [lindex "{} $lbllst" $num]
+    grid [label $frame.${col}_$row -justify left -anchor w \
+	    -text "Profile type $num: $lbl"] \
+	    -column $col -row $row -columnspan 99 -sticky w
+    incr row
+    set col 0
+    grid [label $frame.${col}_$row -text "Peak cutoff"  -padx 4] \
+	    -column $col -row $row -sticky e
+    incr col
+    grid [label $frame.${col}_$row -text "[lindex $proflist 2]" \
+	    -relief groove -bd 2 -padx 2] \
+	    -column $col -row $row -sticky ew
+    incr col
+    set N $num
+    set T [string range $instdat(banktype) 2 2]
+    set lbllist ""
+    global expgui
+    catch {set lbllist $expgui(prof-${T}-$N)}
+    set i 0
+    foreach lbl $lbllist val [lrange $proflist 3 end] {
+	incr i
+	if {$col > 6} {set col 0; incr row}
+	grid [label $frame.${col}_$row -text $lbl -padx 4] \
+		-column $col -row $row -sticky e
+	incr col
+	grid [label $frame.${col}_$row -text $val \
+		-bd 2 -padx 2 -relief groove] \
+		-column $col -row $row -sticky ew
+	incr col
+    }
+    $top.b1 config -state normal \
+	    -command "instSetProfile [list $proflist]; destroy $top"
+}
+
+proc instSetProfile {proflist} {
+    global instparms instdat expgui
+    set b $instparms(bank)
+    set j $instparms(profilenum)
+    set N [set instdat(proftype${b}_$j) [lindex $proflist 1]]
+    set T [string range $instdat(banktype) 2 2]
+    set lbllist ""
+    catch {set lbllist $expgui(prof-${T}-$N)}
+    set instdat(profcut${b}_$j) [lindex $proflist 2]
+    set i 0
+    foreach lbl $lbllist val [lrange $proflist 3 end] {
+	incr i
+	if {$val == ""} {set val "0.0"}
+	set instdat(prof${b}_${j}_$i) $val
+    }
+    # grab Diffractometer constants
+    if {$instparms(ImportDiffConst)} {
+	set h $instparms(histimport)
+	set difcons [lindex $instparms(hstcons$h) 0]
+	if {[string range $instdat(banktype) 2 2] == "T"} {
+	    # TOF grab Difc, difA & zero
+	    set instdat(difc$b) [lindex $difcons 0]
+	    set instdat(difa$b) [lindex $difcons 1]
+	    set instdat(zero$b) [lindex $difcons 2]
+	} elseif {[string range $instdat(banktype) 2 2] == "E"} {
+	    set instdat(difc$b) [lindex $difcons 0]
+	    set instdat(pola$b) [lindex $difcons 4]
+	} else {
+	    set instdat(difc$b) [lindex $difcons 0]
+	    set instdat(difa$b) [lindex $difcons 1]
+	    set instdat(zero$b) [lindex $difcons 2]
+	    set instdat(ipola$b) [lindex $difcons 3]
+	    set instdat(pola$b) [lindex $difcons 4]
+	    set box $instparms(top).b1
+	    set topfr $box.a
+	    set bnkfr $box.b
+	    if { [lindex $difcons 1] == 0.0} {
+		$bnkfr.c4a invoke
+	    } else {
+		$bnkfr.c4b invoke
+	    }
+	}
+    }
+    ShowInstProfile $b
+}
+
+proc AddInstProfile {box b} {
+    global instparms instdat
+    incr instparms(proftypes${b})
+    instShowBank $box
+    set instparms(profilenum) $instparms(proftypes${b})
+    set instdat(proftype${b}_$instparms(profilenum)) " "
+    ShowInstProfile $b
+}
+
+proc ShowInstProfile {b} {
+    global instparms instdat expgui
+    set frame $instparms(profileframe)
+    if {![winfo exists $frame]} return
+    set j $instparms(profilenum)
+    eval destroy [winfo children $frame]
+    set row 0
+    set col 0
+    grid [label $frame.${col}_$row -text "Profile\ntype"] \
+	    -column $col -row $row
+    incr col
+    set menu [tk_optionMenu $frame.${col}_$row instdat(proftype${b}_$j) " "]
+    grid $frame.${col}_$row -column $col -row $row -sticky ew
+    $menu delete 0 end
+    set T [string range $instdat(banktype) 2 2]
+    set lbllst ""
+    catch {set lbllst $expgui(prof-${T}-names)}
+    set val 0
+    foreach lbl $lbllst {
+	incr val
+	$menu add radiobutton -value $val -label "$val) $lbl" \
+		-command "instInitProf; ShowInstProfile $b" \
+		-variable instdat(proftype${b}_$j)
+    }
+    if {$instdat(proftype${b}_$j) == " "} return
+
+    incr col
+    grid [label $frame.${col}_$row -text "Peak\ncutoff"] \
+	    -column $col -row $row
+    incr col
+    if [catch {set instdat(profcut${b}_$j)}] {
+	set instdat(profcut${b}_$j) 0.01
+    }
+    grid [entry $frame.${col}_$row -width 10 \
+	    -textvariable instdat(profcut${b}_$j)] \
+	    -column $col -row $row
+    incr row
+    set col 0
+    set N $instdat(proftype${b}_$j)
+    set T [string range $instdat(banktype) 2 2]
+    set lbllist ""
+    global expgui
+    catch {set lbllist $expgui(prof-${T}-$N)}
+    set i 0
+    foreach lbl $lbllist {
+	incr i
+	if {$col > 6} {set col 0; incr row}
+	grid [label $frame.${col}_$row -text $lbl] \
+		-column $col -row $row
+	incr col
+	if [catch {set instdat(prof${b}_${j}_$i)}] {
+	    set instdat(prof${b}_${j}_$i) 0.0
+	}
+	grid [entry $frame.${col}_$row -width 14 \
+		-textvariable instdat(prof${b}_${j}_$i)] \
+		-column $col -row $row
+	incr col
+    }
+    # reset the number of terms to match the # of labels
+    set instparms(profterms${b}_${j}) $i
+}
+
+proc instInitProf {} {
+    global instparms instdat
+    set b $instparms(bank)
+    set j $instparms(profilenum)
+    set N $instdat(proftype${b}_$j)
+    set T [string range $instdat(banktype) 2 2]
+    global expgui
+    set i 0
+    set lbllist ""
+    catch {set lblist $expgui(prof-${T}-$N)}
+    foreach lbl $lbllist {
+	incr i
+	set instdat(prof${b}_${j}_$i) 0.0
+    }
+    # reset the number of terms to match the # of labels
+    set instparms(profterms${b}_${j}) $i
+}
+
+proc disableWaveBoxes {frame b} {
+    global instparms instdat
+    if {$instparms(banklabel) == "CW neutron"} {
+	set instparms(wavemode) 1
+	set mode disabled
+	set color gray
+    } else {
+	set mode normal
+	set color black
+    }
+    $frame.rad config -state $mode
+    foreach v {c4b c7a c7b c7c e7} {
+	$frame.$v config -state $mode -fg $color
+    }
+    foreach v {l7 l7a} {
+	$frame.$v config -fg $color
+    }
+
+    if {$instparms(wavemode) == 1} {
+	set mode disabled
+	set color gray
+	if {$instdat(difa$b) != 0} {set instdat(difa$b) 0.0}
+    } else {
+	set mode normal
+	set color black
+    }
+    foreach w {e4e e4f l4e l4f} {
+	catch {$frame.$w config -state $mode}
+	catch {$frame.$w config -fg $color}
+    }
+    # for now leave kratio gray, since the value is not used
+    foreach w {e4f l4f} {
+	catch {$frame.$w config -state disabled}
+	catch {$frame.$w config -fg gray}
+    }
+}
+
+proc setRadLabel {b} {
+    global instparms instdat
+    switch $instdat(rad$b) {
+	0 {set instparms(irad) Other}
+	1 {
+	    set instparms(irad) Cr
+	    set instdat(difc$b) 2.28970
+	    set instdat(difa$b) 2.29361
+	}
+	2 {
+	    set instparms(irad) Fe
+	    set instdat(difc$b) 1.93604
+	    set instdat(difa$b) 1.93998
+	}
+	3 {
+	    set instparms(irad) Cu
+	    set instdat(difc$b) 1.54056
+	    set instdat(difa$b) 1.54439
+	}
+	4 {
+	    set instparms(irad) Mo
+	    set instdat(difc$b) 0.70930
+	    set instdat(difa$b) 0.71359
+	}
+	5 {
+	    set instparms(irad) Ag
+	    set instdat(difc$b) 0.55941
+	    set instdat(difa$b) 0.56380
+	}
+    }
+    if {$instparms(wavemode) == 1} {
+	if {$instdat(difa$b) != 0} {set instdat(difa$b) 0.0}
+    } else {
+	if {$instdat(kratio$b) != 0.5} {set instdat(kratio$b) 0.5}
+    }
+}
+
+proc traceinstdat {args} {
+    global instparms
+    incr instparms(changes)
+    if {$instparms(filename) != ""} {
+	$instparms(savebutton) config -state normal
+    }
+}
+
+proc instConfirmQuit {} {
+    global instparms
+    if {$instparms(changes) == 0} {
+	destroy $instparms(top)
+	return
+    }
+    set ans [MyMessageBox -parent . -title "Unsaved Changes" \
+	    -message "You have made changes. Are you sure you want to exit?" \
+	    -icon question -type "Exit Cancel" -default cancel]
+    if {$ans == "exit"} {
+	destroy $instparms(top)
+	return
+    }
+}
+
+proc instMakeWindow {"filename {}"} {
+    global instparms instdat
+
+    set instparms(top) .instedit
+    catch {toplevel $instparms(top)}
+    eval destroy [winfo children $instparms(top)]
+
+    if {$filename == ""} {
+	set instparms(filename) [tk_getOpenFile \
+		-title "Select Instrument parameter file\nor press Cancel to create a new file." \
+		-parent $instparms(top) -defaultextension .ins \
+		-filetypes {{"Instrument parameters file" ".ins .inst .prm"} {All *.*}}]
+    } elseif {$filename == "(new)"} {
+	set instparms(filename) ""
+    } else {
+	set instparms(filename) $filename
+    }
+
+    grid [frame $instparms(top).b1 -bd 2 -relief groove] -column 1 -row 1
+    grid [frame $instparms(top).b1.a] -column 0 -row 0 -sticky ew
+    grid [frame $instparms(top).b1.b] -column 0 -row 1 -sticky ew
+
+    instInit
+    if {[file exists $instparms(filename)]} {
+	instload $instparms(filename)
+	instLoadAllBanks
+	instMakeBankSel $instparms(top).b1
+	set instparms(bank) 1
+	instShowBank $instparms(top).b1
+    } else {
+	set instdat(lastbank) 0
+	instMakeBankSel $instparms(top).b1
+	instNewBank $instparms(top).b1
+    }
+    set instparms(changes) 0
+    wm protocol $instparms(top) WM_DELETE_WINDOW instConfirmQuit
+    if {$instparms(filename) == ""} {
+	wm title $instparms(top) "Editing unnamed instrument parameter file"
+    } else {
+	wm title $instparms(top) "Editing instrument parameter file $instparms(filename)"
+    }
+    bind $instparms(top) <Control-KeyPress-c> instConfirmQuit
+    set instparms(changes) 0
+    # set up a trace
+    trace variable instdat w traceinstdat
+    putontop $instparms(top)
+    tkwait window $instparms(top)
+    afterputontop
+    # delete the trace
+    foreach v [trace vinfo instdat] {eval trace vdelete instdat $v}
+}
+

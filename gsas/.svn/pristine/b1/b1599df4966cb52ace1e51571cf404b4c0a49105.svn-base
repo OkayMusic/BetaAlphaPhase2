@@ -1,0 +1,5 @@
+F 0.3
+S * 1.329 .01 C N              !peptide chain
+S * 1.249 .01 C OXT
+S * 3.80 .1 CA CA
+S CYS 2.031 .01 SG SG          !disulfides

@@ -1,0 +1,882 @@
+#!/bin/sh
+# the next line restarts this script using wish found in the path\
+exec wish "$0" "$@"
+# If this does not work, change the #!/usr/bin/wish line below
+# to reflect the actual wish location and delete all preceeding lines
+#
+# (delete here and above)
+#!/usr/bin/wish
+# $Id: lstview,v 1.19 2008/04/15 17:26:54 toby Exp toby $
+set Revision {$Revision: 1.19 $ $Date: 2008/04/15 17:26:54 $}
+# display a .LST file in a text box
+# updates 8/26 add bindings for page-up, -down, uparrow, downarrow
+# read from gzip .LST.gz files using gunzip and then append the .LST file
+# start work on plotting variables change next line to use 
+package require Tk
+set txtvw(plotvars) 1
+set txtvw(font) "Courier"
+set txtvw(menulength) 25
+set txtvw(stringcount) 0
+set txtvw(string) {}
+set txtvw(sum) 0
+set txtvw(hideplot) 0
+set txtvw(printcommand) lpr
+# maximum characters to read initially from a .LST file
+set txtvw(maxchars) 1000000
+# what are we running here?
+set program [file tail $argv0]
+# fix up problem with starkit tcl
+if {$program != "lstview" && $program != "macromon"} {
+    set program [file tail [info script]]
+}
+if {$tcl_platform(platform) == "windows"} {
+   # windows is slow!
+   set txtvw(maxchars) 200000
+}
+if {[set expnam [lindex $argv 0]] == ""} {
+    set expnam [tk_getOpenFile -initialdir [pwd] \
+		    -parent . \
+		    -filetypes {{"GSAS LST files" .LST} {Everything .*}} \
+		    -defaultextension .LST  \
+		    -title "Choose Listing file to read"]
+    if {$expnam == ""} {exit}
+}
+
+if { ! [string match "*.LST" $expnam]} {
+    set filename $expnam.LST
+} else {
+    set filename $expnam
+}
+if {![file exists $filename]} {
+    tk_dialog .warn Notify "Filename $filename not found" error 0 OK
+    exit
+}
+
+if {[string match "*_macout*" $expnam]} {
+    set mode Macro
+    regsub "_macout" [file root [file tail $expnam]] "" expnam
+} elseif {$::program == "macromon"} {
+    set mode Macro
+} else {
+    set mode normal
+}
+
+set zfil {}
+set lstfp {}
+# is there a compressed version of the file?
+if {[file exists $filename.gz] && $tcl_platform(platform) != "windows"} {
+    set zfil [open "|gunzip < $filename.gz" r]
+}
+set box {}
+set txtvw(followcycle) 1
+
+proc waitmsg {message} {
+    set w .wait
+    # kill any window/frame with this name
+    catch {destroy $w}
+    pack [frame $w]
+    frame $w.bot -relief raised -bd 1
+    pack $w.bot -side bottom -fill both
+    frame $w.top -relief raised -bd 1
+    pack $w.top -side top -fill both -expand 1
+    label $w.msg -justify left -text $message -wrap 3i
+    catch {$w.msg configure -font \
+                -Adobe-Times-Medium-R-Normal--*-180-*-*-*-*-*-*
+    }
+    pack $w.msg -in $w.top -side right -expand 1 -fill both -padx 3m -pady 3m
+    label $w.bitmap -bitmap info
+    pack $w.bitmap -in $w.top -side left -padx 3m -pady 3m
+    update 
+}
+
+proc donewaitmsg {} {
+    catch {destroy .wait}
+}
+waitmsg "Reading $filename, Please wait"
+
+set txtvw(runnumber) 0
+
+proc findcyc {win menu {pos 0.0}} {
+    global txtvw
+    global trackinglist
+    set i 0
+    set lastpos {}
+    # loop over cycles
+    set startpos $pos
+    # get current cycle number
+    set pos [$win search -regexp -count chars \
+	    {Cycle *[0-9]+ +There} $pos+1line end]
+    while {$pos != ""} {
+	# add the current cycle number to the menu
+	set line [lindex [split $pos .] 0]
+	$win tag add cycle $line.1 $line.10
+	incr i
+	set cycle {}
+	regexp {Cycle *([0-9]+) +There} [$win get $pos $line.end] x cycle
+	if {$cycle != ""} {
+	    set lastpos $pos
+	    set txtvw(lastcycle) "Cycle $cycle"
+	    .a.goto.menu entryconfigure 1 -state normal
+	    $menu insert 1 command \
+		    -font 6x12 \
+		    -label "Cycle $cycle" \
+		    -command "$win see $pos"
+	    if {[$menu index end] > $txtvw(menulength)} {$menu delete end}
+	}
+	# get next cycle number
+	set nextpos [$win search -regexp -count chars \
+		{Cycle *[0-9]+ +There} $pos+1line end]
+	if {$nextpos == ""} {
+	    set epos end
+	} else {
+	    set epos $nextpos
+	}
+
+	# loop to highlight all Rwp & Rp values
+	set npos $startpos
+	set npos [$win search -regexp -count chars \
+		{Hstgm *[0-9]+} $npos+1line $pos]
+	while {$npos != ""} {
+	    set line [lindex [split $npos .] 0]
+	    set x [$win get $line.0 $line.end]
+	    scan $x %s%d%s%d%d%f%f%f a hst c d e f rwp rp
+	    foreach d {Rwp Rp} value "$rwp $rp" {
+		set v ${d}_$hst
+		set var tracklist_$v
+		set trackinglist($v) "$d hist $hst"
+		global $var
+		set ${var}($cycle) $value
+	    }
+	    $win tag add rval $npos $line.end
+	    set npos [$win search -regexp -count chars \
+		{Hstgm *[0-9]+} $npos+1line $pos]
+	}
+	# get the CHI**2 value
+	set chipos [$win search {Reduced CHI**2 =} $pos $epos]
+	if {$chipos != ""} {
+	    $win tag add chi $chipos+8chars $chipos+23chars
+	    set chi [string trim [$win get $chipos+16chars $chipos+23chars]]
+	    set txtvw(lastchi) "Chi**2 $chi"
+	    set var tracklist_chi2
+	    set trackinglist(chi2) "red. Chi squared"
+	    global $var
+	    set ${var}($cycle) $chi
+	}
+	set sumpos [$win search {Final variable sum} $pos $epos]
+	if {$sumpos != ""} {
+	    set line [$win get $sumpos "$sumpos lineend"]
+	    regexp {: *([0-9\.]+) } $line a finalshift
+	    set txtvw(finalshift) "Shift/SU $finalshift"
+	    set var tracklist_fshft2
+	    set trackinglist(fshft2) "Sum((shft/su)**2)"
+	    global $var
+	    set ${var}($cycle) $finalshift
+	}
+	# loop to highlight all R(F**2) values
+	set npos $pos
+	set npos [$win search -regexp -count chars \
+		{Histogram *[0-9]+} $npos+1line $epos]
+	while {$npos != ""} {
+	    set line [lindex [split $npos .] 0]
+	    set x [$win get $line.0 $line.end]
+	    catch {
+		regexp {gram *([0-9]+).*\) =(.*)} $x a hst rf2
+		set var tracklist_Rbragg_$hst
+		set trackinglist(Rbragg_$hst) "R(Bragg) hist $hst"
+		global $var
+		set ${var}($cycle) $rf2
+	    }
+	    $win tag add rval $npos $line.end
+	    set npos [$win search -regexp -count chars \
+		    {Histogram *[0-9]+} $npos+1line $epos]
+	}
+	# get ready to loop again
+	set startpos $pos
+	set pos $nextpos
+    }
+    if {$txtvw(followcycle) && $lastpos != ""} {$win see $lastpos}
+}
+
+proc findrun {win {menu ""} {pos 0.0}} {
+    global txtvw
+    while {$pos != ""} {
+	set pos [$win search "Program GENLES" $pos+1line end]
+        if {$menu != "" && $pos != ""} {
+	    incr txtvw(runnumber)
+	    .a.goto.menu entryconfigure 2 -state normal
+	    $menu insert 1 command \
+                    -font 6x12 \
+                    -label "Run $txtvw(runnumber)" \
+                    -command "$win see $pos"
+	    if {[$menu index end] > $txtvw(menulength)} {$menu delete end}
+	}
+    }
+}
+
+
+proc findsum {win menu {pos 0.0}} {
+    global txtvw
+    global trackinglist
+    set pos [$win search {Summary table} $pos+1line end]
+    # found a summary, now search back for the cycle number
+    while {$pos != ""} {
+	# add it to the menu
+	incr txtvw(sum)
+	.a.goto.menu entryconfigure 3 -state normal
+	$menu insert 1 command \
+		-font 6x12 \
+		-label "Summary $txtvw(sum)" \
+		-command "$win see $pos"
+	if {[$menu index end] > $txtvw(menulength)} {$menu delete end}
+	
+	set npos [$win index "$pos+1line linestart"]
+	set fpos [$win index $pos-1line]
+	
+	if {!$txtvw(plotvars)} continue
+
+	# parse outs the last listed cycle number
+	set lstcyc {}
+	set fpos [$win search -backwards -nocase -regexp {cycle *[0-9]+ } $pos]
+	if {$fpos != ""} {
+	    set end [$win index "$fpos lineend"]
+	    set lstcyc [lindex [$win get $fpos $end] 1]
+	}
+	# get the cycle offset
+	set ncyc [lindex [$win get $npos "$npos lineend"] end]
+	set npos [$win index "$npos+1line linestart"]
+	
+	set end [$win index end]
+	# now read through the summary table
+	while {![string match *Fraction* \
+		[set line [$win get $npos "$npos lineend"]] \
+		]} {
+	    set v1 [string range $line 1 9]
+	    # make a name without spaces
+	    set v "zz$v1"
+	    regsub -all " " $v "_" v
+	    set var tracklist_$v
+	    catch {
+		# are there any invalid numbers in the list?
+		foreach value [string range $line 10 end] {
+		    expr [string trim $value]
+		}
+
+		# passed syntax check, add to list
+		set trackinglist($v) "shift/SU $v1"
+		global $var
+		
+		set i 0
+		foreach value [string range $line 10 end] {
+		    incr i
+		    set cycle [expr {$lstcyc - $ncyc + $i}]
+		    set ${var}($cycle) $value
+		}
+	    }
+	    set npos [$win index "$npos+1line linestart"]
+	    if {$npos == $end} break
+	}
+	set pos [$win search {Summary table} $npos+1line end]
+    }
+}
+
+proc findsetstring {win string {menu ""} {pos 0.0}} {
+    global txtvw 
+    while {$pos != ""} {
+	set pos [$win search -regexp -count chars \
+		$string $pos+1line end]
+        if {$menu != "" && $pos != ""} {
+	    $win tag add found $pos "$pos + $chars chars"
+	    incr txtvw(stringcount)
+	    $menu insert 1 command \
+                    -font 6x12 \
+                    -label "loc #$txtvw(stringcount)" \
+                    -command "$win see $pos"
+	    if {[$menu index end] > $txtvw(menulength)} {$menu delete end}
+	}
+    }
+}
+
+proc setsearchstring { } {
+    global txtvw
+    set txtvw(stringcount) 0
+    .a.goto.menu entryconfigure 5 -state disabled -label ""
+    .a.goto.menu.str delete 1 end
+    catch {.txt tag delete found}
+    .txt tag config found -foreground red
+    if {[string trim $txtvw(entry)] == ""} {
+	set txtvw(string) {}
+	return
+    } else {
+	set txtvw(string) [string trim $txtvw(entry)]
+    }
+    findsetstring .txt $txtvw(string) .a.goto.menu.str
+    if {$txtvw(stringcount) > 0} {
+	.a.goto.menu entryconfigure 5 -state normal -label "$txtvw(string)..."
+    }
+}
+
+proc updatetext {"fil {}"} {
+    global txtvw filename tcl_platform lstfp
+    set repeat 0
+    if {$fil == ""} {
+	set repeat 1
+	if {$::mode == "Macro"} {
+	    after 500 updatetext
+	} else {
+	    after 5000 updatetext
+	}
+	set fil $lstfp
+    }
+    if {! [file exists abort_${::expnam}_macro.flag] && $::mode == "Macro"} {
+	.but.abort config -text "Abort Macro" -relief raised
+    }
+    if {$::program == "macromon" && ! [file exists running_${::expnam}_macro.flag]} {
+	exit
+    }
+
+    set txt {}
+    catch {set txt [read $fil]}
+    if {$txt == ""} return
+    if {$::program == "macromon"} {
+	set i [string last "Cycle " $txt]
+	set ii [expr {$i + 23}]
+	if {[
+	     regexp {Cycle *([0-9]+) +There} [string range $txt $i $ii] junk cycle
+	    ]} {
+	    set ::txtvw(lastcycle) "Cycle $cycle"
+	}
+	set i [string last "Reduced CHI**2 =" $txt]
+	set ii [expr {$i + 23}]
+	if {[
+	     regexp { *= *([.0-9]+) *} [string range $txt $i $ii] junk chi
+	    ]} {
+	    set ::txtvw(lastchi) "Chi**2 $chi"
+	}
+	set i [string last "Final variable sum" $txt]
+	set ii [string first "Time" $txt $i]
+	if {[
+	     regexp {: *([.0-9]+) *} [string range $txt $i $ii] junk finalshift
+	    ]} {
+	    set ::txtvw(finalshift) "Shift/SU $finalshift"
+	}
+	# resize 
+	wm geom . {}
+	return
+    }
+
+    .txt config -state normal
+    set oldend [.txt index end]
+    if {$::mode == "Macro"} {
+	regsub -all { *[0-9]+ *Out of *[0-9]+ *powder profile points processed *\n} $txt "" txt
+    }
+	
+    # truncate the text if too long
+    if {[string length $txt] > $txtvw(maxchars) && $repeat == 0} {
+	set beg [expr [string length $txt] - $txtvw(maxchars)]
+	.txt insert end "(first $beg characters in file skipped)\n"
+	.txt insert end [string range $txt $beg end]
+    } else {
+	.txt insert end $txt
+    }
+    # don't disable in Win as this prevents the highlighting of selected text
+    if {$tcl_platform(platform) != "windows"} {
+	.txt config -state disabled
+    }
+    update idletasks
+    findrun .txt .a.goto.menu.run $oldend
+    update
+    findcyc .txt .a.goto.menu.cyc $oldend
+    update
+    findsum .txt .a.goto.menu.sum $oldend
+    if {$::mode == "Macro"} {.txt see end}
+    update
+	
+    if {$txtvw(string) != ""} {
+	findsetstring .txt $txtvw(string) .a.goto.menu.str $oldend
+	if {$txtvw(stringcount) > 0} {
+	    .a.goto.menu entryconfigure 5 -state normal -label "$txtvw(string)..."
+	}
+    }
+}
+
+proc GetSearchString {} {
+    catch {destroy .str}
+    toplevel .str
+    grab .str
+    pack [frame .str.1] -side top
+    pack [frame .str.2] -side top
+    pack [label .str.1.l -text "Search String"] -side left
+    pack [entry .str.1.e -textvariable txtvw(entry) -width 12] -side left
+    pack [label .str.1.2 -text "(regexp)"] -side left
+    pack [button .str.2.ok -text "Search" -command \
+	    "setsearchstring; destroy .str" ] -side left
+    pack [button .str.2.q -text "Quit" -command \
+	    "destroy .str" ] -side left
+# bind to RETURN here    
+#    bind .str 
+}
+
+proc findstring {win str1 {str2 ""}} {
+    set pos [$win search -backwards $str1 end]
+    if {$pos == "" && $str2 != ""} {
+	set pos [$win search -backwards $str2 end]
+    }
+    if {$pos == ""} return
+    $win see $pos
+}
+
+proc SaveOptions {} {
+    global txtvw tcl_platform
+    if {$tcl_platform(platform) == "windows"} {
+	set fp [open c:/gsas.config a]
+    } else {
+	set fp [open [file join ~ .gsas_config] a]
+    }
+    puts $fp "# LSTVIEW saved options from [clock format [clock seconds]]"
+    foreach var {followcycle font printcommand} {
+	puts $fp "set txtvw($var) [list $txtvw($var)]"
+    }
+    close $fp
+}
+
+proc aboutgsas {} {
+    global Revision
+    tk_dialog .warn About "
+GSAS\n\
+R. B. Von Dreele, Argonne National Lab\n
+and A. C. Larson, Los Alamos (retired)\n\n\
+MACROMON\nB. H. Toby, Argonne National Lab\n\n\
+$Revision\n\
+" {} 0 OK
+}
+
+proc postingvars {} {
+    global trackinglist
+    eval destroy [winfo children .plot.c.f]
+    set i 0
+    foreach var [lsort [array names trackinglist]] {
+	grid [checkbutton .plot.c.f.$i -text $trackinglist($var) \
+		-pady 0 -command plotvars -variable plotlist($var)] \
+		-column 0 -row [incr i] -sticky w
+    }
+}
+
+proc makeplot {} {
+    # handle Tcl/Tk v8+ where BLT is in a namespace
+    #  use the command so that it is loaded
+    catch {blt::graph}
+    catch {
+	namespace import blt::graph
+    }
+    toplevel .plot
+    grid [graph .plot.g] -column 0 -row 0 -sticky news
+    canvas .plot.c \
+	    -scrollregion {0 0 5000 1000} -width 40 -height 250 \
+	    -yscrollcommand ".plot.s set"
+    scrollbar .plot.s -command ".plot.c yview"
+    grid .plot.c -column 1 -row 0 -sticky news
+	frame .plot.c.f -class SmallFont
+    .plot.c create window 0 0 -anchor nw -window .plot.c.f
+    grid columnconfigure .plot 0 -weight 1
+    grid rowconfigure .plot 0 -weight 1
+    Blt_ZoomStack .plot.g
+    Blt_ActiveLegend .plot.g
+    .plot.g config -title ""
+    .plot.g xaxis config -title "cycle"
+    .plot.g yaxis config -title ""
+    wm iconify .plot
+}
+
+proc plotvars {} {
+    raise .plot
+    eval .plot.g element delete [.plot.g element names]
+    global trackinglist
+    global plotlist
+    set num 0
+    foreach v [lsort [array names trackinglist]] {
+	set datalist {}
+	if $plotlist($v) {
+	    incr num
+	    set var tracklist_$v
+	    global $var
+	    set color [lindex {red green blue magenta cyan yellow} \
+		    [expr $num % 6]]
+	    foreach n [lsort -integer [array names $var]] {
+		lappend datalist $n [set ${var}($n)]
+	    }
+	    .plot.g element create "$var" -data $datalist -color $color \
+		    -label $trackinglist($v)
+	}
+    }
+}
+
+proc hideplot {} {
+    global txtvw
+    if {![winfo exists .plot]} {
+	makeplot
+	postingvars
+    }
+    # hide or show the plot
+    if {$txtvw(hideplot) != 1} {
+	wm iconify .plot
+    } else {
+	wm deiconify .plot
+	update idletasks
+	# size the box width & scrollregion height
+	set sizes [grid bbox .plot.c.f]
+	.plot.c config -scrollregion $sizes -width [lindex $sizes 2]
+	# is the scroll bar needed?
+	if {[winfo height .plot.c] >= [lindex $sizes 3]} {
+	    grid forget .plot.s
+	} else {
+	    grid .plot.s -column 2 -row 0 -sticky news
+	}
+    }
+}
+
+
+proc KillLSTfile {} {
+    global filename lstfp tcl_platform
+    # confirm the delete
+    set ans [tk_dialog .warn Notify \
+	    "OK to delete the contents of $filename?" "" 0 Yes No]
+    if {$ans != 0} return
+    # stop the updates
+    after cancel updatetext
+    # zero out the file
+    close $lstfp
+    set lstfp [open $filename w+]
+    .txt config -state normal
+    .txt delete 0.0 end
+    ClearMenus
+    updatetext
+}
+
+proc TrimLSTfile {} {
+    global filename lstfp tcl_platform txtvw
+    
+    # get the last refinement run position
+    set loc {}
+    # get the starting location 
+    catch {
+	set loc [lindex [.a.goto.menu.run entrycget 1 -command] end]
+	set loc [.txt index "$loc - 2lines"]
+	set txtvw(delete) [expr {100.*$loc/[.txt index end]}]
+	.txt see $loc
+
+    }
+    if {$loc == ""} {
+	set txtvw(delete) [expr {50.* \
+		([lindex [.txt yview] 0] + [lindex [.txt yview] 1])}]
+	set loc [expr {int(0.5+ $txtvw(delete) * [.txt index end]/100.)}].0
+    }
+
+    catch {toplevel .trim}
+    eval destroy [winfo children .trim]
+    wm title .trim "Trim $filename"
+    pack [label .trim.0 -text "File $filename has [expr {int([.txt index end])}] lines total."] -side top
+    pack [label .trim.1 -text "Select percentage of file to delete."] \
+	    -anchor w -side top
+    
+    # set the slider resolution so that 1 division is on the
+    # order of 1-2 lines
+    set res .5
+    while {$res > 200./[.txt index end] && $res > 0.01} {
+	if {[string match *5* $res]} {
+	    set res [expr $res/2.5]
+	} else {
+	    set res [expr $res/2.]
+	}
+    }
+    pack [scale .trim.2 -command HighlightText -orient horizontal \
+	    -variable txtvw(delete) \
+	    -resolution $res] -expand yes -fill x 
+    pack [frame .trim.3]
+    pack [button .trim.3.a -text Trim \
+	    -command {DeleteSelectedText; destroy .trim} \
+	    ] -side left
+    pack [button .trim.3.b -text Cancel -command {destroy .trim} ] -side left
+    # create a binding so that we can click on the text box
+    .txt tag delete b
+    .txt tag add b 0.0 end
+    .txt tag bind b <1> "ClickHighlightText %x %y"
+    # show the region pending delete
+    .txt tag delete pend
+    .txt tag add pend 0.0 $loc
+    .txt tag config pend -foreground grey
+}
+
+proc ClickHighlightText {x y} {
+    global txtvw
+    if {![winfo exists .trim]} return
+    set loc [.txt index "@$x,$y linestart"]
+    set txtvw(delete) [expr {100.*$loc/[.txt index end]}]
+    .txt tag delete pend
+    .txt tag add pend 0.0 $loc
+    .txt tag config pend -foreground grey
+}
+
+proc DeleteSelectedText {} {
+    global filename lstfp
+    .txt config -state normal
+    eval .txt delete [.txt tag nextrange pend 0.0]
+    # stop the updates
+    after cancel updatetext
+    # zero out the file
+    close $lstfp
+    set lstfp [open $filename w+]
+    puts $lstfp [.txt get 0.0 end]
+    .txt delete 0.0 end
+    ClearMenus
+    seek $lstfp 0
+    updatetext
+}
+
+proc ClearMenus {} {
+    foreach m {str run cyc sum} {
+	.a.goto.menu.$m delete 1 end
+    }
+    foreach num {1 2 3 5} {
+	.a.goto.menu entryconfigure $num -state disabled
+    }
+    global txtvw
+    set txtvw(runnumber) 0
+    set txtvw(sum) 0
+}
+
+proc HighlightText {args} {
+    global txtvw
+    set loc [expr {int(0.5+ $txtvw(delete) * [.txt index end]/100.)}].0
+    .txt tag delete pend
+    .txt tag add pend 0.0 $loc
+    .txt tag config pend -foreground grey
+    .txt see $loc
+}
+
+proc PrintSelection {} {
+    global txtvw
+    if {[catch {
+	set fp [open "| $txtvw(printcommand)" w]
+	puts $fp [selection get]
+	close $fp
+    } errmsg]} {
+	MyMessageBox -parent . -title "Print error" \
+	    -message "Error trying to print: $errmsg" \
+	    -icon warning -type Ignore -default ignore
+	# -helplink "expguierr.html Customizewarning"
+    }
+    catch {close $fp}
+}
+
+proc SetPrintCommand {} {
+    set bx .opt
+    catch {destroy $bx}
+    toplevel $bx
+    wm iconname $bx "Print options"
+    wm title $bx "Print options"
+
+    pack [label $bx.0 -text "Set Print Command" ] -side top
+    pack [frame $bx.c] -side top
+    pack [frame $bx.b] -side top
+    pack [label $bx.c.a -text "Command:"] -side left
+    pack [entry $bx.c.b -textvariable txtvw(printcommand) -width 40] \
+	    -side left
+    pack [button $bx.b.c -command "destroy $bx" -text Close ] -side right
+}
+
+proc AbortMacro {} {
+    .but.abort config -text "Macro aborting..." -relief sunken
+    close [open abort_${::expnam}_macro.flag w]
+}
+
+#----------------------------------------------------------------
+# where are we?
+set expgui(script) [info script]
+# translate links -- go six levels deep
+foreach i {1 2 3 4 5 6} {
+    if {[file type $expgui(script)] == "link"} {
+	set link [file readlink $expgui(script)]
+	if { [file  pathtype  $link] == "absolute" } {
+h	    set expgui(script) $link
+	} {
+	    set expgui(script) [file dirname $expgui(script)]/$link
+	}
+    } else {
+	break
+    }
+}
+
+# fixup relative paths
+if {[file pathtype $expgui(script)] == "relative"} {
+    set expgui(script) [file join [pwd] $expgui(script)]
+}
+set expgui(scriptdir) [file dirname $expgui(script) ]
+set expgui(docdir) [file join $expgui(scriptdir) doc]
+# location for web pages, if not found locally
+set expgui(website) 11bm.xor.aps.anl.gov/expguidoc/
+
+source [file join $expgui(scriptdir) gsascmds.tcl]
+source [file join $expgui(scriptdir) opts.tcl]
+
+# override options with locally defined values
+set filelist [file join $expgui(scriptdir) localconfig]
+if {$tcl_platform(platform) == "windows"} {
+    lappend filelist "c:/gsas.config"
+} else {
+    lappend filelist [file join ~ .gsas_config]
+}
+if {[catch {
+    foreach file $filelist {
+	if [file exists $file] {source $file}
+    }
+} errmsg]} {
+    set msg "Error reading file $file (aka [file nativename $file]): $errmsg"
+    MyMessageBox -parent . -title "Customize warning" \
+	-message $msg -icon warning -type Ignore -default ignore \
+	-helplink "expguierr.html Customizewarning"
+}
+
+set txtvw(lastchi) {}
+set txtvw(lastcycle) {}
+set txtvw(finalshift) {}
+if {$::program != "macromon"} {
+    text .txt -width 100 -wrap none \
+	-yscrollcommand ".yscroll set" \
+	-xscrollcommand ".xscroll set" 
+    if {$tcl_version >= 8.0} {.txt config -font $txtvw(font)}
+    scrollbar .yscroll -command ".txt yview"
+    scrollbar .xscroll -command ".txt xview" -orient horizontal
+    grid .xscroll -column 0 -row 2 -sticky ew
+    grid .txt -column 0 -row 1 -sticky nsew
+    grid .yscroll -column 1 -row 1 -sticky ns
+} else {
+    grid [label .msg -text "\nMacro running\n" -padx 20 -pady 5] -column 0 -row 1 -sticky nsew
+}
+grid columnconfigure . 0 -weight 1
+grid rowconfigure . 1 -weight 1
+wm title . "View $filename"
+wm iconname . $filename
+grid [frame .a -bd 2 -relief raised] -column 0 -row 0 -columnspan 2 -sticky ew
+pack [menubutton .a.file -text File -underline 0 -menu .a.file.menu] \
+	    -side left
+menu .a.file.menu
+if {$::program != "macromon"} {
+    .a.file.menu add command -label "Delete $filename" -command KillLSTfile
+    .a.file.menu add command -label "Trim $filename" -command TrimLSTfile
+}
+.a.file.menu add command -label Exit -command "destroy ."
+
+if {$::program != "macromon"} {
+    # windows copy command. Should not be needed in X windows
+    pack [menubutton .a.edit -text Edit -underline 0 -menu .a.edit.menu] \
+	-side left
+    menu .a.edit.menu
+    if {$tcl_platform(platform) == "windows"} {
+	.a.edit.menu add command -label copy \
+	    -command {catch {clipboard append [selection get]}}
+    } else {
+	.a.edit.menu add command -label "Print Selection" \
+	    -command {catch PrintSelection}
+    }
+
+    pack [menubutton .a.goto -text "Go To" -underline 0 -menu .a.goto.menu] \
+	-side left
+    menu .a.goto.menu
+    .a.goto.menu add cascade -label "Cycle #"  -menu .a.goto.menu.cyc \
+	-state disabled
+    menu .a.goto.menu.cyc
+    .a.goto.menu add cascade -label "Refinement Run #"  -menu .a.goto.menu.run \
+	-state disabled
+    menu .a.goto.menu.run
+    .a.goto.menu add cascade -label "Summary #"  -menu .a.goto.menu.sum \
+	-state disabled
+    menu .a.goto.menu.sum
+    .a.goto.menu add command -label "Set Search String" -command GetSearchString 
+    .a.goto.menu add cascade -label ""  -menu .a.goto.menu.str -state disabled
+    menu .a.goto.menu.str
+
+    pack [menubutton .a.options -text "Options" -underline 0 \
+	      -menu .a.options.menu] \
+	    -side left
+    menu .a.options.menu
+    .a.options.menu  add checkbutton -label "Auto Advance" -variable txtvw(followcycle) 
+    
+    if {$tcl_version >= 8.0} {
+	pack [label .a.fontl -text "  Font:"] -side left
+	set fontbut [tk_optionMenu .a.fontb txtvw(font) ""]
+	pack .a.fontb -side left
+	$fontbut delete 0 end
+	foreach f {5 6 7 8 9 10 11 12 13 14 15 16} {
+	    $fontbut add command -label "Courier $f" -font "Courier $f"\
+		-command "set txtvw(font) \"Courier $f\"; \
+		.txt config -font \$txtvw(font)"
+	}
+    }
+
+    if {$tcl_platform(platform) != "windows"} {
+	.a.options.menu add command -label "Set print command" -underline 1 \
+	    -command SetPrintCommand
+    }
+    .a.options.menu add command -label "Save Options" -underline 1 \
+	-command "SaveOptions"
+    if {$txtvw(plotvars) && ![catch {package require BLT}]} {
+	.a.options.menu add checkbutton -label "Show Plot" -command hideplot \
+	    -variable txtvw(hideplot)
+    }
+}
+pack [menubutton .a.help -text Help -underline 0 -menu .a.help.menu] -side right
+menu .a.help.menu
+.a.help.menu add command -command "MakeWWWHelp expgui.html LSTVIEW" \
+    -label "Web page"
+if {![catch {package require tkcon} errmsg]} {
+    .a.help.menu add command -label "Open console" -command {tkcon show}
+} elseif {$tcl_platform(platform) == "windows"} {
+    .a.help.menu add command -label "Open console" -command {console show}
+}
+.a.help.menu add command -command aboutgsas -label "About"
+
+grid [frame .but ] -column 0 -row 3 -columnspan 2 -sticky ew
+pack [label .but.lbl2 -textvariable txtvw(lastcycle) \
+	-relief sunken -bd 2] -side left
+pack [label .but.lbl3 -textvariable txtvw(lastchi) \
+	-relief sunken -bd 2] -side left
+pack [label .but.lbl4 -textvariable txtvw(finalshift) \
+	-relief sunken -bd 2] -side left
+if {$mode == "Macro"} {
+    pack [button .but.abort -text "Abort Macro "\
+	     -command AbortMacro] -side right
+}
+if {$::program != "macromon"} {
+    #bind all <Control-KeyPress-c> {destroy .}
+    bind . <KeyPress-Prior> ".txt yview scroll -1 page"
+    bind . <KeyPress-Next> ".txt yview scroll 1 page"
+    bind . <KeyPress-Up> ".txt yview scroll -1 unit"
+    bind . <KeyPress-Down> ".txt yview scroll 1 unit"
+    bind . <KeyPress-Home> ".txt yview 0"
+    bind . <KeyPress-End> ".txt yview end"
+    #pack [button .but.q -text close -command "destroy ." ] -side right
+    .txt tag config cycle -background yellow
+    .txt tag config rval -background  green
+    .txt tag config chi -background  green
+}
+if [file exists $filename] {
+    set lstfp [open $filename r]
+} else {
+    # create a file if it does not exist
+    set lstfp [open $filename w+]
+}
+donewaitmsg
+# seems to be needed in OSX
+update
+wm geom . [winfo reqwidth .]x[winfo reqheight .]
+#
+
+# read a file compressed file, if present
+if {$zfil != ""} {
+    updatetext $zfil
+    close $zfil
+}
+# read the initial file
+updatetext $lstfp
+# now start reading with updates
+updatetext

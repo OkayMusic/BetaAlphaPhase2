@@ -1,0 +1,461 @@
+<HTML>
+<HEAD>
+   <TITLE>UNIX Installation notes for EXPGUI</TITLE>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI, Windows">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<CENTER><H1>
+<HR noshade width="75%" size="2" align="center">
+Installing 
+<A HREF="expgui.html">
+EXPGUI
+</A>
+on Linux
+<HR noshade width="75%" size="2" align="center">
+</H1></CENTER>
+<P>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=CENTER><TR><TH>
+<B>Please note:</B>
+A new mechanism for installing GSAS & EXPGUI is now recommended. See
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallLinux">
+this link</a>. If this method is used, EXPGUI or a python script can
+be used to update GSAS & EXPGUI quickly and easily. The information
+below is all obsolete.
+Also, GSAS updates for the Silicon Graphics have not been produced for
+many years.
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+Note that root access is not required to load this GSAS/EXPGUI package.
+You may choose to do this work as root, so that the files may be installed 
+a central location (such as <tt>/usr/local</tt>).
+
+<H2>1. Prerequisites</H2>
+
+Installation of GSAS & EXPGUI requires X windows, which is loaded with 
+the operating system on virtually all Linux and SGI systems. 
+It also requires only the shared libraries typically found on standard 
+install configurations (tell me if I am wrong). 
+The Linux version is compiled with g77 v2.96 on a Redhat 7.1 machine.
+It should be compatible with most modern versions of Linux.
+The SGI version has been compiled with f77 on a SGI running IRIX 6.5. It should
+be compatible with most recent versions of IRIX.
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+This GSAS & EXPGUI is now distributed with a version of Tcl/Tk, 
+so installation of Tcl/Tk is no longer a prerequisite.
+
+<H2>2. Download the GSAS/EXPGUI Distribution</H2>
+<I>Make a note of where you download the file. In the following section
+it will be assumed the file was placed in</I> <tt>/tmp/</tt>.
+<DL>
+<DT>SGI:
+<DD>download file
+<A HREF="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/SGI_gsas+expgui.tar.gz">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/SGI_gsas+expgui.tar.gz</A> (~11 Mb) 
+by shift-clicking on the previous link.
+(<I>Alternately this file can also be downloaded from the CCP14 mirrors in</I>
+<a href="
+http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/SGI_gsas+expgui.tar.gz"
+>UK</a>,
+
+<a href="
+http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/SGI_gsas+expgui.tar.gz"
+>Canada</a>, 
+
+or
+
+<a href="
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/SGI_gsas+expgui.tar.gz"
+>Australia</a>).
+
+<DT>LINUX:
+<DD>download file
+<A HREF="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/LINUX_gsas+expgui.tar.gz">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/LINUX_gsas+expgui.tar.gz</A> (~10 Mb) 
+by shift-clicking on the previous link.
+(<I>Alternately this file can also be downloaded from the CCP14 mirrors in</I>
+<a href="
+http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/LINUX_gsas+expgui.tar.gz"
+>UK</a>, 
+(<a href="
+http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/LINUX_gsas+expgui.tar.gz"
+>Canada</a>, 
+
+or 
+
+<a href="
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/LINUX_gsas+expgui.tar.gz"
+>Australia</a>).
+
+</DL>
+
+<P>
+<H2>
+3. Unpack the distribution</H2>
+<I>In this step,
+it is assumed that you downloaded the distribution file in
+directory</I> <tt>/tmp/</tt>.
+
+<UL>
+<LI>Determine a directory where the software should be installed.
+<I>If you do not have root access, this will likely be in your 
+own working area, typically</I> <tt>/usr/people/</tt>account 
+<I>or</I> <tt>/home/</tt>account. Note that the files will be 
+placed in a subdirectory named <tt>gsas</tt> in this location.
+<pre>
+      cd 
+      mkdir Programs
+      cd Programs
+</Pre>
+or
+<pre>
+      cd /usr/local
+</Pre>
+
+<LI>Expand the files:
+<P><DL>
+<DT>SGI, use command 
+<DD><PRE>gunzip < /tmp/SGI_gsas+expgui.tar.gz | tar xvf -</PRE>
+<DT>LINUX, use command 
+<DD><PRE>tar xvzf /tmp/LINUX_gsas+expgui.tar.gz</PRE>
+</DL>
+</UL>
+
+<H2>
+4. Installing a shortcut to EXPGUI</H2>
+While it is possible to invoke EXPGUI by typing
+<FONT FACE="COURIER"><PRE>
+    /usr/local/gsas/tcltk84+ /usr/local/gsas/expgui/expgui
+</PRE></FONT>
+or 
+<FONT FACE="COURIER"><PRE>
+   /home/toby/myprogs/gsas/tcltk84+ /home/toby/myprogs/gsas/expgui/expgui
+</PRE></FONT>
+(etc.) this would get old fast. Rather, you will likely want to 
+create an easier command to type. 
+Below are three ways to do this. Note that only one is needed. Do not use all 
+three. You could also create a startbar or desktop icon that can be clicked
+to start EXPGUI.
+The way this is done depends on how your system is set up and cannot 
+be described here.
+
+<em>Note that in the commands below, it is assumed that 
+GSAS has been installed in <tt>/myprogs/gsas</tt>.
+Also, note that in the commands below, 
+</em><FONT FACE="COURIER">^D</FONT><em> means control-D.</em>
+
+
+<UL><H4>
+4.1 Installing an alias for EXPGUI</H4>
+<P>
+One way to create a easy way to invoke EXPGUI is to add an alias to your 
+default shell.
+First, determine what shell you are using. Type
+<PRE>
+    echo $SHELL
+</PRE>
+
+The response will likely be something like /usr/bin/bash (the bash shell) or 
+/usr/bin/tcsh (the tcsh shell).
+<P>
+<DL>
+<DT>If you use tcsh or csh:
+<DD>to add an alias to your ~/.cshrc file, type these commands
+(change <tt>/myprogs</tt> as needed):
+<FONT FACE="COURIER"><PRE>
+         cat >> ~/.cshrc
+         alias expgui "/myprogs/gsas/tcltk84+ /myprogs/gsas/expgui/expgui"
+         ^D
+</PRE></FONT>
+
+<DT>If you use bash:
+<DD>to add an alias to your ~/.bash_profile, type these commands
+(change <tt>/myprogs</tt> as needed):
+<FONT FACE="COURIER"><PRE>
+         cat >> ~/.bash_profile
+         alias expgui="/myprogs/gsas/tcltk84+ /myprogs/gsas/expgui/expgui"
+         ^D
+</PRE></FONT>
+</DL>
+
+<H4>
+4.2 Installing EXPGUI in the path</H4>
+<P>
+Another way to simplify access to EXPGUI 
+is to create a file that will invoke the GUI script. 
+The file must be placed in a directory in your path and 
+flagged as executable. You can examine the directories in your path by typing:
+<PRE>
+    echo $PATH
+</PRE>
+Also, check to see that you do not alreay have expgui command in your path
+by typing:
+<PRE>
+    which expgui
+</PRE>
+You should get a response "expgui not found in...". A response of 
+<tt>/usr/bin/expgui</tt> tells you there is already a shortcut to expgui
+in that location. Either replace it or choose a name other than expgui.
+<P>
+The commands to create this executable file will be:
+<FONT FACE="COURIER"><PRE>
+        cat > /usr/bin/expgui
+	/myprogs/gsas/tcltk84+ /myprogs/gsas/expgui/expgui
+        ^D
+        chmod +x /usr/bin/expgui
+</PRE></FONT>
+(change <tt>/myprogs</tt> and <tt>/usr/bin</tt> as needed).
+
+<I>Note that this step (4.2) is incompatible with the one below (4.3).</I>
+<H4>
+4.3 Linking EXPGUI into the path</H4>
+<P>
+Another way to simplify access to EXPGUI 
+is to create a link in your system's path to the GUI script.
+First, you will need to edit the 3rd line in the EXPGUI script from
+<PRE>
+      exec wish "$0" "$@"
+</PRE>
+to 
+<PRE>
+      exec /myprogs/gsas/tcltk84+ "$0" "$@"
+</PRE>
+(change <tt>/myprogs</tt> as needed).
+Then you will create a link using:
+                ln -s /myprogs/gsas/expgui/expgui /usr/bin/expgui
+</PRE></FONT>
+<I>Note that this step (4.3) is incompatible with the one above (4.2).</I>
+</UL>
+
+<HR noshade><HR noshade>
+<H2>Updating to a new GSAS release</H2>
+<DL><DL>
+It is quite common that Bob Von Dreele will release an update to the
+GSAS programs more frequently than the combination gsas+expgui
+is updated. It is possible to update only the
+GSAS software. 
+To determine the date of the GSAS package release, 
+run a GSAS program, such as EXPEDT or SPACEGRP and note the 
+date where it says "Distributed on ..."
+To update,
+first determine where you have installed the GSAS/EXPGUI software
+(<tt>/myprogs</tt> in the previous example). 
+You will want to install the GSAS distribution to the <tt>gsas</tt> 
+subdirectory in that location.
+Then download the latest GSAS release from CCP14:
+<DL>
+<DT>UK:<DD>
+<A HREF="http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/">
+http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/</A>
+<BR>or<BR>
+<A HREF="
+ftp://ftp.ccp14.ac.uk/ccp14/ftp-mirror/gsas/public/gsas/">ftp://ftp.ccp14.ac.uk/ccp14/ftp-mirror/gsas/public/gsas/</A>
+
+<DT>Canada:<DD>
+<A HREF="http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/gsas/public/gsas/">http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/gsas/public/gsas/</A>
+
+<DT>Australia:<DD>
+<A HREF="
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/gsas/public/gsas/">
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/gsas/public/gsas/</A>
+</DL>
+<P>Select and download the appropriate gsaskit.tar.gz (making sure that the 
+listing date is significantly later than the distribution date 
+you currently have).
+Then use commands like this:
+
+<P><DL>
+<DT>SGI, use command 
+<DD><PRE>
+cd /myprogs/gsas
+gunzip < /tmp/gsaskit.tar.gz | tar xvf -</PRE>
+<DT>LINUX, use command 
+<DD><PRE>
+cd /myprogs/gsas
+tar xvzf /tmp/gsaskit.tar.gz</PRE>
+</DL>
+<P>
+Finally, check that GSAS has indeed been updated by 
+again running a GSAS program, such as EXPEDT or SPACEGRP and noting the 
+date where it says "Distributed on ..."
+</DL></DL>
+
+<H2>Updating to a new EXPGUI release</H2>
+<DL><DL>
+It is also common that new features will be added to EXPGUI or 
+bug fixes will be made without an update to the
+combination gsas+expgui
+package. 
+The absolute latest release (which may not have gotten 
+a lot of testing)
+is distributed as 
+<A HREF="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/expgui_ALPHA.tar.gz">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/expgui_ALPHA.tar.gz</A>.
+You can find the number of the latest alpha release by looking at file
+<A Href="http://www.ncnr.nist.gov/xtal/software/expgui/alpha/wishlist.html">
+http://www.ncnr.nist.gov/xtal/software/expgui/alpha/wishlist.html</A>
+<P>
+To update,
+first determine where you have installed the GSAS/EXPGUI software
+(<tt>/myprogs</tt> in the previous example). 
+You will want to install the GSAS distribution to the <tt>gsas/expgui</tt> 
+subdirectory in that location.
+Second, note the EXPGUI package date, by 
+using the Help/About menu command in EXPGUI.
+You then want to download this file:
+<DL>
+<A HREF="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/expgui_ALPHA.tar.gz">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/expgui_ALPHA.tar.gz</A>
+<BR>
+(for mirrors, select file expgui_ALPHA.tar.gz from CCP14 sites in 
+<A HREF="
+http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/">
+the UK</A>, 
+
+<A HREF="http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/">
+Canada</A>, or 
+
+<A HREF="
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/briantoby/pub/cryst/gsas/">
+Australia</A>.)
+</DL><P>
+and unpack it to subdirectory <tt>.../gsas/expgui/</tt>
+using commands like this:
+
+<P><DL>
+<DT>SGI:
+<DD><PRE>
+cd /myprogs/gsas/expgui
+gunzip < /tmp/expgui_ALPHA.tar.gz | tar xvf -</PRE>
+<DT>LINUX:
+<DD><PRE>
+cd /myprogs/gsas/expgui
+tar xvzf /tmp/expgui_ALPHA.tar.gz</PRE>
+</DL>
+</DL></DL>
+
+<P>
+<H2>
+<a name="NoRPM"></a><H2>
+RPMs for GSAS/EXPGUI are not being updated</H2>
+I am no longer preparing an RPM distribution for GSAS & EXPGUI. This 
+is because it was getting increasingly hard to find RPM distributions 
+for Tcl/Tk and BLT. If one has to install & build these packages from
+source code, then one must also override the RPM package tracking
+system to install the GSAS & EXPGUI RPM. 
+The current method, which includes the entire Tcl/Tk package is 
+easier to deal with.
+<P>
+<h2>The Tcl/Tk Starkit</H2>
+<P>
+The GSAS-EXPGUI distribution now includes a single file version of the 
+entire Tcl/Tk package, as well as a graphics package for Tcl/Tk, called
+BLT, that is used extensively within EXPGUI. The inclusion of this file
+within the package simplifies installation considerably. 
+This file,
+<tt>tcltk84+</tt>, contains many other Tcl/Tk packages (that are 
+not used within EXPGUI), but may be of value for use with other applications.
+
+<a name="testtcltk"></a><H2>
+Using other versions of Tcl/Tk</H2>
+If you have another version of Tcl/Tk installed on your computer, 
+it must also have the BLT package installed and configured properly. 
+To confirm this 
+software is installed and working correctly on your system 
+try the following commands. (Commands you type are in this <font face="courier">typewriter</font> 
+font, computer responses are this <font face="courier"><I>italic font</I></font>.
+My comments are provided in this text font and are <U>underlined</U>).
+<UL>
+<TABLE>
+<TR><TD width="50%"><font face="courier">[tammy@beryl]$ wish</font></TD>
+<TD><U>(note a window is created)</U></TD></TR>
+<TR><TD><font face="courier"><I>%</I> set tcl_version</font></TD></TR>
+<TR><TD><font face="courier"><I>8.0</I></font></TD>
+<TD><U>(8.0 is the Tcl/Tk version number. EXPGUI requires 8.0 or higher)</U></TD></TR>
+<TR><TD><font face="courier"><I>%</I> package require BLT</font></TD></TR>
+<TR><TD><font face="courier"><I>2.4</I></font></TD>
+<TD><U>(2.4 is the BLT package version number. 
+EXPGUI requires 2.3 or higher. 
+If you get "can't find package BLT" then 
+BLT is not installed [properly] on your system)</U></TD></TR>
+<TR><TD><font face="courier"><I>%</I> blt::graph .g</font></TD></TR>
+<TR><TD><font face="courier"><I>.g</I></font></TD>
+<TD><U>(nothing happens. You should not get an error message here.)</U></TD></TR>
+<TR><TD><font face="courier"><I>%</I> pack .g</font></TD>
+<TD><U>(now a graph is displayed)</U></TD></TR>
+<TR><TD><font face="courier"><I>%</I> Blt_ZoomStack .g</font></TD>
+<TD><U>(if error message: invalid command name "Blt_ZoomStack" appears
+there is a problem with your BLT installation, see below.)</U></TD></TR>
+</TABLE>
+There is a common problem with the pkg_Index.tcl file in older 
+versions BLT that makes 
+the Blt_ZoomStack command inaccessible, see my updated copy
+<A HREF="ftp://ftp.ncnr.nist.gov/pub/cryst/tcltk/BLT2.4_pkgIndex.tcl">
+ftp://ftp.ncnr.nist.gov/pub/cryst/tcltk/BLT2.4_pkgIndex.tcl
+</A> for an example that works. Also see the 
+<A HREF="http://www.ncnr.nist.gov/programs/crystallography/software/tclpkgs82linux.html">
+Compiling Tcl/Tk 8.2.3 & packages for Linux</A> example of how to install.
+</UL>
+<P>
+<HR noshade><HR noshade>
+<P><H2>
+Acknowledgements</H2>
+<P>Thanks to Paul Kienzle of the 
+<a href="http://www.ncnr.nist.gov/dave/">
+NCNR DAVE project</A> for providing the "all in one file" (starkit) 
+version of Tcl/Tk for SGI and Linux.
+<P>
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/gsas.html">
+GSAS</A>
+is written by Allen C. Larson and 
+Robert B. Von Dreele while at Los Alamos National Laboratory.
+Problems, questions
+or kudos concerning GSAS should be sent to Robert B. Von Dreele at 
+<A HREF="MAILTO:vondreele@anl.gov">vondreele@anl.gov</A>
+
+<P>EXPGUI was written by Brian H. Toby while at the NIST Center for Neutron Research,
+<A HREF="MAILTO:Brian.Toby@ANL.GOV">Brian.Toby@ANL.GOV</A> 
+with help from Jonathan Wasserman.
+<P>
+<hr><blockquote>
+GSAS is Copyright, 1984-1997, The Regents of the University of California.
+The GSAS software was produced under a U.S. Government contract (W-7405-ENG-36)
+by the Los Alamos National Laboratory, which is operated by the University
+of California for the U.S. Department of Energy. The U.S. Government is
+licensed to use, reproduce, and distribute this software. Permission is
+granted to the public to copy and use this software without charge, provided
+that this notice and any statement of authorship are reproduced on all
+copies. Neither the Government nor the University makes any warranty, express
+or implied, or assumes any liability or responsibility for the use of this
+software.
+
+<P>EXPGUI is not subject to copyright. Have fun with it.
+
+<p>Neither the U.S. Government nor any author makes any warranty, 
+expressed or implied, or assumes any liability or responsibility 
+for the use of this information or the software described
+here. Brand names cited here are used for
+identification purposes and do not consitute an endorsement by NIST.
+</blockquote>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>
+$Revision: 1225 $ $Date: 2012-11-08 19:42:25 +0000 (Thu, 08 Nov 2012) $
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6R.html">Next page</A>
+</TH><TH><A Href="expgui5.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 6
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.6 Constraints panel</h3>
+<DL><DL>
+GSAS offers two ways to limit changes to parameters that are based rules
+  created by a crystallographer to create what is felt to be the most
+  reasonable model.
+So called "soft constraints", which are better described as "restraints"
+  penalize the fit if 
+aspects of a model (for example, bond lengths) differ from selected
+  values. They are now located on the on the <A Href="expgui6R.html">Restraints panel</A>. 
+Actual constraints, which are sometimes called "hard constraints", are
+  on panel described here. They reduce the actual number of 
+parameters in a model,
+by grouping parameters so that a single shift (possibly scaled) is 
+applied to each parameter in the group.
+At this time the only constraints that can be set in EXPGUI are on
+<a href="#AtomConstraints"><B>Atom Constraints</B></A> for normal phases,
+<a href="#MMConstraints"><B>Macromolecular Atom Constraints</B></A>
+  when a macromolecular phase is present, or
+<a href="#ProfileConstraints"><B>Peak Profile Constraints</B></A>.
+GSAS offers many other types of restraints, but these must be
+  accessed in EXPEDT.
+<P>
+Note that in GSAS these constraints are only applied to shifts, but not to the
+actual values. This means that, for example, 
+if two atoms 
+are constrained so that the shift on their occupancy is the same, but 
+the initial occupancies differ, the difference in their occupancies
+  will not change as the values are refined.
+<P>
+Due to the way GSAS implements constraints, a parameter can be included 
+in only one constraint. Should one or more parameters be constrained twice,
+the refinement results are unpredictable, so EXPGUI will not allow
+  this (EXPEDT will). One can sometimes bypass
+  this problem by defining redundant parameters. For example to
+  constrain the occupancy of site A to B and site A to C, one can
+  create two atom A sites: A<sub>1</sub> & A<sub>2</sub>. Then one can create two
+  constraints, for site A<sub>1</sub> to B and site A<sub>2</sub> to C. The actual occupancy
+  of site A is then that of A<sub>1</sub> plus A<sub>2</sub>
+
+</DL></DL>
+<a name="AtomConstraints"></a>
+<H4>A.6.1 Atom Constraints</H4>
+<DL><DL>
+The atom constraints editing panel appears below. Note that constraints can 
+be listed sorted by constraint number, phase number, lowest atom number or
+variable by clicking on the buttons at the top of the panel.
+<P>
+To delete one or more constraints, click on the appropriate
+  checkbuttons
+  in the <B>Delete</B> column and the press the Delete button, below.
+</DL></DL>
+<img SRC="mc.gif" align=TEXTTOP  alt="EXPGUI Screen snapshot">
+<DL><DL>
+<a name="AtomConstraintsError"></a>
+Should parameters be included in more than one constraint, 
+an error message is displayed, as shown below.
+Note that the constraint number is displayed as red on the main 
+atomic constraints window (see above), if the 
+constraint contains a parameter referenced elsewhere.
+Negative contraint values are highlighted with a beige background 
+to make them more visible.
+
+</DL></DL>
+<img SRC="mcerr.gif" align=TEXTTOP  alt="EXPGUI Screen snapshot">
+<DL><DL>
+<a name="EditAtomConstraints"></a>
+<P>
+<img SRC="mcedit.gif" align=LEFT  alt="EXPGUI Screen snapshot">
+<img SRC="mcvar.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+When the edit button for a constraint is pressed, the constraint is 
+opened for editing. Controls are available to select the phase, variable,
+multiplier and atom(s). Note that for atom selection, use of the control key 
+and the left mouse button allow individual atoms to be selected or deselected.
+Shift and the left mouse button allow ranges of atoms to be selected and the 
+right mouse button selects all atoms
+<A href="expgui.html#mouseactions">(see Mouse Actions)</A>.
+<P>
+Note that it is inappropriate 
+to constrain different types of parameters together, for example X and Uiso.
+The left-most variable button is the "master" which 
+determines what variable are allowed in the
+other variable buttons. 
+<P>
+When the "New Constraint" button is pressed, a blank constraint editing
+window is opened. Note that any variable to the right may then be selected,
+including three special codes, Uxx, XYZU and XYZU+-F. 
+<UL><LI>
+XYZU creates 
+four constraints, 
+requiring the shifts on x, y, z and Uiso to be the same for all the selected 
+atoms.
+<LI> 
+Uxx does the same for the six anisotropic displacement parameters.
+<LI>
+<a name="XYZUF"></a>XYZU+-F is used for pairs of atoms where 
+the shifts on x, y, z and Uiso are required to be equal, but the shifts
+on Frac are opposite. 
+</UL>
+These special codes are valuable for atoms that share a site or are 
+otherwise grouped together.
+<P>
+<a name="AtomConstraintsMax"></a>
+Note that only 100 parameters may be included in a single atomic constraint, 
+with one exception. When shifts for Uiso
+are constrained to the same value for all atoms in a phase, 
+this counts as a single parameter. If more than 500 
+parameters are entered for a constraint, an error message is shown.
+Up to 2000 total atomic constraints may be entered. 
+EXPGUI does not warn if you exceed this limit.
+</DL></DL>
+
+<a name="MMConstraints"></a>
+<H4>A.6.2 Macromolecular Constraints</H4>
+<DL><DL>
+Constraints for a macromolecular phase can be entered on a 
+panel similar to the Atomic Constraints, except that the phase number
+does not appear anywhere (since the macromolecular phase must 
+be phase #1). The variables that can be constrained for
+a macromolecular phase are the coordinates, x, y, & z as well as 
+the occupancy, FRA and the atomic displacement parameter, UIS. 
+The special constraint, XYZU, is used to constrain all coordinates 
+and the displacement parameter.
+</DL></DL>
+
+<a name="ProfileConstraints"></a>
+<H4>A.6.3 Profile Constraints</H4>
+<DL><DL>
+The profile constraints editing panel appears below. Profile constraints
+are used to relate the shifts applied to profile terms for different
+phase/histogram combinations. Profile terms are identified by number,
+so while EXPEDT allows one to constrain the first profile term for
+a TOF histogram to a the first term in a CW histogram, EXPGUI attempts to 
+make this impossible. 
+<P>
+To delete one or more constraints, click on the appropriate checkbuttons
+in the <B>Delete</B> column and the press the Delete button, below.
+</DL></DL>
+<img SRC="pc.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<DL><DL>
+
+<a name="ProfileConstraintErr"></a>
+<img SRC="pcerr.gif" align=LEFT alt="EXPGUI Screen snapshot">
+Should parameters be included in more than one constraint, 
+an error message is displayed, as shown below.
+Note that the constraint number is displayed as red on the main 
+profile constraints window (see above), if the 
+constraint contains a parameter referenced elsewhere.
+
+<BR CLEAR=LEFT>
+<P>
+<a name="EditProfileConstraints"></a>
+When the edit button for a constraint is pressed, the constraint is 
+opened for editing, as shown below. 
+Listboxes contain the available phases and histograms.
+Only the histograms of the same data type (TOF, CW or ED) are included,
+but no check is made to ensure that the 
+selected phase/histogram combinations
+all have the same profile type.
+Note that for phase and histogram selection, use of the control key 
+and the left mouse button allow individual items to be selected or deselected.
+Shift and the left mouse button allow ranges of items to be selected and the 
+right mouse button selects all phases or histograms.
+<A href="expgui.html#mouseactions">(see Mouse Actions)</A>.
+<P>
+<img SRC="pcedit.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<P>
+</DL></DL>
+<a name="NewProfileConstraints"></a>
+<img SRC="pcnew1.gif" align=LEFT alt="EXPGUI Screen snapshot">
+When the "New Constraint" button is pressed, a window is opened to select
+the histogram and profile function type to be constrained. Note that 
+only for profile function #4, where the number of terms depends on the 
+phase symmetry, does it matter what phase you select. The available profile 
+terms are displayed on the bottom of the window and more than
+one can be selected. 
+<BR CLEAR=LEFT>
+<P>
+<DL><DL>
+<img SRC="pcnew2.gif" align=LEFT alt="EXPGUI Screen snapshot">
+
+After the "Continue" button is pressed, a constraint 
+edit window is opened, as shown to the left.
+Listboxes contain the available phases and histograms and 
+only the histograms of the selected data type are included, as before.
+Also, for phase and histogram selection, use of the control or shift key 
+and the left mouse button allow individual items to be selected or deselected
+and the right mouse button selects all phases or histograms.
+Note that if more than one profile term was selected on the previous window,
+the same set of constraints are for each term.
+<BR CLEAR=LEFT>
+<P>
+<a name="ProfileConstraintsMax"></a>
+Note that only 27 terms can be included in a single profile constraint.
+Also, only like profile terms can be constrained. While GSAS does allow 
+different types of profile terms to be constrained together, this does not 
+usually make sense and EXPGUI does not allow it.
+</DL></DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6R.html">Next page</A>
+</TH><TH><A Href="expgui5.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,4 @@
+The demo routines have been removed to save space. They can be loaded
+as part of the full distribution from the BWidget home page:
+    http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/bwidget/?cvsroot=tcllib
+    also see http://tcllib.sourceforge.net/ 

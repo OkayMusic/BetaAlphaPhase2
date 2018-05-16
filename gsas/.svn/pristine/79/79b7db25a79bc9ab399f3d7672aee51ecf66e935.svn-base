@@ -1,0 +1,122 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6.html">Next page</A>
+</TH><TH><A Href="expgui4.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 5
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.5 Profile panel</h3> 
+<DL><DL>
+The Profile panel is used to edit the profile values as well as
+their refinement flags and damping value.
+Note that there will be a set of profile parameters for each
+phase present in each histogram.
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+The "Change Type" button is used to select a new profile type for one
+or more histogram/phase combinations. 
+<P>
+Note that the order that histograms appear in this 
+panel is determined by the 
+<a href="expguic.html#sorthist">"Sort histograms by"</a> option in 
+the Options Menu.
+</DL></DL>
+<img SRC="5.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<DL><DL>
+When more than one phase is present in the histogram, 
+the profiles for all phases are shown.
+</DL></DL>
+<img SRC="5a.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<DL><DL>
+<P><I>
+EXPGUI disables the refinement flags for profile terms 
+</I>trns<I> or </I>shft<I> 
+when the histogram zero point correction is refined.
+Neophyte users of GSAS sometimes incorrectly attempt to 
+refine these terms together, which almost always causes problems. 
+(Note that histogram 
+</I>Zero<I> is refined for parallel beam diffraction instruments, 
+typically synchrotron or neutron diffractometers, while 
+</I>trns<I> and </I>shft<I> are
+appropriate only for Bragg-Brentano geometry [typically lab x-ray] instruments.
+In the Bragg-Brentano case, </I>shft<I> 
+is related to the displacement of the 
+sample from the scattering plane, which is usually subject to error and thus 
+should be refined and </I>trns<I> is a correction for sample transparency, 
+which is typically refined only with a low density sample.)
+</I><P>
+If 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> is set to "All", 
+this panel is disabled. For other settings of this mode, 
+profile values and settings can be collectively
+modified for groups of histograms and the panel appears slightly 
+differently, as is seen below:
+</DL></DL>
+<img SRC="5c.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+
+
+<a name="ChangeType">
+<h4>A.5.1 Edit Profile Type</h4> 
+<DL><DL>
+Pressing the "Change Type" button causes a window like the one below to 
+be displayed.
+<P><img SRC="5b.gif" align=TEXTTOP alt="EXPGUI Screen snapshot"><BR><P>
+Note that the default profile values are taken from the instrument parameter
+file (in the example above, a profile was selected where no 
+such default values were defined and the current values (where appropriate)
+are taken from the current profile function. Through use of the appropriate
+buttons, selected values can be retained from the current profile when 
+the function is changed or can be reset to default values. This latter
+capability can be useful even when not changing the profile type, if the 
+profile terms have refined into a false minimum.
+
+</DL></DL>
+<a name="GlobalEdit">
+</a><h4>A.5.2 Profile panel</h4> 
+<DL><DL>
+<img SRC="5d.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<P>
+When the button labeled "Global Edit" is pressed 
+(<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> must be 
+set to a single histogram type) the dialog above will be displayed.
+The entry boxes will appear blank
+and only those terms that are filled in will be changed when the "Set"
+button is pressed.
+
+</DL></DL><hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui6.html">Next page</A>
+</TH><TH><A Href="expgui4.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

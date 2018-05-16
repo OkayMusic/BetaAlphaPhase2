@@ -1,0 +1,792 @@
+<html>
+<head>
+   <title>EXPGUI Wish List</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A  Href="revlog.html">Full change log</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI Wish List<BR>
+New Features Completed, In Progress, Planned, or Requested
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+<I><blockquote><blockquote>
+Information on desired (and completed) development tasks for EXPGUI
+are now captured as "Tickets" in the
+    <A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/">
+EXPGUI Trac system</A>. In particular, see the
+    <A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/timeline">
+    timeline of changes</A> and the 
+   <A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/report">
+    reports on Tickets</A>. Any other information on this page is no
+longer being updated -- though there are still some good ideas for
+development here.
+</blockquote></blockquote></I>
+<P>
+<hr><hr>
+
+
+<P>
+This page describes recent features added to EXPGUI or that are being 
+considered for addition.
+See the <A HREF="expgui.html">EXPGUI documentation</A> for a description of 
+the current features and see <A HREF="revlog.html">the EXPGUI Revision log</A>
+for a complete list of all changes for the source files.
+
+<H2>Requested EXPGUI improvements</H2><DL>
+The suggested improvements obtained from EXPGUI users are listed here. 
+Prioritization is based in part on input from users, from back when 
+EXPGUI development was supported by NIST via ATP intramural program.
+At present EXPGUI development is progressing slowly, since the work 
+is not funded.
+<P>
+In the list below, dates for requests are noted in parenthesis when known.
+Additional suggestions and input on priorities are welcome; send them to
+the author of EXPGUI, 
+<a href="mailto:brian.toby@anl.gov?subject=EXPGUI suggestions">Brian.Toby@ANL.GOV</a>
+<H3>Requests, 2002-</H3><DL>
+<UL>
+<LI> Add ability to use d-min or Q-max when adding multiple histograms 
+(2/06) <font color=red>(done, 3/06)</font>
+<LI> Add ability to use INSTEDIT for TOF datasets; grab TOF profiles & DIFA/C 
+from .EXP file
+(2/06) <font color=red>(done, 3/06)</font>
+<LI> Set up simple magnetic refinements (5/03)
+<LI> Save window sizes & placement information (4/03)
+<LI> Fix a coordinate for origin definition (4/03)
+<LI> Change .gsas_config to gsas.config for Windows (3/03)
+<font color=red>(done, 5/03)</font>
+<LI> Warn to run POWPREF after adding phases, histograms, 
+changing phase or histogram flags (profile?) (2/03)
+<font color=red>(done, 4/03)</font>
+
+<LI> Improve ability to add multibank histograms in one swell foop (2/03)
+<font color=red>(done, 8/03)</font>
+
+<LI> Export diffraction data to FOX (2/03)
+<font color=red>(done, 4/03)</font>
+
+<LI> Mac OS X support (1/03)
+<font color=red>(done, 11/03)</font>
+
+<LI> Support Fourier map export for FOX (1/03)
+<font color=red>(to appear as export option in FORPLOT)</font>
+
+<LI> Add support for WINUTILS 
+   (see http://prdownloads.sourceforge.net/tomasoft/ and 
+   http://sourceforge.net/project/showfiles.php?group_id=1616) 
+as an alternative to WINEXEC 
+<font color=red>(done, 9/04)</font>
+
+<LI> Adding Profile constraints -- dummy out profile functions that are not present (7/02)
+
+<LI> Update LSTVIEW plots with latest refinements results (7/02)
+
+<LI> Allow setting the "anisotropic broadening axis" for sfec, ptec,... (7/02)
+
+<LI> Display Rwp in LSTVIEW & EXPGUI (7/02)
+
+<LI> Allow setting up DISAGL controls; in particular flag for inclusion 
+of Fourier peaks [EXPEDT: K D D F] (7/02)
+
+<LI> Least Squares options: atom shift limits [enable/disable] (5/02)
+
+<LI> Edit histogram weighting factors (5/02)
+
+<LI> Least Squares options commonly needed for single crystal work (3/02)
+<OL>
+<LI> F   - Change minimization function 
+<LI> N n - Lower D-spacing limit 
+<LI> R   - Change the weight modification flag, Robust 
+<LI> S n - Set a Lower I/SigI cut-off in RFN-F 
+<LI> W n - Refinement weight option "n" 
+</OL>
+
+<LI> List single crystal histograms; useful options/parameters are: 
+use/ignore flag, scale factor, damping & refinement flag (3/02)
+
+<LI> Show cursor position in Liveplot (1/02)
+<font color=red>(done)</font>
+
+<LI> Label LIVEPLOT phase by phase name (1/02)
+<font color=red>(done)</font>
+</UL>
+</DL>
+<H3>Requests, 2001 and before</H3><DL>
+<H4>
+Highest 
+Priority</h4><UL>
+
+<LI> graphical excluded region editing
+<font color=red>(done)</font>
+
+<LI> Fixed background editor; fit a Chebeschev polynomial to 
+	selected background points
+<font color=red>(done)</font>
+
+<LI> import coordinates from EXP files
+<font color=red>(done)</font>
+
+<LI> import coordinates from .xtl files
+<font color=red>(done)</font>
+
+<LI> import coordinates from Platon (.spf) files
+<font color=red>(done)</font>
+
+<LI> support the new archived .EXP files (.Oxx)
+<font color=red>(done)</font>
+
+<LI> Liveplot: look for a valid histogram on startup
+<font color=red>(done)</font>
+
+<LI> support new refinement control options (convergence...)
+<font color=red>(done)</font>
+
+<LI> support histogram flags
+<font color=red>(done)</font>
+
+<LI> Support macromolecular phases
+<font color=red>(done)</font>
+
+</UL><h4>
+Medium
+Priority</h4><UL>
+
+<LI>Grab wavelength from .EXP file in INSTEDIT (F. F. Ferreira, 10/2005).
+
+<LI> support histogram flags for non-powder 
+(single xtal & soft-constraint) histograms.
+<font color=red>(done)</font>
+
+<LI> Support dummy histograms for powder simulations
+<font color=red>(done)</font>
+
+<LI> Revisit GSAS2CIF to export results to CIF
+<font color=red>(done)</font>
+
+<LI> Show status information (R-factors & dates) from selected .EXP files & 
+.Oxx files
+<font color=red>(done)</font>
+
+<LI> Rework coordinate export interface
+<font color=red>(done)</font>
+
+<LI>Support more coordinate export formats (.SPF & SHELX for Platon & CrystalMaker)
+<font color=red>(done)</font>
+
+<LI> Support dummy histograms in EXCLEDT
+<font color=red>(done)</font>
+
+<LI> Plot absorption corrections (11/01)
+<font color=red>(done)</font>
+
+<LI> Delete .LST flags in lstview (12/01)
+<font color=red>(done)</font>
+
+<LI> Add GUI support for bond-distance soft constraints
+[a major project]
+
+<LI> "finalplot" program for publication-quality output
+
+<LI> Import diffraction data from CIFs 
+
+<LI> Fourier Transform interface, 
+perhaps with two parts: set up options for map computing and at some 
+point later think about map viewing options.
+
+</UL><h4>
+Low
+Priority</h4><UL>
+
+<LI> "save as" for DISAGL output
+<font color=red>(done)</font>
+
+<LI> log/graph parameter shifts vs cycle
+<font color=red>(done)</font>
+
+<LI> instrument parameter file editor
+<font color=red>(done, 5/03)</font>
+
+<LI> import all histogram parameters (e.g. bkg, profile, scale, ...) 
+	from another .EXP file
+
+<LI> import from other .EXP:  Preferred orientation, Restraints, Constraints...
+
+<LI> export Le Bail reflection intensities to SHELX & EXPO formats
+
+<LI> "wizard" that would lead new users through the steps of 
+	setting up a refinement. This may be hard to do well, but ideas
+	are solicited.
+
+</UL><h4>
+Not Planned
+</h4><UL>
+
+<LI> Shelx style disagl output
+<font color=red>(done, <a href="gsas2cif.html#cifselect">see CIFSelect</a>)</font>
+
+<LI> point & click GUI-Forplot
+
+<LI> save plot as metafile
+
+</UL>
+<hr>
+</DL>
+
+<a name="WhatsNew"></a>
+<H2>RECENT ADDITIONS TO EXPGUI</H2><DL>
+Additional features & fixes added to EXPGUI since mid-2000 are listed here,
+with an approximate date the features were added and the EXPGUI version
+where the feature was added. This list includes only the more significant 
+changes.
+For a complete list of all changes for the source files
+see <A HREF="revlog.html">the EXPGUI Revision log.</A>
+<P>
+<DT>Import pdCIF data 
+<DD>EXPGUI can now read powder CIF data and rewrite it as
+  GSAS .fxye (1 line per file) data. For CW data only. 
+(4/2006, 1.83)
+<DT>DISAGL export
+<DD>Add button to select distances from 1 phase and copy to Windows clipboard
+  to interface with Andrew Will's VaList program (not yet tested).
+(4/2006, 1.83)
+<DT>Bug fixes & cleanup
+<DD>Bugs in EXCLEDT, Import Atoms, etc; relabel many buttons for better
+  consistency and to be more conventional.
+(4/2006, 1.83)
+<DT>EXPGUI macros added
+<DD>EXPGUI can record nearly all actions into a macro file. The macro file
+  can be "replayed" to repeat those actions on a new experiment. Macro
+  files can replayed a line at a time or can be executed all at once.
+  Tcl commands
+  can be introduced into a macro file so that programming can be done
+  with macro files. Misc changes to suit this such as turn of prompt when
+  running GSAS programs; run GSAS programs w/o terminal windows.
+(4/2006, 1.82)
+<DT>User error checking
+<DD>Check for final R in space group name for R space groups in
+  rhombohedral settings.
+(4/2006, 1.82)
+<DT>Lattice parameter entry
+<DD>Unit cell type now constrains the number of lattice parameters that can be
+  entered.
+(4/2006, 1.82)
+<DT>Import diffractometer constants
+<DD>Diffractometer constants can be read from a GSAS .EXP file into INSTEDIT.
+(4/2006, 1.82)
+<DT>Minor changes
+<DD>fix grace export, spelling on convergence, warn on windows if COMSPEC
+  (cmd.exe location) is not defined.
+(4/2006, 1.81)
+<DT>Minor changes
+<DD>Add gsas2map, remove now defunct background #3, fix Q conversion in background
+(4/2006, 1.80)
+
+<DT>TOF facilities
+<DD>Improve adding multiple histograms by specifying d-min or Q-max in place 
+of tof-min; Allow INSTEDIT to be used for TOF instrument parameter files.
+(4/2006, 1.79)
+<DT>MUSTRPLOT
+<DD>Add micro-strain plotting program to menus.
+(4/2006, 1.79)
+
+<DT>Recomputation of Multiplicities
+<DD>EXPGUI can now recompute the multiplicities for a set of atoms. This can be 
+done with a button on the edit atoms page and is automatically done when the 
+atoms coordinates are changed with a transformation matrix or an origin shift
+as well as prior to a composition computation.
+(2/2006, 1.78)
+<DT>Bug & Cosmetic Fixes
+<DD>Put GSAS into window title
+<BR>rationalize appearance of some labels fields (histogram heading & history)
+<BR>bug: in global setting of phase fractions & ph. frac. damping
+<BR>prevent use of more than 36 bkg parameters in BKGFIT, since that is all GSAS allows
+<BR>fix bug in 2theta max when adding multiple histograms
+(2/2006, 1.78)
+
+<DT>
+Transform Atoms - Origin 1 -> 2
+<DD>
+The option to transform Origin 1 settings to Origin 2 is now provided 
+in the windows raised by th "xform atom(s)" button on the phase panel.
+(9/2005, 1.77)
+
+<DT>
+DRAWxtl Export
+<DD>
+DRAWxtl export has been enhanced to display vectors for magnetic phases
+and to launch DRAWxtl directly.
+(9/2005, 1.77)
+
+<DT>Spherical Harmonic Fix
+<DD>In June 2005, GSAS was changed to allow more spherical harmonic terms
+by renaming the CRSxODF records. EXPGUI now converts old records to the 
+new format and can read them.
+(9/2005, 1.77)
+
+<DT>Import coordinates from .EXP file
+<DD>Fix bug introduced when new all-in-one Tcl/Tk package was implemented 
+(missing package require Tk).
+(9/2005, 1.77)
+
+<DT>Print from LSTVIEW (Unix only)
+<DD>Selected text can be sent to lpr command
+(3/2005, 1.76)
+
+<DT>Misc fixes from RBVD
+<DD>Fix profile 4 labels, add support for #5, add LS Band control, add
+extra digit to PRNT for extra option, note Pawley phase.
+(3/2005, 1.76)
+
+<DT>Prevent use of Zero & SHFT (+ TRANS) parameters together
+<DD>A common GSAS error is to refine a zero correction together with 
+the Bragg-Brentano corrections (SHFT & TRANS). When Zero is refined, 
+TRANS & SHFT are now turned off and disabled.
+(3/2005, 1.76)
+
+
+<DT>Cleanup/Bug fixes
+<DD>Require BWidget package; provide a clear error message when not found.
+Fix vector access in liveplot (not broken?) & excledt for BLT2.4z.
+More documentation changes.
+(9/2004, 1.75)
+<DT>Installation/instructions
+<DD>New GSAS/EXPGUI packages have been created for 
+all platforms using the new Tcl/Tk starkits. 
+The installation instructions for Windows, SGI/Linux & Mac OS X have
+been extensively revised.
+(9/2004, 1.74)
+<DT>WINUTILS
+<DD>EXPGUI now can use the WINUTILS or WINEXEC package to run 
+GSAS programs in a COMMAND.COM window on Windows-95/-98 and -ME. 
+This was needed to update to a newer Tcl/Tk release that fixes
+a hang in -XP. Note that WINUTILS & WINEXEC are not used
+in -NT/-2000/-XP.
+Also, misc "package require" etc. to use Tcl/Tk Starkit (all platforms).
+(9/2004, 1.74)
+<DT>Coordinate export to DRAWXTL
+<DD>new export routine creates a .STR file for the
+very nice 
+<A HREF="http://www.lwfinger.net/drawxtl/">DRAWXTL</A> visualization program. 
+(9/2004, 1.74)
+<DT>Coordinate export to CIF
+<DD>new export routine creates a bare-bones CIF file with coordinates
+for a phase.
+(9/2004, 1.73)
+<DT>Fix non-ASCII character bug
+<DD>A bug was fixed that previously allowed EXPGUI to place 
+non-ASCII characters into a .EXP file. GSAS could not read these files. 
+This may not address every possible way this could happen (I was bit 
+by this before, see note on v1.64), but should catch a lot more of these
+problems.
+(9/2004, 1.73)
+
+<DT>zoom fixes for BLT2.4z
+<DD>BLT 2.4z changes, yet again the binding for zooming; EXCLEDT & BKGEDIT 
+were updated to address this. The best cure for this is probably to not
+use the mouse buttons for other purposes.
+(5/2004, 1.72)
+<DT>LIVEPLOT ignore bad element attributes
+<DD>if a bad color value, etc. was saved for liveplot, the program would 
+not start; this has been fixed.
+(5/2004, 1.72)
+<DT>Open Console
+<DD>An "open console" command has been added to the help menu in EXPGUI, 
+LSTVIEW, LIVEPLOT, BKGFIT, WIDPLT & ABSPLT to help with debugging
+(5/2004, 1.72)
+
+<DT>Misc bug fixes (from Lachlan)
+<DD>make sure initial alpha1:2 ratio is 0.5 not 0.0; fix INSTEDIT none button; 
+save changes before BKGEDIT.
+(5/2004, 1.71)
+<DT>LIVEPLOT
+<DD>Add (obs-calc)/sigma plotting to LIVEPLOT 
+<BR>Use arrow keys to move zoom region around (convenient!)
+(4/2004, 1.71)
+<DT>Fox export
+<DD>Flag origin 2 space groups for FOX XML output
+(4/2004, 1.71)
+<DT>INSTEDIT bug
+<DD>Add ITYP line to instrument parameter file
+(4/2004, 1.71)
+<DT>Scan plot zoom
+<DD>The zoom region in LIVEPLOT, EXCLEDT & BKGEDIT can be moved around 
+with the arrow keys (convenient!)
+(4/2004, 1.71)
+
+<DT>Customization for OS X
+<DD>On OS X, EXPGUI will set app & define icon for .EXP files
+(1/2004, 1.69)
+
+<DT>CIF updates
+<DD>Update CIF codes to use different indexing scheme for dictionaries
+(12/2003, 1.68)
+
+<DT>reflection mark bug in excledt
+<DD>Fix edit broken close button for edit reflection marks in excledt; remove
+unneeded phases from option list; implement reflection mark shortcuts [press 
+1 for phase 1,...]
+(12/2003, 1.65)
+
+<DT>Fix "Chinese date bug"
+<DD>Windows computers set to operate with Chinese inserted timezone reference
+into .EXP history record with chinese characters; this made .EXP file invalid
+within GSAS. The time zone is no longer recorded.
+(11/2003, 1.64)
+
+<DT>Change "Use new name" for archived .EXP files
+<DD>If you are reloading an archived .EXP file, you can copy it to be the 
+latest version of the current .EXP file, or supply a new name. Previously, 
+it saved the current file under a new name -- what was I thinking then?
+(11/2003, 1.64)
+
+<DT>OS X compatible
+<DD>This version of EXPGUI runs under Macintosh OS X(!)
+(11/2003, 1.64)
+
+<DT>Add Multiple Histograms
+<DD>This option allows two or more "banks" of data to be read in a single 
+pass for use with multibank diffractometers
+(8/2003, 1.62)
+
+<P>
+<DT>Instrument parameter file editor
+<DD>This is used to modify and create instrument parameter files
+(5/2003, 1.61)
+
+<DT>Absorption correction big fix.
+<DD>The problem where a change made by EXPGUI causes EXPEDT to garble 
+the ABSCOR record has been located and fixed, finally. Thanks are due to 
+detailed bug reports from 3 different people, so that this bug could be 
+tracked down!
+(5/2003, 1.61)
+
+
+<DT>Change .gsas_config to c:\gsas.config on windows
+<DD>The name ~/.gsas_config makes sense in UNIX but is clumsy in Windows
+(5/2003, 1.61)
+
+<DT>LIVEPLOT export
+<DD>Liveplot now exports data to FOX and .CSV files (to produce publication
+quality graphics).
+(4/2003, 1.60)
+
+<DT>Export to FOX
+<DD>EXPGUI can now export coordinates & raw data to FOX 
+(Free Objects for Xtallography, objcryst.sourceforge.net)
+via XML.
+(9/2002, 1.58) & 
+(4/2003, 1.60)
+
+<DT>TOF bug fixes, POWPREF nagging
+<DD>The "add histogram", EXCLEDT and BKGEDIT sections were reworked to 
+correct errors in handling TOF datasets. EXPGUI flags changes that 
+would require POWPREF to be run before GENLES and warns if POWPREF is not
+run.
+(4/2003, 1.60)
+
+<DT>GSAS2CIF, FillCIF & CIFSelect
+<DD>The GSAS2CIF program has been rewritten, the FillCIF utility
+has been created to edit the new CIF templates
+and the new CIFSelect utility is provided to edit distance & angle publication
+flags. A new <a href="gsas2cif.html">GSAS2CIF web page</A> has been created to describe the process.
+(9/2002, 1.58)
+
+
+<DT>Fix profile constraint bug
+<DD>Profile constraints now must have a histogram & phase selected; 
+defaults are used, where appropriate.
+(9/2002, 1.58)
+
+<DT>Profile Constraint bug fixes
+<DD>The cancel button is fixed & the continue button for new constraints
+works only when 1 or more terms are selected.
+(7/2002, 1.56)
+
+<DT>Show cursor position in LIVEPLOT
+<DD>Cursor position can optionally be displayed in LIVEPLOT/BKGEDIT
+(press "L" for live cursor).
+(2/2002, 1.55)
+
+<DT>Bug fixes
+<DD>Fix bugs: reading of spacegroup in CIFs, large .LST files in LSTVIEW
+(2/2002, 1.55)
+
+<DT>Absorption/Reflection Correction
+<DD>A new box has been added to the histogram panel to control
+the absorption parameters.
+(1/2002, 1.55)
+
+<DT>Coordinate Import/Export
+<DD>Export formats can now be added at run-time by writing 
+export_*.tcl files. Export to MSI .xtl, SHELX & Platon .spf files 
+is now supported. 
+<BR>
+Import from .xtl & .spf (PLATON) files. For
+.xtl import, automatically shift Origin 1 to origin 2.
+<BR>
+Better translation/checking of space group names on import. Space groups are
+better checked against spacegroup.ref in import_cif.tcl as was added 
+to import_spf.tcl & import_xtl.tcl.
+(1/2002, 1.54)
+
+<DT>Support macromolecular phases.
+<DD>mm phases can be edited on phase panel & a mm constraints
+sub-panel has been added. Also add programs ramafit & gsas2pdb to menus.
+(1/2002, 1.54)
+
+<DT>ABSPLT
+<DD>Display absorption/reflectivity correction
+(new program).
+(1/2002, 1.54)
+
+<DT>BKGEDIT
+<DD>fit terms using linear least squares. Background
+functions 1-6 now are implemented. Colors/symbol size a little nicer.
+(1/2002, 1.54)
+
+<DT>LIVEPLOT
+<DD>Cycle through histograms with the "N" keyboard key.
+<BR>
+Optionally Label tickmarks by phase name & edit phase label on
+the edit tickmarks menu.
+<BR>
+Plots can now be exported to GRACE (aka xmgr) to 
+produce publication-quality graphics. A similar
+feature for a Windows program, 
+preferably a common and not overly expensive (at least for academic users),
+if one can be found that accepts ASCII command files.
+(1/2002, 1.54)
+
+<DT>LSTVIEW enhancements<DD>
+LSTVIEW can now be used to plot R-factors as a function of the
+cycle number. If the summary of shifts output option is on, 
+the ratio of shifts to standard uncertainty can also be plotted.
+<BR>
+LSTVIEW can also delete some or all of the .LST file contents.
+<BR>
+Minor bugs were also corrected.
+(1/2002, 1.54)
+
+<DT>Bug fixes<DD>
+Put Edit Excluded Regions button back; Allow D as an element type; bkgedit
+with old BLT versions; manual zoom reset; saveas error; 
+(12/2001, 1.53)
+
+<DT>EXP info<DD>
+Display R-factors, etc. in .EXP file open dialog.
+(12/2001, 1.52)
+
+<DT>Histogram Flags<DD>
+Histogram flags can be set for all types of histograms.
+(11/2001, 1.51)
+
+<DT>Dummy Histograms<DD>
+Dummy histogram ranges can now be changed in the EXCLEDT routine.
+(11/2001, 1.50)
+
+<DT>
+Excluded region/Data limits editor
+<DD>
+Major rewrite to make compatible with Win-9x & add dummy histogram support
+(11/2001, 1.50)
+
+<DT>LIVEPLOT, BKGEDIT & EXCLEDT
+<DD>new features: manual zoom (z key) and cycle between histograms
+(n key)
+(11/2001, 1.50)
+
+<DT>Update archived file treatment<DD>
+Archived files are now saved as <I>EXPNAM</I>.Oxx where xx is a pair
+of hexidecimal digits, as is now done in EXPEDT, GENLES,...
+Archived files can now be read directly in Windows & Unix.
+(10/2001, 1.49)
+
+<DT>Import coordinates from EXP files<DD>
+A .EXP or .Oxx file is selected (as well as a phase, 
+if more than one is present) and the coordinates are imported into
+the current experiment file. 
+(10/2001, 1.48)
+
+<DT>Web help<DD>
+Fix -NT & -2000 bug in bringing up web pages
+
+<DT>Dummy Histograms<DD>
+Dummy histograms are used to simulate powder diffraction patterns. 
+It is now possible to set them up in EXPEDT using the "add histogram"
+button.
+(9/2001, 1.47)
+
+<DT>
+Histogram flags
+<DD>
+The use/do not use flag for histograms can now be set using a button 
+on the histogram panel.
+(9/2001, 1.47)
+
+<DT>
+Excluded region/Data limits editor
+<DD>
+This allows the range of data to be included in the refinement 
+to be selected graphically.
+(9/2001, 1.46)
+
+<DT>
+Adjustable screen font selection
+<DD>
+Font size can now be selected from a menu. Convenient, as well as 
+perhaps improving on utility for folks with visual disabilities.
+The customization discussion in expgui_cfg.html
+now tells how to do override the default families & relative sizes.
+(9/2001, 1.46)
+
+<DT>
+Add Marquardt damping, LeBail damping to GUI
+<DD>
+These parameters are on "LS Controls" panel, along with 
+the convergence parameter. The <a HREF="expgui1.html">documentation for this
+panel</A>
+has also been expanded 
+to better explain what these options do. (7/2001, 1.44)
+
+<DT>
+Fixed background points (BKGEDIT)
+<DD>
+Fits a Chebeshev polynomial to a set of fixed points input by a user.
+If need be (not recommended, though) the background points 
+can be input to GSAS as fixed background values. (7/2001, 1.44)
+<DT>
+"doc-less" install
+<DD>
+Allow doc web pages to be read from www.ncnr.nist.gov, if not present on 
+local system (6/2001, 1.43)
+
+<DT>
+Load archived files (Unix only)
+<DD>
+A convenient way to load archived versions of the .EXP file has been 
+added to the EXPNAM command (4/2001, 1.42).
+
+<DT>
+Sort atoms to be added
+<DD>
+A convenient way to sort the atom list (4/2001, 1.42).
+
+<DT>
+WWW links
+<DD>
+Implemented context-sensitive help that brings up web pages
+from local storage. (10/2000, 1.38)
+
+<DT>
+Error reporting
+<DD>
+When an invalid entry is specified, (for example 1..0 is typed, instead
+of 1.0) EXPGUI ignores the entry and (now) it is also displayed in red, to 
+flag the error. This only happens for entries on the main panels. For
+entries on modal dialogs (where there a "done" or "keep" button), these
+errors will be reported only when the button is pressed. (10/2000, 1.38)
+
+<DT>
+Import Atoms/Import Phase
+<DD>
+A CIF import routine is now available. (10/2000, 1.38)
+
+<DT>
+"Non-shell" version of EXPGUI
+<DD>
+EXPGUI has two functions, 1) to act as a "shell" that calls the 
+various GSAS programs, and 2) to edit the .EXP file. For use with 
+MacGSAS (and possibly the standard Win-95 GSAS shell), it is possible
+to turn off the "shell" features -- by calling EXPGUI with the argument
+-noshell or /noshell or by setting environment variable EXPGUI_NOSHELL to 1.
+This mode has not yet been tested and is not expected to 
+be needed due to the OS X release. (10/2000, 1.36)
+
+<DT>
+NIST accessibility requirement
+<DD>
+NIST requires that all images in WWW pages have an ALT= tag included.
+This has been done on all the documentation HTML pages, despite the 
+fact that (in this case) it adds no new content for anyone.
+
+<DT>
+Change space group/Import from file
+<DD>
+A mechanism where one can specify a new space group, cell,
+and reinput all atoms for the phase (to get site syms correct). One can
+keep the old atoms for the phase or replace them. It is possible
+to do this manually or with a file import capability.
+At present the only file type accepted is 
+the .CEL format from PowderCell. New format filters can be "dropped" in
+place. (8/2000, 1.33)
+
+<DT>
+Import Atoms/Import Phase
+<DD>
+This appears on the add atoms & add phase dialogs and draws on the above. 
+(8/2000, 1.33)
+
+<DT>
+Transform Atoms
+<DD>
+There is now a "xform atom(s)" button on the phase panel that 
+can be used to transform coordinates,
+globally set the occupancy & Uiso and switch atoms between
+iso/aniso and erase selected groups of atoms
+(8/2000, 1.31)
+
+<DT>
+Delete phases
+<DD>
+Work around -- change phase flags on the histogram page (appears when 2+ phases
+present). 
+(8/2000, 1.31)
+
+<DT>
+Spherical Harmonic (ODF) Preferred Orientation
+<DD>
+done 
+(7/2000, 1.29)
+
+<DT>
+Define background types
+<DD>
+The pull-down background selection menu now shows the names of the 
+background functions (7/2000, 1.29)
+
+
+</DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A  Href="revlog.html">Full change log</A>
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>
+$Revision$ $Date$
+</blockquote>
+</body>
+</html>

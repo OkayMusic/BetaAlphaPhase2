@@ -1,0 +1,369 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui7.html">Next page</A>
+</TH><TH><A Href="expgui6R.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 8
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.8 Rigid Body Introduction</h3>
+<DL><DL>
+GSAS Rigid bodies are another way to constrain relative atomic
+  positions. In a rigid body fit,
+a group of atoms are constrained so that they rotate and/or translate as a unit.
+GSAS allows quite complex rigid bodies, with up to 9 scaling parameters and
+when multiple rigid bodies are used with grouped parameters even more complex
+constraints can be developed. The EXPGUI rigid body interface allows access to
+most of the GSAS features and offers some setup features not in GSAS, but
+expert users may need to use EXPEDT for some very complex constraint models.
+<P>
+ Use of a rigid body reduces
+the number of parameters refined, prevents deviations from chemical
+reasonableness and generally helps obtain a more stable refinement. This can be especially important in the
+early stages of refinement. Rigid
+bodies are commonly used to constrain rigid moieties such phenyl or cyclopentadienyl rings but, they can be generated for much
+more complicated structures. Rigid bodies in GSAS are always
+represented by a set of Cartesian coordinates describing the relative positions
+of the atoms to be constrained. More complex frameworks can be constructed
+using multiple sets of Cartesian coordinates with variable multipliers, for
+more complex constraints. Even more sophisticated refinements are possible when
+multiple rigid bodies are constrained to share an origin or positioning (Euler)
+angles.
+<P>
+ Once created, the
+rigid body framework is applied as a constraint by mapping it onto atoms in a
+phase. The same rigid body framework can be mapped multiple times into one or
+more phases.
+  Once mapped, the set
+of atoms will refine as a single body with 3 parameters describing the
+translation of the rigid body origin (generally the centroid of mass of the
+atomic grouping but, this is optional) and 3 parameters describing the rotation
+of the body about the origin (Euler Angles). TLS terms (translation, libration,
+screw) can be used to model cooperative thermal motion about the rigid
+body. The EXPGUI rigid body routines
+will allow the user to readily generate the rigid body framework (called matrices
+in EXPGUI terminology) and map the rigid body to sets of atoms already present
+in the GSAS EXP file. 
+
+The EXPGUI Rigid Body Panel allows for the
+creation or viewing of rigid bodies.
+A rough outline of the procedure to generate and refine with a rigid body
+is as follows:
+
+<OL>
+<LI>Define the framework of the rigid
+body with a set of Cartesian coordinates representing the relative atomic
+positions. This can be done by
+manual input, loading the coordinates from an ASCII file,
+converting Z-matrix coordinates to Cartesian or generating Cartesian coordinates
+from fractional coordinates in an existing molecular fragment in the GSAS EXP
+file.
+<LI>
+ The rigid body
+framework must be mapped upon the crystal structure.
+This requires that the atoms in the
+phase be sequential and must match the order of atoms in the rigid body
+framework. 
+  To change the sequential
+order in the rigid body, the Edit Matrix routine may be used to reorder the
+rigid body coordinates.
+ In the
+mapping procedure, this number of the first atom in the phase to match the
+rigid body is designated (since the mapping then follows) and both the Euler angles
+and rigid body origin are specified; EXPGUI can help determine values
+  for these. 
+  This can be repeated to map the rigid
+body framework to other parts of the structure.
+<LI>
+ Once the rigid body framework
+is mapped to the crystal structure, the refinement flags for the Euler angles
+and Origin can be set. This will turn on the 'X' refinement flags for the
+included atoms in the Phase Panel. It is important that these match the state
+of the rigid body refinement flags or GENLES will crash.
+</OL>  
+</DL></DL>
+<H3>A.8.a Main Rigid Body Panel</H3>
+<DL><DL>
+The main panel for rigid bodies presents a interface where bodies can
+  be initially defined. When bodies have been defined, a tab appears
+  for each defined body, where these bodies can be used or
+  edited. This main panel is shown below and subsequent sections
+  describe how bodies are initially defined. 
+  <BR><img src="rb001.jpg" alt="RB start panel">
+ <BR>
+  Rigid bodies are created
+from one or more sets of Cartesian coordinates multiplied by a scale factor and
+then summed to create Cartesian coordinates in Angstroms. This can be expressed
+as a linear algebra expression,
+<P><DL><DL>
+ XYZ = M1*XYZ1 + M2*XYZ2 + ...
+</DL></DL>
+<P> 
+Where XYZ, XYZ1, ...are 3 by N matrices (3 columns by N atoms) and M1,
+M2,...
+are scalars. Therefore in EXPGUI terminology, each set of Cartesian
+coordinates is called a "Matrix." The
+sum of these scaled matrices describes the rigid body framework that is to be
+mapped upon the atoms of the crystal structure. Most commonly, however, only
+one matrix is used and M1=1. In this case the matrix is simply a set of Cartesian
+coordinates in Angstroms, which can be input by multiple methods.
+As a reminder, note that the rigid body
+framework will be mapped to consecutive atoms in the EXP file must be so the Cartesian
+coordinates of the rigid body MUST be listed in a corresponding order.
+<P>
+If the ordering of the Cartesian
+coordinates of the rigid body, as input, is incorrect, they may be rearranged
+with the Edit Matrix panel invoked
+from the Rigid Body Type panel.
+<P>
+Advanced refinements
+may take advantage of the GSAS feature of multiple matrices, each with its own
+matrix multiplier. This can result is some very advanced refinements such as
+independently refining the C-C and C-H bond distances in a hydrocarbon
+ring.
+<P>
+The "Create Rigid Body" tab offers several ways to create a rigid
+body:
+<UL><LI>Manual rigid body definition
+  <LI>Cartesian coordinates from ASCII text file
+  <LI>Cartesian coordinates from a Z-matrix
+  <LI>Compute Cartesian coordinates from EXP file (fractional coordinates)
+  </UL>
+  
+ <H4>A.8.a1 Manual rigid body definition</H4>
+<DL>
+  The manual definition window allows input of coordinates and
+  multipier(s) by typing values into boxes. Number of matrices
+  determines the number of multipliers and sets of coordinates that
+  are added. Number of Cartesian sites is the number of atoms in the
+  rigid body. The "Save Rigid Body" button creates a new rigid body
+  with the specified input. The "Export Cartesian Coordinates..."
+  writes an ASCII file with the current input.
+  <BR><img src="rb002.jpg" alt="Manual RB creation window">
+</DL>
+ <H4>A.8.a2 Cartesian coordinates from ASCII text file</H4>
+<DL>
+Cartesian coordinates
+can be read from any ASCII file containing Cartesian coordinates in a standard
+tabular format.
+  This routine allows
+the user to determine which columns (separated by a delimiter) represents the X,
+Y and Z coordinates.
+ The user also
+has the option to ignore any row or column that contains irrelevant
+information.
+  Once the Cartesian
+coordinates are isolated, and the "Continue" button is pressed,
+  the user continues to the "Create Rigid Body" window (see above).
+  <BR><img src="rb003.jpg" alt="ASCII RB input window">
+</DL>
+
+  <H4>A.8.a3 Cartesian coordinates from a Z-matrix</H4>
+<DL>
+Cartesian coordinates
+can also be calculated from a Z-matrix in an appropriate ASCII format.
+ The conversion routine will allow dummy
+atoms to be identified and ignored in the conversion process.
+ Upon pressing the "Continue" button, the Z-matrix
+is converted to Cartesian coordinates and the user progresses to the
+  "Create Rigid Body" window (see above).
+ <BR><img src="rb004.jpg" alt="Z-matrix RB input window">
+</DL>
+<A name="fromEXP">
+<H4>A.8.a4 Compute Cartesian coordinates from EXP file (fractional coordinates)</H4>
+</A>
+<DL>
+  A rigid body can also be created directly by computing Cartesian coordinates
+for atoms in the current EXP file.
+  In order to do this, the number of atom sites in the rigid body framework must be specified
+as well as the starting atom number (remember rigid bodies are mapped
+  consecutively) using the window shown below.
+  Once the number of atoms in the body is
+set, the "Choose Start Atom" button is pressed. This creates buttons for
+all possible choices for the first atom to define the body. The starting
+atom is selected by pressing one of these button(s) and this defines
+  the atoms to be used in the rigid body framework. The user must then
+  select 
+which atoms will be used to define the origin (the origin will be at the
+centroid of the atoms chosen) as well as define the axes that will be used to
+generate the x-axis and the xy plane for the Cartesian coordinate system.
+The Cartesian coordinates for the body that are generated can be exported to an
+ASCII text file (with the "Export Cartesian Coordinates"
+button) for later use. More commonly, the "Save and Map
+Rigid Body" button is used; this creates a new rigid body type and
+  maps that body (<A href="#MapBody">see A.8.b2</A>) to the selected atoms in the phase.
+ <BR><img src="rb005.jpg" alt="Fraction Coords RB input window">
+</DL>
+
+</DL></DL>
+<H3>A.8.b Rigid Body Panel</H3>
+<DL><DL>
+ As each rigid body is
+defined, a "Rigid Body Type N" panel will be created.<span
+style="mso-spacerun:yes">&nbsp; 
+  This panel will show how the rigid body
+is mapped, and will allow the user to map / unmap the
+rigid body on to the crystal structure, view the rigid body (this
+  assumes the
+ <A HREF="http://www.lwfinger.net/drawxtl/">DRAWxtl</A> program is installed on their computer), edit the
+rigid body, set refinement flags, or delete the rigid body.
+  <BR><img src="rb006.jpg" alt="RB edit panel">
+
+  <H4>A.8.b1 Plot Rigid Body</H4>
+<DL>
+  <A HREF="http://www.lwfinger.net/drawxtl/">DRAWxtl</A>
+  is a very useful viewing program that
+EXPGUI can invoke, if installed. It
+allows for the viewing of the rigid body to ensure it is correct before mapping
+and matches the ordering of the atoms in the EXP file. Note that plots
+  to not display atom types, since there is no type information
+  associated with position in a rigid body. Atom types are determined
+  by the atoms when the body is mapped. A sample plot 
+  obtained from the "Plot Rigid Body" button is shown below.
+  <BR><img src="rb007.png" alt="DRAWxtl screen">
+</DL>
+<A name="MapBody">
+ <H4>A.8.b2 Map Rigid Body</H4>
+</A><DL>
+The rigid body must be mapped to the
+crystal structure to define the constraint. This is done by pressing
+  the "Map Rigid Body" button, which raises the window below. 
+  <BR><img src="rb008.png" alt="Map RB"><BR> 
+Note that when a rigid body is created from atoms already in the .EXP
+  file (<A href="#fromEXP">see A.8.a4</A>), the "Save and Map" command
+  performs this step automatically.
+  <P>
+  In order to map the rigid body the user
+will need to specify the phase and the sequence number of the first atom in the
+.EXP file to be included.
+  This will
+be the atom assigned to the first set of coordinates in the rigid
+  body.
+ Each succeeding atom will be assigned
+the consecutive set of coordinates.
+The origin and Euler angles for the rigid body placement must be
+determined; this can be done by fitting to the atoms in the
+.EXP file using the &quot;Fit rigid body to phase&quot; button. A
+  table of RMS (~ A distances) between the mapped rigid body placement
+  and the initial atom placements -- this describes the quality of the fit.
+ If the fit is poor, it is
+likely that the ordering of Cartesian coordinates is incorrect, resulting in high
+RMS values. If this occurs, the ordering of the Cartesian coordinates must be
+modified with the Edit Matrix routine.
+  <BR><img src="rb010.png" alt=""><BR>
+ <img src="rb009.png" alt="" ALIGN="RIGHT">
+ The fit can be visually examined with
+the &quot;Plot rigid body &amp; phase&quot; button with results as
+  show to the right. 
+  The rigid body is shown in
+red and the .EXP file coordinates are shown in green. Note that it is often
+easier to understand what is being plotted, when bonds are drawn. The input in
+the "Bonds" box specifies ranges of distances where 0.9-1.1, 1.3-1.6 draws bonds
+between atoms spaced 0.9 to 1.1 A (typical C-H bonds) and 1.3 to 1.6 A (typical
+organic molecule bonds). You may wish to specify different
+  ranges where other types of bonding are present. One can also change
+  the display from the DRAWxtl menus.
+<BR Clear="all">
+  </DL>
+ <H4>A.8.b3 Edit Rigid Body</H4>
+  <DL>
+
+Pressing the "Edit Matrix" button on the "Rigid Body Type N" panel
+    provides an interface that will allow the Cartesian coordinates to be modified by
+sorting, swapping, adding or deleting matrix elements.
+   It will also allow for setting the refinement flag for Matrix
+Multipliers.
+  <BR><img src="rb011.jpg" alt=""><BR>
+ <img src="rb012.png" alt="" ALIGN="RIGHT">
+   Note that repeating the previous
+mapping, after reordering
+of the Cartesian coordinates, the following fit of a cyclopentadienyl
+ligand is accomplished and the RMS differences in the
+fitting procedure are small.
+    Below
+shows the correct fit.
+  <BR><img src="rb013.png" alt=""><BR>
+  <BR><img src="rb014.png" alt=""><BR>
+</DL>
+
+</DL></DL>
+<H3>A.8.c Setting Rigid Body Refinement Flags</H3>
+<DL><DL>
+ The "Refinement Flags" button opens a window that allows the
+user to set flags to refine various parameters.
+Parameters can be set up to refine as
+free variables or constrained variables.
+The TLS (translation, librations, screw) terms describe the rigid body
+thermal motions and are normally off.
+They should only be turned on if the user has a strong understanding of
+the relationships between the TLS terms.
+Note: if an Origin or Euler angle
+flag is enabled, the appropriate atom X refinement flag on the phase panel will
+be set.
+  GENLES will have errors if
+rigid body parameters are refined, but not the positions of the corresponding
+atoms.
+
+ Note that in EXPEDT,
+rigid body parameters can be grouped by assigning them the same variable
+number. The same feature is possible via a graphical interface by "tagging" (pressing
+the appropriate button for) items to vary and then using the following buttons:
+<UL><LI>
+ "Set Free Variables" - will assign each tagged parameter as
+an unconstrained variable by providing a unique variable number.
+
+ <LI>Do Not Refine Variables - will turn off the refinement flag
+for all tagged parameters.
+
+ <LI>Set Constrained variables - will constrain all tagged parameters
+and assign a single variable for refinement.
+ <LI>Clear All Variables - will clear all refinement flags.
+
+<LI>Assign Variables and Save - will assign variable numbers to each
+unique parameter to be refined and close the Refinement Flag window.
+  <BR><img src="rb015.png" alt=""><BR>
+  <BR><img src="rb016.png" alt=""><BR>
+
+The above Phase Panel shows the 'X'
+refinement flags active allowing the rigid body refinement to
+  commence.
+ These flags were set automatically when
+the rigid body position parameter were set to be refined. If these flags are
+turned off, it is likely that GENLES will crash. Note that atoms in a
+  rigid body are now tagged with the letter "r" in the atom listings.
+  </DL></DL>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui7.html">Next page</A>
+</TH><TH><A Href="expgui6R.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

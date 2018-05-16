@@ -1,0 +1,506 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="liveplot.html">Next page<BR>(Utilities)</A>
+</TH><TH><A Href="expgui7.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, Menu Contents
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h2>C. Menu Contents</h2>
+Note that the figures on this page are likely to be out of date with
+respect to the text. The text is updated more frequently. Also, note
+that not all menu options are available in Windows.
+
+<a name="1"></a>
+<H3>C.1 File Menu</H3>
+<BLOCKQUOTE>
+The options on the File menu as is the custom contains the commands 
+for reading and writing experiment files, as well as starting 
+and ending the program.
+<DL>
+<DT>Open<DD>
+    	Select an existing GSAS experiment to be used. If a name is entered 
+	that does not exists, it is possible to create a new
+	experiment file from scratch.
+<DT>expnam<DD>
+Equivalent to Open (included for historical reasons.)
+
+<DT>Save<DD>Saves modifications to the current experiment file to disk (shortcut Alt-S).
+<DT>Save As<DD>Saves modifications to the current experiment file to disk
+	under a new file name
+<DT>Reread .EXP file<DD>Reread the last saved version of the
+  experiment file from disk.
+<DT>Update GSAS/EXPGUI<DD>This queries the EXPGUI software repository
+  to see if any files in EXPGUI or GSAS has been updated. It then
+  offers the program user the option to update these files. The update
+  will fail if the user does not have permission to change the EXPGUI
+  or GSAS files. In this case, a system administrator may be needed.
+  <DT>revert<DD>Used to load an <a href="#archive">archived</A>
+    (backup) version of the current .EXP file. 
+<DT>EraseHistory<DD>Deletes old history records to speed reading of the .EXP file.
+<DT>convert<DD>Convert a standard ASCII file to the direct access
+  format used by GSAS (and for UNIX, the reverse) -- this is not
+  likely to be needed, as GSAS now does most conversions automatically.
+<DT>exit<DD>Exit EXPGUI (shortcut Alt-X or ^C)
+</DL>
+<img SRC="m1.gif" BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="2"></a>
+<h3>C.2 Options Menu</h3>
+<BLOCKQUOTE>
+This menu contains options that determine how EXPGUI runs.
+<a name="archive"></a>
+<DL>
+<DT>archive EXP<DD>
+  Toggles archiving of .EXP files. When on, files are 
+	saved before they are overwritten by EXPGUI as a file
+	named <I>EXPNAM</I>.Oxx where xx is a pair of hexidecimal
+	digits (01, 02,..., 09, 0A,... OF, 10,... FF). 
+	Each time that EXPGUI archives a file, note is placed in the .LST file
+	so that the saved file name can be associated with 
+	the refinement stage. Turning this option off, prevents EXPGUI
+	from creating these <I>EXPNAM</I>.Oxx archive files, but 
+	the will still be created by EXPEDT, GENLES,...
+<P>
+<DT>Use DISAGL Window<DD>When this option is set, results from DISAGL are 
+         shown in a separate window. When it is not set, the results are
+        written in the .LST file. Note that on Windows, LSTVIEW can interfere
+	with putting output into the DISAGL window. The solution is to 
+	close LSTVIEW before running DISAGL.
+
+<a name="Autoupdate"></a>
+<DT>Autoload EXP<DD>Normally EXPGUI prompts before rereading the EXP 
+file when GENLES, POWPREF,... or other GSAS programs run 
+If this option is set, the new file is automatically read without a prompt. 
+The advantage of leaving this option off, is that 
+you can opt to not load the
+revised .EXP file, which means that you reject the last set of changes.
+This is useful if 
+GENLES blows up or you have done something wrong. The reason to  
+turning "autoload EXP" on is
+that there is one less thing to do when running GSAS programs.
+Note that it is still possible to reverse changes, if 
+<a href="#archive">archive files</A>, but this may require more
+  effort. See the File/revert menu entry.
+<a name="execprompt"></a>
+<DT>Prompt after GSAS run<DD>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+By default, GSAS programs are run in a separate window 
+and after the program completes, the window remains open until enter is
+pressed in the window. Turning the "Prompt after GSAS run" option off, causes
+the window to be closed immediately after the program completes, saving 
+some effort but obliterating any error messages or other evidence of problems.
+
+<a name="Autoicon"></a>
+<DT>Iconify during GSAS<DD>
+If this option is turned on, the main EXPGUI window is shrunk to an icon
+(minimized) while GSAS programs are running and EXPGUI is suspended. 
+The author prefers this mode, since there is no reason to have the 
+screen cluttered with EXPGUI when it can't be used, 
+but this is an option so that the mode can be turned off by those people
+who find this behavior annoying. It appears this option causes
+  problems on Windows 7. 
+
+<a name="AutostartGRWND"></a>
+<DT>Autostart GRWND
+<DD>
+This option is available on Windows-95, -98 and -ME to deal with a operating
+system quirk that prevents the starting of the GRWND.EXE program, 
+needed for graphics in GSAS programs such as POWPLOT, RAWPLOT, EXPEDT,...
+(this program is not needed for EXPGUI graphics, such as LIVEPLOT). It 
+is not understood why this error happens or how to prevent it. One cure
+is to start this GRWND.EXE program before starting the GSAS program. 
+If this option is selected, each time a GSAS program is started, a separate
+program TLIST.EXE is used to check if GRWND.EXE is running. If it is not, 
+EXPGUI will start this program before starting the requested GSAS program.
+
+<a name="sortatoms"></a>
+<DT>Sort atoms by<DD>	Determines the order that atoms are displayed on the "Phase" pane
+	Atoms may be displayed sorted by number, atom type, site multiplity,
+	occupancy, or by x, y or z coordinate
+<P>
+Clicking on the heading above the atoms list cycles with the left
+mouse button cycles through the atom sort modes. Clicking with
+the right mouse button resets the atom sort mode to "number".
+
+<a name="sorthist"></a>
+<DT>Sort histograms by<DD>Determines the order that histograms are displayed on the 
+	Histogram, Scaling and Profile panes
+
+	Histograms may be sorted by histogram number, histogram type, 
+	original bank number, or diffraction angle/wavelength
+<DT><A href="expgui.html#multiplehistogram">Multiple hist. selection</A><DD>
+        When this mode is off, it is possible to modify parameters
+	and refinement flags for only a single histogram. For other settings,
+	it is possible to modify parameters and flags for groups of 
+	histograms (see help for Mouse actions). 
+
+	It does not make sense, however, to globally modify
+	instrument-related parameters and flags for different histogram types.
+	So global actions can be limited to a single class of histogram types
+	(e.g. TOF, CW Neutron,...), which allows these parameters to be set
+	for groups of similar histograms. Thus, if this mode is set to "All"
+	the Histogram and Profile panes are disabled.
+<DT>Override backspace<DD>This option is available in UNIX only, as there are different
+	ways that backspace can be implemented. When option is set 
+	as "On," the backspace key is overridden to send a "delete" 
+	character. If backspace does not work in a program such as 
+	EXPEDT, change try the other setting for this option.
+
+<a name="setfont"></a>
+<DT>Set Screen Font
+<DD>
+This menu changes the fonts used in most sections of EXPGUI. 
+Note that this setting can be saved with the 
+SaveOptions menu option (below) so that EXPGUI automatically
+starts with the chosen font.
+
+<a name="exptoolout"></a>
+<DT>Show EXPTOOL output<DD>
+Normally EXPGUI does not show the output from EXPTOOL, when 
+actions like adding atoms, phases or histograms is performed.
+If an error is detected, the output is shown. If 
+there are problems with adding phases, atoms, histograms... and
+a window showing an error does not appear,
+this option should be set to "on" so the output from EXPTOOL is 
+always shown.
+
+<DT>Save Options<DD>Save the current values for "Override backspace", 
+	<a href="#sortatoms">"Sort atoms by"</a>, 
+        <a href="#sorthist">"Sort histograms by"</a>, 
+	<a href="#archive">"archive EXP"</a>,
+	<a href="#Autoupdate">"Autoload EXP"</a>,
+	<a href="#setfont">"Set Screen Font"</a>,
+	and
+	<a href="#Autoicon">"Iconify during GSAS"</a>
+	
+	in file ~/.gsas_config (or c:\gsas.config on Windows).
+<DT>Save Position<DD>Saves the current screen position of the EXPGUI
+  window as the starting point for future runs of EXPGUI in
+  	in file ~/.gsas_config (or c:\gsas.config on Windows).
+
+<DT>liveplot_options<DD>Used to set options for 
+<a HREF="liveplot.html#liveplot">LIVEPLOT</a>,
+for example, the histogram to be plotted
+<DT>Assign app to .EXP files<DD>(on Mac only) When selected, this
+  causes .EXP files to be linked (via the file resource fork) to the
+  EXPGUI applescript. This also causes the .EXP files to be displayed
+  with a GSAS icon. 
+  
+</DL>
+<img SRC="m2.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="3"></a>
+<h3>C.3 Powder Menu</h3>
+<BLOCKQUOTE>
+This menu contains links to GSAS programs used for powder diffraction
+analysis.
+<DL>
+<DT>expedt<DD>Run GSAS experiment editor (shortcut Alt-E)
+<DT>powpref<DD>Powder data preparation (shortcut Alt-P)
+<DT>genles<DD>Run GSAS experiment editor (shortcut Alt-G)
+<DT>powplot<DD>Display powder patterns
+<DT>rawplot<DD>Plot powder data
+<DT>fitspec<DD>Fit a TOF vanadium scattering spectrum
+<DT><a HREF="liveplot.html#bkgedit">bkgedit</a>
+<DD>Invokes the <a HREF="liveplot.html#bkgedit">BKGEDIT</a> program
+to fit a background function to a set of fixed background points.
+<DT><a HREF="excledt.html">excledt</a>
+<DD>Invokes the <a HREF="excledt.html">EXCLEDT</a> program
+to set the upper and lower limits for a histogram, as well as
+edit excluded regions.
+<DT>seqgsas<DD>Invokes the sequential GSAS refinement program to run
+  GENLES on a set of very similar data files.
+<DT>mustrplot<DD>Plot microstrain results
+<DT><a HREF="expgui.html#INSTEDIT">instedit</A><DD>Invokes the <a HREF="expgui.html#INSTEDIT">instedit</A>
+  to edit an instrument parameter file.
+<DT>New InstParm file<DD>Creates a new instrument parameter file using
+  <a HREF="expgui.html#INSTEDIT">instedit</A>.
+
+
+</DL>
+<img SRC="m3.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="4"></a>
+<h3>C.4 Xtal (Single Crystal) Menu</h3>
+<BLOCKQUOTE>
+This menu contains links to GSAS programs used for 
+single-rystal diffraction analysis.
+<DL>
+<DT>expedt<DD>Run GSAS experiment editor (shortcut Alt-E)
+<DT>genles<DD>Run GSAS experiment editor (shortcut Alt-G)
+<DT>scabs<DD>Single crystal absorption
+<DT>scmerge<DD>Sort and merge single crystal data
+<DT>sxtldata<DD>Prepare generic single crystal data
+</DL>
+<img SRC="m4.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="5"></a>
+<h3>C.5 Graphics Menu</h3>
+<BLOCKQUOTE>
+This menu contains links to several GSAS and 
+two non-GSAS (<a HREF="liveplot.html#liveplot">LIVEPLOT</a>,
+and widplt)
+programs used for graphical display of data and results.
+<DL>
+<DT>Fourier<DD>Provides an interface to set up computation of
+  Fourier maps and compute them using program Fourier.
+  Also see the <A HREF="#DRAWxtl">Export to DRAWxtl</A> interface,
+  which can be used to set up, compute, export and display Fourier
+  maps. Note that a Fourier map can be set up for only one phase
+  at a time. 
+<DT>forsrh<DD>Search Fourier map for peaks
+<DT>forplot<DD>Display Fourier maps (set Fourier options in EXPEDT 
+	and then compute with FOURIER
+<DT>polfplot<DD>Display polefigures
+<DT>powplot<DD>Display powder patterns
+<DT>ortep<DD>Draw crystal structure
+<DT>rawplot<DD>Plot powder data
+<DT>gsas2map<DD>Exports a Fourier map in formats used by other
+  programs (for example Fox and DRAWxtl).
+<DT><a HREF="liveplot.html#liveplot">liveplot</a>
+<DD>Invokes the <a HREF="liveplot.html#liveplot">LIVEPLOT</a> program
+to create a plot of powder data 
+with zooming, automatic update and other nice features.
+<DT>vrstplot<DD>Create a VRML 3-D file for viewing with 3rd party software
+<DT>widplt<DD>Displays the FWHM as a function of Q, 2Theta,... for UVWXY values input or read from an EXP file
+<DT><a HREF="expgui.html#ABSPLT">absplt</A>
+<DD>The <a HREF="expgui.html#ABSPLT">absplt</A> program displays the
+  absorption/reflectivity correction curve for values used in a histogram.
+<DT>mustrplot<DD>Plot microstrain results
+<DT>seqplot<DD>Plot results from seqgsas
+</DL>
+<img SRC="m5.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="6"></a>
+<h3>C.6 Results Menu</h3>
+<BLOCKQUOTE>
+This menu contains links to several GSAS and 
+one non-GSAS (lstview)
+programs used for analysis of results.
+<DL>
+<DT>bijcalc<DD>Thermal parameter analysis
+<DT>disagl<DD>Distance/angle calculations
+<DT>disaglviewer<DD>Display results from distance/angle calculations
+  in a graphical browser.
+<DT>reflist<DD>List reflection data
+<DT>geometry<DD>Molecular geometry calculations
+<DT>hstdmp<DD>List powder histogram data
+<DT>istats<DD>HKL Intensity statistics
+<DT>rcalc<DD>Compute reflection resuduals
+<DT>composition<DD>Computes the chemical composition of a unit cell
+accounting for site multiplicies and occupancies
+<DT>lstview<DD>Create a box with scrollbars containing the current .LST file
+<DT>ramafit<DD>Fits torsion angle distributions, particularly in peptide
+chains, for use in restraints.
+<DT>seqplot<DD>Plot results from seqgsas
+</DL>
+<img SRC="m6.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="7"></a>
+<h3>C.7 Calculations Menu</h3>
+<BLOCKQUOTE>
+This menu contains programs for useful crystallographic computations.
+<DL>
+<DT>cllchg<DD>Transform unit cell
+<DT>composition<DD>Computes the chemical composition of a unit cell
+accounting for site multiplicies and occupancies
+<DT>rducll<DD>Unit cell reduction
+<DT>spcgroup<DD>Space group symbol interpreter
+<DT>seqgsas<DD>Invokes the sequential GSAS refinement program to run
+  GENLES on a set of very similar data files.
+<DT>seqplot<DD>Plot results from seqgsas
+<DT>unimol<DD>Unique molecule assembler
+</DL>
+<img SRC="m7.gif" BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<a name="9"></a>
+<h3>C.8 Macro Menu
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+</h3>
+<BLOCKQUOTE>
+The macro capability allows actions performed in EXPGUI to be captured into a
+file as a series of Tcl command.
+It is then possible to repeat the actions in a macro repeatedly 
+by replaying the macro. Note that macro files can be edited and 
+Tcl/Tk commands can be added to the macros to expand capabilities. 
+As an example, this code
+<blockquote><TT><PRE>
+runAddHist Data.raw 11BM-12D.INS 1 1 T 59.9995
+runAddHist Data.raw 11BM-12D.INS 2 2 T 57.9995
+runAddHist Data.raw 11BM-12D.INS 3 3 T 55.9995
+runAddHist Data.raw 11BM-12D.INS 4 4 T 53.9995
+</PRE></TT></blockquote>
+can be modified to prompt for a file name and then use it in a macro:
+<blockquote><TT><PRE>
+set DataFile [tk_getOpenFile -defaultextension .raw]
+runAddHist $DataFile 11BM-12D.INS 1 1 T 59.9995
+runAddHist $DataFile 11BM-12D.INS 2 2 T 57.9995
+runAddHist $DataFile 11BM-12D.INS 3 3 T 55.9995
+runAddHist $DataFile 11BM-12D.INS 4 4 T 53.9995
+</blockquote></TT></DL>
+<DL>
+<DT>Record EXPGUI macro<DD>
+When this option is turned on, subsequent actions are recorded into the 
+selected macro file. 
+<DT>Add comment to macro<DD>
+If this option is selected, a window is opened where a string can be typed.
+This information is then entered at the current point within the macro file
+as a comment. 
+<DT>Replay macro line-at-a-time<DD>
+When this option is used, a macro file is selected by the user; the 
+contents of the macro file is displayed, and button can be pressed to execute 
+each command in the macro file. By clicking on a line in a macro file, that line
+will be the next to be run, so that sections of the file can be skipped over
+or repeated. The macro can also be edited within the file viewer window.
+<DT>Replay macro all at once<DD>
+When this option is used, a macro file is selected by the user, and then
+all commands in the macro file are executed. A status window is opened that 
+shows the number of refinement cycles, Chi<sup>2</sup> and the last sum of 
+shifts and also allows macros to be aborted. Note that any GSAS run in progress
+will run to completion before the Abort is invoked.
+Note that <A href="#Autoupdate">Autoload EXP</A> is temporarily set to 
+on and <A href="#execprompt">Prompt after GSAS run</A>
+is temporarily set to off, when this command is invoked, so that the macro 
+runs without need for prompts.
+
+<DT>Show GSAS output in window<DD>
+When this option is selected, GSAS programs are run in a separate window
+that is created for each program run -- even during macro execution. 
+When this option is deselected, output from GSAS programs is placed in a 
+separate file 
+(<I>XXXXXXXX</I>_mac.LST where <I>XXXXXXXX</I> is the experiment name) 
+and LSTVIEW is opened to view the output from that .LST file.
+</DL>
+</BLOCKQUOTE>
+
+<a name="8"></a>
+<h3>C.9 Import/Export Menu</h3>
+<BLOCKQUOTE>
+This menu contains utilities for importing information into GSAS and
+exporting it to other programs.
+<DL>
+<DT>Coord Export<DD>This provides a series of routines that are used
+to write coordinates and possibly other information to files:<P>
+<DL>
+<DT>gsas2cif<DD>Prepares IUCr crystallographic information (CIF) file
+that documents the current refinement. The CIF contains the
+coordinates for all phases as well as the observed and computed
+diffraction patterns. The templates used by GSAS2CIF can be customized
+to provide a detailed description of the experimental measurements and
+results for use in documenting analysis for publication or
+deposition. 
+<DT>coords-only CIF<DD>For export of intermediate results to another
+program, CIF can be a useful exchange format. This routine provides a
+CIF with the current coordinates from one phase and not much else.
+<a name="DRAWxtl"></a>
+<DT>export to DRAWxtl<DD>
+  <A HREF="http://www.lwfinger.net/drawxtl/">DRAWxtl</A>
+  is a very useful free program for display of structures and
+maps. This writes a .STR input file used in the DRAWxtl
+program and optionally launches DRAWxtl, if installed.
+While the control options offered by EXPGUI are relatively
+modest (display of polyhedra,
+selection for bonds to be drawn, display of Fourier contours), 
+once the DRAWxtl program is launched, the full range of DRAWxtl
+options can be accessed from that program's GUI. When a Fourier map
+contour is included, the Fourier parameters are set, the map is
+computed (program fourier) and is converted to the format needed by
+DRAWxtl (program gsas2map) automatically. 
+<DT>export to SHELX<DD>This writes coordinates for a selected phase in
+the .INS format used by SHELX and several other programs.
+<DT>export to PLATON<DD>This writes coordinates for a selected phase in
+the .SPF format used by PLATON
+<DT>export test format<DD>This demonstrates how a coordinate export
+routine can be added to EXPGUI. See the <A
+HREF="expgui_cfg.html#export">documentation on this</A> for further
+information. 
+<DT>export to FOX<DD>This prepares a XML file with coordinates for use
+in the FOX program
+<DT>MSI .xtl<DD>Prepare a .XTL format file of atomic positions. This
+file is used in older Accelrys software such as Cerius and
+Insight-II. It may no longer be of value.
+</DL>
+
+<DT>CIF Export<DD>This provides a series of routines that are used
+to prepare CIF files:<P>
+<DL>
+<DT>gsas2cif<DD>Prepares IUCr crystallographic information (CIF) file
+that documents the current refinement. The CIF contains the
+coordinates for all phases as well as the observed and computed
+diffraction patterns. The templates used by GSAS2CIF can be customized
+to provide a detailed description of the experimental measurements and
+results for use in documenting analysis for publication or
+deposition.
+<DT>FillTemplate<DD>Used to edit the CIF template files used in GSAS2CIF
+<DT>CIFselect<DD>Used to select interatomic distances and angles to be
+included in the CIF created by GSAS2CIF.
+</DL>
+
+<DT>hklsort<DD>Prepare HKL tables
+<DT>pubtable<DD>Prepare atom parameter tables
+<DT>convert<DD>Convert a standard ASCII file to the direct access format used by GSAS (and for UNIX, the reverse)
+<DT>cad4rd<DD>Prepare CAD4 single crystal data
+<DT>dbwscnv<DD>Convert a powder diffraction data file from DBWS format
+<DT>x17bcnv<DD>Convert an energy dispersive diffractogram data file from NSLS X17b
+<DT>p3r3data<DD>Prepare Siemens/Brucker P3R3 single crystal data
+<DT>sxtldata<DD>Prepare generic single crystal data
+<DT>gsas2pdb<DD>
+Import (using GSAS2PDB & EXPEDT) and export coordinates (for 
+macromolecular phases) to/from Protein Data Base files
+<DT>ref2asc<DD>
+Exports a GSAS reflection file to ASCII for use in non-GSAS programs
+<DT>ref2bin<DD>
+Imports an ASCII reflection file to the GSAS binary format
+<DT>gsas2map<DD>Exports a Fourier map in formats used by other
+  programs (for example Fox and DRAWxtl).
+</DL>
+<img SRC="m8.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</BLOCKQUOTE>
+
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A>
+</TH><TH><A Href="liveplot.html">Next page<BR>(Utilities)</A>
+</TH><TH><A Href="expgui7.html">Previous page</A>
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>
+$Revision$ $Date$
+</blockquote>
+</body>
+</html>

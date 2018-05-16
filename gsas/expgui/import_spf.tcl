@@ -1,0 +1,164 @@
+# $Id: import_spf.tcl 1251 2014-03-10 22:17:29Z toby $
+
+#-------------------------------------------------
+# define info used in addcmds.tcl
+set description "Platon .spf file"
+set extensions .spf
+set procname ReadSPFFile
+#-------------------------------------------------
+
+proc ReadSPFFile {filename} {
+    set fp [open $filename r]
+    set cell {}
+    set atomlist {}
+    set spg {}
+    set shift {}
+    set sglbl {}
+    set msg {}
+
+    while {[gets $fp line] >= 0} {
+	set token [lindex $line 0] 
+	switch [string toupper $token] {
+	    CELL {
+		set cell [lrange $line 1 end]
+		# drop wavelength if present
+		if {[llength $cell] == 7} {
+		    set cell [lrange $cell 1 end]
+		}
+	    }
+	    SPGR {
+		set sglbl [lrange $line 1 end]
+	    }
+	    UIJ {
+		catch {
+		    set sum 0
+		    foreach a [lrange $line 1 3] {
+			set sum [expr {$sum + $a/3.}]
+		    }
+		    set lbl [lindex $line 1]
+		    set Uarray($lbl) $sum
+		}
+	    }
+	    BIJ {
+		catch {
+		    set sum 0
+		    foreach a [lrange $line 1 3] {
+			set sum [expr {$sum + $a/3.}]
+		    }
+		    set sum [expr {$sum/(8*3.14159*3.14159)}]
+		    set lbl [lindex $line 1]
+		    set Uarray($lbl) $sum
+		}
+	    }
+	    U {
+		catch {
+		    set lbl [lindex $line 1]
+		    set Ueq [expr {[lindex $line 1]}]
+		    set Uarray($lbl) $Ueq
+		}
+	    }
+	    B {
+		catch {
+		    set lbl [lindex $line 1]
+		    set Ueq [expr {[lindex $line 1]/(8*3.14159*3.14159)}]
+		    set Uarray($lbl) $Ueq
+		}
+	    }
+	    ignore {# the entries below are ignored}
+	    TITL {}
+	    CESD {}
+	    LATT {}
+	    SYMM {}
+	    SUIJ {}
+	    SBIJ {}
+	    TRNS {}
+	    ATOM {
+		set lbl [lindex $line 1]
+		set atomarray($lbl) [lrange $line 2 4]
+	    }
+	    default {
+		set lbl [lindex $line 0]
+		# ignore black lines
+		if {$lbl != ""} {
+		    set atomarray($lbl) [lrange $line 1 3]
+		}
+	    }
+	}
+    }
+    close $fp
+    if {[catch {array names atomarray}]} {
+	MyMessageBox -parent . -type ok -icon warning \
+		-message "Warning: no atoms were found!"
+	return
+    }
+    set typelist {
+	H HE LI BE B C N O F NE NA MG AL SI P S CL AR K CA SC TI V CR MN FE CO
+	NI CU ZN GA GE AS SE BR KR RB SR Y ZR NB MO TC RU RH PD AG CD IN SN SB
+	TE I XE CS BA LA CE PR ND PM SM EU GD TB DY HO ER TM YB LU HF TA W RE
+	OS IR PT AU HG TL PB BI PO AT RN FR RA AC TH PA U NP PU AM CM BK CF 
+	D
+    }
+    # create the atoms list
+    foreach lbl [array names atomarray] {
+	# set the type from the first or first two letters of the label
+	foreach type "[string range $lbl 0 1] [string range $lbl 0 0]" {
+	    if {[lsearch $typelist [string toupper $type]] >= 0} {
+		break
+	    }
+	    set type {}
+	}
+	# set x y & z
+	set l "$lbl $atomarray($lbl) [list $type]"
+	catch {lappend lbl $Uarray($lbl)}
+	lappend atomlist $l
+    }
+    # check the spacegroup
+    if {$sglbl !=  ""} {
+	global expgui
+	set sgtmp [string toupper $sglbl]
+	# remove spaces from space group
+	regsub -all " " $sgtmp "" sgtmp
+	# make a copy where we treat bar 3 as the same as 3 
+	regsub -- "-3" $sgtmp "3" sgtmp3
+	set fp1 [open [file join \
+		$expgui(scriptdir) spacegrp.ref] r]
+	while {[gets $fp1 line] >= 0} {
+	    set testsg [string toupper [lindex $line 8]]
+	    regsub -all " " $testsg "" testsg
+	    if {$testsg == $sgtmp} {
+		set spg [lindex $line 8]
+		set sgnum [lindex $line 1]
+		break
+	    } elseif {[lindex $line 1] >= 200} {
+		regsub -- "-3" $testsg "3" testsg3
+		if {$testsg3 == $sgtmp3} {
+		    set spg [lindex $line 8]
+		    set sgnum [lindex $line 1]
+		    break
+		}
+	    } elseif {[lindex $line 1] <= 18} {
+		# monoclinic: change operators of form "1 xxx 1" to "xxx"
+		regsub -- " 1 (.*) 1" [string toupper [lindex $line 8]] "\\1" testsg
+		# remove spaces from space group
+		regsub -all " " $testsg "" testsg
+		if {$testsg == $sgtmp} {
+		    set spg [lindex $line 8]
+		    set sgnum [lindex $line 1]
+		    break
+		}
+	    }
+	}
+	close $fp1
+	# exact spacegroup was not found
+	if {$spg == ""} {
+	    MyMessageBox -parent . -type ok -icon warning \
+		    -message "Warning: The space group ($sglbl) was not found and likely needs to be edited"
+	    set msg "Check space group"
+	}
+    } else {
+	MyMessageBox -parent . -type ok -icon warning \
+		-message "Warning: No space group found"
+	    set msg "Input a space group"
+    }
+    return "[list $spg] [list $cell] [list $atomlist] [list $msg]"
+}

@@ -1,0 +1,188 @@
+# Export coordinates to SHELX (.ins) format file
+# $Id: export_shelx.tcl 1251 2014-03-10 22:17:29Z toby $
+set label "export SHELX (.ins) format"
+set action export_SHELX
+proc export_SHELX {} {
+    global expmap expgui
+    # don't bother if there are no phases to write
+    if {[llength $expmap(phaselist)] == 0} {
+	MyMessageBox -parent . -title "No phases" \
+		-message "Sorry, no phases are present to write" \
+		-icon warning
+	return
+    }
+    MakeExportBox .export "Export coordinates in SHELX (.ins) format" \
+	    "MakeWWWHelp expgui.html ExportSHELX"
+    # note, change export in the line above to the name anchor for a 
+    # section documenenting the format added to expgui.html, if added
+    #
+    # force the window to stay on top
+    putontop .export
+    # Wait for the Write or Quit button to be pressed
+    tkwait window .export
+    afterputontop
+    # test for Quit
+    if {$expgui(export_phase) == 0} {return}
+
+    # now open the file and write it
+    set phase $expgui(export_phase)
+    if [catch {
+	set filnam [file rootname $expgui(expfile)]_${phase}.ins
+	set fp [open $filnam w]
+	# deal with macromolecular phases
+	if {[lindex $expmap(phasetype) [expr {$phase - 1}]] == 4} {
+	    set mm 1
+	    set cmd mmatominfo
+	} else {
+	    set mm 0
+	    set cmd atominfo
+	}
+	#==============================================================
+	# title info from GSAS title & phase title
+	puts $fp "TITL [expinfo title]"
+	# write out cell parameters with dummy (0.5A) wavelength
+	set line {CELL 0.5}
+	foreach p {a b c alpha beta gamma} {
+	    lappend line [phaseinfo $phase $p]
+	}
+	puts $fp $line
+	# turn space group into lattice type and a list of unique symm opts
+	# (omit x,y,z, centering, center of sym=-x,-y,-z)
+	set sginfo [ParseSGROUP [phaseinfo $phase spacegroup]]
+	set centerlist { 
+	    dummy primitive i-centered r-centered f-centered a-centered 
+	    b-centered c-centered
+	}
+	set L [lsearch $centerlist [string tolower [lindex $sginfo 1]]]
+	if {$L == -1} {
+	    MyMessageBox -parent . -title "Parse error" \
+		    -message "Export error: could not parse SGROUP output for  [phaseinfo $phase spacegroup]" \
+		    -icon warning
+	    set L 1
+	}
+	if {[string tolower [lindex $sginfo 0]] == "acentric"} {
+	    set L "-$L"
+	}
+	puts $fp "LATT $L"
+	foreach s [lrange [lindex $sginfo 3] 1 end] {
+	    puts $fp "SYMM [lindex $s 0], [lindex $s 1], [lindex $s 2]"
+	}
+	set maxmult 1
+	# loop over atoms to count types
+	foreach atom $expmap(atomlist_$phase) {
+	    # count the unique atom types
+	    set type [$cmd $phase $atom type]
+	    # parse to element symbol
+	    regexp {([a-zA-Z]+)} $type a type
+	    set type [string range $type 0 1]
+	    if {[catch {incr count($type)}]} {set count($type) 1}
+	    # get maximum multiplicity
+	    if {!$mm} {		
+		set m [atominfo $phase $atom mult]
+		if {$m > $maxmult} {set maxmult $m}
+	    }
+	}
+	set elemlist [array names count] 
+	puts $fp "SFAC $elemlist"
+	set fmt %s%d
+	foreach n $elemlist {
+	    if {$count($n) > 99} {set fmt %s%.2x}
+	    set count($n) 0
+	}
+	foreach atom $expmap(atomlist_$phase) {
+	    # count the unique atom types
+	    set type [$cmd $phase $atom type]
+	    # parse to element symbol
+	    regexp {([a-zA-Z]+)} $type a type
+	    set type [string range $type 0 1]	    
+	    # make a 4 character label
+	    set lbl [format $fmt $type [incr count($type)]]
+	    # find the scattering factor number
+	    set sfac [lsearch $elemlist $type]
+	    incr sfac
+	    # determine SHELX occupancy 
+	    if {$mm} {
+		# for macromolecular phases assume all atoms on 
+		# general positions
+		set m 1
+		set frac [mmatominfo $phase $atom frac]
+	    } else {
+		set m [atominfo $phase $atom mult]
+		if {$m != $maxmult} {
+		    set m [expr {(1.*$m) / $maxmult}]
+		} else {
+		    set m 1
+		}
+		set frac [atominfo $phase $atom frac]
+	    }
+	    if {$frac == 1} {
+		set occ [expr {10 + $m}]
+	    } else {
+		set occ [expr {$frac * $m}]
+	    }
+	    # prepare displacement parm string
+	    set U {}
+	    if {!$mm && [atominfo $phase $atom temptype] == "A"} {
+		foreach uij {U11 U22 U33 U23 U13 U12} {
+		    lappend U [atominfo $phase $atom $uij]
+		}
+	    } else {
+		set U [$cmd $phase $atom Uiso]
+	    }
+	    foreach var {x y z} {
+		set $var [$cmd $phase $atom $var]
+	    }
+	    #write out the atom, tab delimited
+	    puts $fp "$lbl $sfac $x $y $z $occ $U"
+	}
+	#==============================================================
+	close $fp
+    } errmsg] {
+	MyMessageBox -parent . -title "Export error" \
+		-message "Export error: $errmsg" -icon warning
+    } else {
+	MyMessageBox -parent . -title "Done" \
+		-message "File [file tail $filnam] was written"
+    }
+}
+
+proc ParseSGROUP {spg} {
+    # check the space group
+    global tcl_platform expgui
+    set fp [open spg.in w]
+    puts $fp "N"
+    puts $fp "N"
+    puts $fp $spg
+    puts $fp "Q"
+    close $fp
+    catch {
+	if {$tcl_platform(platform) == "windows"} {
+	    exec [file join $expgui(gsasexe) spcgroup.exe] < spg.in >& spg.out
+	} else {
+	    exec [file join $expgui(gsasexe) spcgroup] < spg.in >& spg.out
+	}
+    }
+    set fp [open spg.out r]
+    set out [read $fp]
+    close $fp
+    # look for errors -- there should not be any, but...
+    if {[regexp "space group symbol.*>(.*)Enter a new space group symbol" \
+	    $out a b ] != 1} {set b $out}
+    if {[string first Error $b] != -1} {
+	return "error [list $b]"
+    }
+    set result "{} {} {}"
+    if {[regexp "he lattice is (.*) Laue" \
+	    $out a result ] >= 1} {
+    }
+    set symlist {}
+    for {set i 1} {$i < 99} {incr i} {
+#	puts [format "(%2d) " $i]
+	set pos [string first [format "(%2d) " $i] $out]
+	if {$pos == -1} break
+	lappend symlist [string trim \
+		[string range $out [expr $pos+4] [expr $pos + 25]]]
+    }
+    lappend result $symlist
+    return $result
+}

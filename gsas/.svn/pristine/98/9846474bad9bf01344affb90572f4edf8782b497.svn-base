@@ -1,0 +1,759 @@
+<HTML>
+   <TITLE>Customizing EXPGUI and Associated Programs</TITLE>
+
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<CENTER><H1>
+<HR noshade width="75%" size="2" align="center">
+Customizing EXPGUI and Associated Programs
+<HR noshade width="75%" size="2" align="center">
+</H1></CENTER>
+
+The EXPGUI GSAS graphical user interface can be modified in many 
+ways quite easily.
+This document describes how the GUI works and how to modify the menus without
+significant reprogramming. A little bit of programming skills in Tcl/Tk 
+can go a long way in adding new features. See the 
+<a HREF="#Customizing">Customizing</A> examples, below.
+
+<H3>EXPGUI</H3>
+The main GUI is created by file expgui, which in turn uses the following files
+sequentially:
+<UL>
+<LI><FONT FACE="COURIER">readexp.tcl</FONT>
+<LI><FONT FACE="COURIER">gsascmds.tcl</FONT>
+<LI><FONT FACE="COURIER">gsasmenu.tcl</FONT>
+</UL>
+Two additional files are read if they are found:
+<UL>
+<LI><FONT FACE="COURIER">localconfig</FONT>
+<LI>UNIX: <FONT FACE="COURIER">.gsas_config</FONT>
+or Windows: <FONT FACE="COURIER">c:\gsas.config</FONT></UL>
+<P>The first three files, 
+(<FONT FACE="COURIER">readexp.tcl</FONT>, <FONT FACE="COURIER">gsascmds.tcl</FONT>, <FONT FACE="COURIER">gsasmenu.tcl</FONT>)
+must be located in the same directory where the <FONT FACE="COURIER">expgui</FONT> file is found. 
+The <FONT FACE="COURIER">localconfig</FONT> file also is read from this directory, if it exists.
+The final file, <FONT FACE="COURIER">.gsas_config</FONT>
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>), 
+is read from the user's login directory (UNIX) or 
+<FONT FACE="COURIER">C:\</FONT> (Windows). 
+The <FONT FACE="COURIER">localconfig</FONT> and 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files are intended to 
+contain system-wide and user-level default values for parameters 
+that are described in this document. Most routines have 
+a "Save Options" command that writes some of the current parameters to 
+file  <FONT FACE="COURIER">.gsas_config</FONT>
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>). 
+Note that information in <FONT FACE="COURIER">.gsas_config</FONT>
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+overrides that in <FONT FACE="COURIER">localconfig</FONT>.
+No error occurs if either of these files are not found.
+
+<P>
+The <FONT FACE="COURIER">readexp.tcl</FONT> and <FONT FACE="COURIER">gsascmds.tcl</FONT> files contain 
+tcl procedures that are
+used for more than one application, so it is convenient to place them 
+in separate files. They are only of interest to someone trying to debug
+or add new functionality to expgui.
+<P>
+The <FONT FACE="COURIER">gsasmenu.tcl</FONT> file defines the contents of the 
+menu bar, the contents of the
+button bar and definitions for each command. The contents of this file
+are designed to be modified and extended by users, either by editing the file, 
+or by overriding definitions in the <FONT FACE="COURIER">localconfig</FONT> or 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files.
+
+The important variables defined in the <FONT FACE="COURIER">gsasmenu.tcl</FONT> file are:
+<DL><DL>
+<DT><FONT FACE="COURIER">expgui(menunames)</FONT><DD>
+This list defines the menu bar headings other than File, Options & Help
+<DT><FONT FACE="COURIER">expgui_menulist</FONT><DD>
+Each array element, e.g. expgui_menulist(file) and expgui_menulist(powder),
+defines commands to be added to a menu heading. Each command will appear 
+as an array element in expgui_cmdlist.
+<DT><FONT FACE="COURIER">expgui_cmdlist</FONT><DD>
+Each array element, e.g. expgui_cmdlist(Save) or expgui_cmdlist(expnam) 
+contains two items. The first defines a tcl procedure to be executed 
+when the command is invoked, or "-" if no command will be invoked and
+the second contains help information describing what the command does.
+Note that when menu item is selected the variable cmd is set to the
+name of the command, so
+<FONT FACE="COURIER"><PRE>
+    expgui_cmdlist(powpref) {{runGSASwEXP $cmd} {Powder data preparation}}
+</PRE></FONT>
+means that "runGSASwEXP powpref" will be invoked when powpref is invoked.
+For example, when powpref is selected, the tcl command
+"runGSASwEXP $cmd" is invoked, where variable cmd is set to "powpref".
+<DT><FONT FACE="COURIER">expgui(buttonlist)</FONT><DD>
+This list defines the commands that will appear on the button bar where
+each item that appears on the button bar must have a matching pair of entries
+in expgui_cmdlist.
+Thus if the command 
+<FONT FACE="COURIER"><PRE>
+   set expgui(buttonlist) {expnam expedt genles ortep fourier forsrh forplot lstview}
+</PRE></FONT>
+is placed in the <FONT FACE="COURIER">localconfig</FONT> or 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files this will 
+redefine the contents of the button bar.
+</DL></DL>
+
+In addition to the variables defined in the previous file, expgui, uses 
+a small number of array elements for other configuration options. They are:
+<DL><DL>
+
+<DT><FONT FACE="COURIER">expgui(scriptdir)</FONT><DD>
+This determines where files such as <FONT FACE="COURIER">readexp.tcl</FONT>, etc.
+are located. This defaults to the location where <FONT FACE="COURIER">expgui</FONT> is located so
+it rarely needs to be changed.
+
+<DT><FONT FACE="COURIER">expgui(gsasdir)</FONT><DD>
+This contains the location of the GSAS directory, if it is not the
+parent director where expgui is found.
+This determines where a number of GSAS data files will be located. If expedt
+crashes when you try to add new atoms, this is probably wrong.
+
+<DT><FONT FACE="COURIER">expgui(gsasexe)</FONT><DD>
+This determines where the GSAS executable files are located.
+You might want to change this is you keep multiple versions of GSAS
+around or if you keep the GSAS files in a different location than 
+the default or want to keep the tcl files somewhere other than 
+in a subdirectory of the GSAS files.
+
+<DT><FONT FACE="COURIER">expgui(bkgcolor1)</FONT><DD>
+Sets the background color for the bottom box on the phase panel.
+The default value, #fdf, is a light violet that 
+will probably drive some folks nuts, but is a good contrast to the yellow
+of the refinement flags.
+
+<DT><FONT FACE="COURIER">liveplot(hst)</FONT><DD>
+Sets the default histogram used for liveplot
+
+<DT><FONT FACE="COURIER">liveplot(legend)</FONT><DD>
+Sets the default value for display of the legend in liveplot
+
+<DT><FONT FACE="COURIER">expgui(initstring)</FONT><DD>
+Defines commands to be executed by EXPGUI after all other commands
+have been run. This is used to define initialization commands in
+the <FONT FACE="COURIER">localconfig</FONT> or 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files that cannot be
+run at the time when the files are sourced. <I>(added in EXPGUI v1.21)</I>
+</DL>
+  <P><B>Window location variables.</B> These variables determine where
+the EXPGUI window is located on the screen. 
+Note that regardless of the values, the window will never be placed so
+that any part is outside of the screen.
+<DL>
+<DT><FONT FACE="COURIER">expgui(xpos)</FONT><DD>
+  Horizontal window location where 0 is fully to the left and 100 is
+  fully to the right. Default is 50 (middle). 
+<DT><FONT FACE="COURIER">expgui(ypos)</FONT><DD>
+  Vertical window location where 0 is fully to the top and 100 is
+  fully to the bottom. Default is 50 (middle).
+<DT><FONT FACE="COURIER">expgui(poscenter)</FONT><DD>
+  Specifies what part of the window is placed at the specifed location: N for top and S for
+  bottom; W for left and E for right. These letters can be combined,
+  so that NS centers vertically and EW centers horizontally. Default
+  is the middle of the window (NSEW).
+<P>
+  <B>Example 1:</B> This code placed in the localconfig or gsas.config
+  (or .gsas_config) file causes the window to be placed in the lower
+  right side of the screen. Depending on the screen size, it may be
+  flush to the bottom-left:
+<blockquote><PRE>
+set expgui(xpos) 25
+set expgui(ypos) 75
+</PRE></blockquote> 
+<P>
+  <B>Example 2:</B> Instead, this code causes the window to be placed on the right side of
+  the screen, vertically centered, but only when the screen has more than 2000 pixels (probably
+  indicating a dual-screen configuration)
+<blockquote><PRE>
+  if {[winfo screenwidth .] > 2000} {
+    set expgui(xpos) 25
+}
+</PRE></blockquote>
+
+</DL>
+
+</DL></DL>
+
+The following variables are written to 
+<font face="courier">.gsas_config</font> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+when 
+"Save Options" is used. These variables are all set from the GUI and therefore
+do not need to be edited manually. 
+
+<DL><DL>
+<DT><FONT FACE="COURIER">expgui(archive)</FONT><DD>
+This defines the default state for the archive flag, 
+where 0 is off and 1 is on. When archive is on, a copy of the .EXP file
+is saved before a new version of the file is saved in EXPGUI.
+
+<DT><FONT FACE="COURIER">expgui(font)</FONT><DD>
+This determines the base font used in the programs. You conceivably 
+could want to use an integer value not present in the 
+"Options/Screen Font" menu command.
+
+<DT><FONT FACE="COURIER">expgui(asorttype)</FONT><DD>
+This determines the atom sort mode.
+
+<DT><FONT FACE="COURIER">expgui(hsorttype)</FONT><DD>
+This determines the histogram sort mode.
+
+<DT><FONT FACE="COURIER">expgui(filesort)</FONT><DD>
+This determines the default file sorting mode for the expnam command.
+
+<DT><FONT FACE="COURIER">expgui(autoexpload)</FONT><DD>
+If set to 1, the experiment file is automatically reread after
+GSAS programs modify it.
+(UNIX only)
+
+<DT><FONT FACE="COURIER">expgui(showexptool)</FONT><DD>
+If set to 1, output from EXPTOOL is shown after the program is run. 
+This is probably needed only for debugging purposes.
+
+<DT><FONT FACE="COURIER">env(GSASBACKSPACE)</FONT><DD>
+Used only for UNIX: This determines if the default definition
+for the backspace key is overridden; some UNIX systems need this so that 
+expedt and other terminal-oriented programs work correctly and 
+other systems do not. You can toggle this option using the 
+"Override Backspace" option on the file menu to see what works for you.
+</DL></DL>
+
+
+<HR><H3><A NAME="import">Coordinate import routines for EXPGUI</A>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+</H3>
+See the <A HREF="expgui.html#import">coordinate import discussion</A> 
+for description of available formats.
+It is possible to define new formats for EXPGUI to use for importing
+phase/coordinate information. This is done by creating a file 
+containing the appropriate Tcl code to read this file type. 
+All that is needed to cause the code to be incorporated into
+EXPGUI is to name it
+<FONT FACE="COURIER">import_</FONT><I>xxxx</I><FONT FACE="COURIER">.tcl</FONT> (where <I>xxxx</I> is arbitrary)
+and place it in the EXPGUI directory. All files with 
+such names are read when EXPGUI is started. 
+
+The <FONT FACE="COURIER">import_</FONT> file must contain four items:
+<UL>
+<LI>
+A description for the type of file to be read. 
+<DL><DL>
+<FONT FACE="COURIER"><PRE>
+set description "PowderCell .CEL file"
+</PRE></FONT>
+</DL>
+The text should not be too long, but use a return (\n) if needed:
+<DL><FONT FACE="COURIER"><PRE>
+set description "My favorite coordinate\nfile from the GIGO pkg"
+</PRE></FONT></DL></DL>
+This description text shows up on the button for selecting a format.
+<P>
+<LI>
+A list of preferred file extensions.
+<DL><DL><FONT FACE="COURIER"><PRE>
+set extensions .cel
+</PRE></FONT></DL>
+or 
+<DL><FONT FACE="COURIER"><PRE>
+set extensions {.jnk .junk}
+</PRE></FONT></DL></DL>
+In UNIX upper and lower case
+versions will be generated automatically, so do not worry about 
+the case of the extension. Note that "*" (all files) is always added as well.
+<P>
+<LI>
+The name of the routine that will read the data file
+<DL><DL><FONT FACE="COURIER"><PRE>
+set procname ReadPowderCellFile
+</PRE></FONT></DL></DL>
+<LI>
+A routine that takes the file name as an argument
+<DL><DL><FONT FACE="COURIER"><PRE>
+proc ReadPowderCellFile {filename} {
+</PRE></FONT></DL></DL>
+and returns a list containing the following four items
+<OL>
+<P><LI>Space Group
+<DL><DL>
+The space group should be named and spaced appropriately for GSAS,
+e.g. P 21/c or P 21 21 21, not P21/c or P212121.
+</DL></DL>
+Note that GSAS requires that if a center of symmetry is present,
+this center defines the origin (Origin 2 settings, where more than one setting
+is given in the International Tables).
+<P><LI>Cell parameters
+<DL><DL>
+All six parameters should be specified in a list
+</DL></DL>
+<P><LI>Atom Coordinates
+<DL><DL>
+The atom coordinates should be specified as a list with a list element 
+for each atom. 
+The list contains the following items:
+<OL>
+<LI>Atom label
+<LI><I>x</I>
+<LI><I>y</I>
+<LI><I>z</I>
+<LI>Atom type
+<LI>Occupancy
+<LI>U<sub>iso</sub>
+</OL>
+If an item is not specified, it is left blank in the atom table, except for
+Occupancy and U<sub>iso</sub>, which default to 1.0 and 0.025, respectively.
+However, one must specify a null value, if an item will be skipped over. 
+For example, use:
+<FONT FACE="COURIER"><PRE>
+    "Li1 0 0 0 li 0.5"
+</PRE></FONT>
+or 
+<FONT FACE="COURIER"><PRE>
+    "{} 0 0 0 li 0.5"
+</PRE></FONT>
+but not 
+<FONT FACE="COURIER"><PRE>
+    "0 0 0 li 0.5"
+</PRE></FONT>
+
+</DL></DL>
+<P><LI>Warning Message (optional)
+<DL><DL>
+The warning message is displayed at the bottom of the 
+Replace Atoms and Add Atoms box after the file is read. This can be used
+to warn the user about problems reading the file, for example if
+the space group symbol needs attention.
+</DL></DL>
+</OL>
+See the file <FONT FACE="COURIER">import_cell.tcl</FONT> as an example for how this code
+is written.
+
+</UL>
+<HR><H3><A NAME="export">Coordinate Export routines for EXPGUI</A>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+</H3>
+See the <A HREF="expgui.html#export">coordinate export discussion</A> 
+for description of available formats.
+It is possible to define new formats for EXPGUI to use for exporting
+phase/coordinate information. This is done by creating a file 
+containing the appropriate Tcl code to read this file type. 
+All that is needed to cause the code to be incorporated into
+EXPGUI is to name it
+<FONT FACE="COURIER">export_</FONT><I>xxxx</I><FONT FACE="COURIER">.tcl</FONT> (where <I>xxxx</I> is arbitrary)
+and place it in the EXPGUI directory. All files with 
+such names are read when EXPGUI the Import/Export=>"Coord Export" submenu 
+is first invoked.
+
+The <FONT FACE="COURIER">export_</FONT> file must define two variables:
+<DL><DL>
+<DT>label<DD>
+This defines the text that appears on the submenu. For example:
+<FONT FACE="COURIER"><PRE>
+        set label "MSI .xtl format"
+</PRE></FONT>
+<DT>action<DD>
+This defines the Tcl routine that will be used to 
+<FONT FACE="COURIER"><PRE>
+        set action exp2xtl
+</PRE></FONT>
+</DL></DL>
+See the file <FONT FACE="COURIER">export_example.example</FONT>, as well as the 
+<FONT FACE="COURIER">export_*.tcl</FONT> files
+as examples for how this
+sort of routine is written.
+
+<HR><H3>LSTVIEW</H3>
+The <FONT FACE="COURIER">localconfig</FONT> and 
+<FONT FACE="COURIER">.gsas_config</FONT> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+files are read, if present.
+The following options are available for customization in these files:
+<DL><DL>
+<DT><FONT FACE="COURIER">txtvw(menulength)</FONT><DD>
+This limits the number of entries that can
+exist in a menu. For example, the default is 25, so when more than 25 cycles
+are found in a .LST file, only the last 25 are listed in the 
+"Go To"/cycle submenu.
+<DT><FONT FACE="COURIER">txtvw(maxchars)</FONT><DD>
+This limits the maximum number of 
+characters that will be read from an existing .LST file to speed
+the start of the program. The default is ~1Mb 
+for UNIX systems and ~200K for Windows.
+<DT><FONT FACE="COURIER">txtvw(plotvars)</FONT><DD>
+If txtvx(plotvars) is 1, a plot window is created for plotting of 
+R-factors and parameter shifts as a function of cycle number.
+Note that the summary of shifts must be displayed, in order
+to plot parameter shifts. If this variable is set to 0, the
+plot window is not created and LSTVIEW runs a bit faster.
+</DL></DL>
+
+The following variables are written to 
+<font face="courier">.gsas_config</font> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+when 
+"Save Options" is used. These variables can be set from the GUI and therefore
+do not need to be edited manually. 
+
+<DL><DL>
+<DT><FONT FACE="COURIER">txtvw(followcycle)</FONT><DD>
+This sets the initial value for the 
+"Auto Advance" button in the "Go To" menu. When this is true,
+the program will show the last cycle in the file. As new cycles are
+added, the "view" is advanced.
+
+<DT><FONT FACE="COURIER">txtvw(font)</FONT><DD>
+This sets the font used for LSTVIEW. See documentation on the font command in 
+Tk for details on font naming.
+</DL></DL>
+
+<hr><H3>LIVEPLOT</H3><A NAME="liveplot"></A>
+A description of the customization options for LIVEPLOT can be 
+found in the 
+<A HREF="liveplot.html#customize">
+LIVEPLOT description</A>.
+
+
+<HR>
+<a name="WIDPLT"></a>
+<H3>WIDPLT</H3>
+The widplt script is used to display the FWHM for one or more histograms
+from a .EXP file. 
+At this point it only works for CW data.
+It is often convenient to add for reference the expected
+instrumental curves as options to the menu. This can be done by creating a
+file called widplot_<i>name</i>. For example, renaming the 
+<font face="courier">example_widplt_BT1</font> file supplied with the distribution to 
+<font face="courier">widplt_BT1</font> will cause the FWHM curves for the NIST BT-1 instrument
+to be added to the menu of defined FWHM values.
+<P>
+Creating such a file is easy. To add a entry define the following
+five array elements using a single, unique element name and then append that 
+element name to variable datalist.
+Define 
+<FONT FACE="COURIER"><PRE>
+    set UVWP(Ge15) {398.5 -343.2  163.0 0}
+    set XY(Ge15) {0 0}
+    set wave(Ge15) 2.0775
+    set lblarr(Ge15) "BT-1 Ge(311) 15'"
+    set ttrange(Ge15) "5 160"
+    lappend datalist Ge15 
+</PRE></FONT>
+Array element UVWP(item) contains the (Gaussian) GU, GV, GW and GP values, 
+while XY(item) contains the (Lorentzian) LX and LY terms. Array element 
+wave(item) contains a wavelength, array element lblarr(item) contains
+the text to be shown on the "Plot Contents" menu and ttrange(item)
+defines the range the function is valid.
+<P>
+The following variables are written to 
+<font face="courier">.gsas_config</font> 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+when 
+"Save Options" is used. These variables are all set from the GUI and therefore
+do not need to be edited manually. 
+
+<DL><DL>
+<DT><FONT FACE="COURIER">graph(printout)</FONT><DD>
+This is set to 1 if PostScript files 
+will be printed and 0 if they will be written to disk (for Windows all
+files should be written to disk).
+
+<DT><FONT FACE="COURIER">graph(outname)</FONT><DD>
+This is the default for the file name used
+when PostScript files will be written to disk.
+
+<DT><FONT FACE="COURIER">graph(outcmd)</FONT><DD>
+This is the default for the command used
+to print PostScript files (Unix only). 
+
+<DT><FONT FACE="COURIER">graph(legend)</FONT><DD>
+Sets the default value for display of the legend in liveplot and widplt.
+
+<DT><FONT FACE="COURIER">graph(plotunits)</FONT><DD>
+Sets the units used for displaying the data. Values are "d", "q", "", 
+for d-space, Q and 2-theta, respectively.
+<DT><FONT FACE="COURIER">graph(equivwave)</FONT><DD>
+Sets the wavelength used for displaying data, if blank, no conversion is
+done and data are shown in their original wavelength.
+</DL></DL>
+
+<hr>
+<a name="Customizing"><H2>
+Customizing Example 1: Adding a new button to the button bar
+</H2></A>
+When a LeBail extraction is used to refine lattice constants, profile 
+terms, ... It is always a good idea to run GENLES a few times after running 
+POWPREF. This is because GENLES sets the extracted intensities back to their
+crystallographic values, during the first GENLES cycle after POWPREF has been 
+run. Refining anything until the extracted intensities return to reasonable
+values is a really bad idea. Forturnately, running GENLES with the number of
+cycles set to zero gives the Le Bail extraction a head start.
+<P>
+The code below can be used to define a new command, <font face="courier">leBail</font>. The first
+command adds a command to the button bar and the second one defines what will
+be done when it is invoked (the number of cycles is set to zero and 
+GENLES is run three times). It also defines the help entry. Note that commands must start with a lower case letter even though Armel LeBail's last name 
+does not.
+
+<FONT FACE="COURIER"><PRE>
+    lappend expgui(buttonlist) leBail
+    set expgui_cmdlist(leBail) {
+	{set entryvar(cycles) 0; runGSASwEXP "genles genles genles"}
+	{Converges GENLES with LeBail extractions; 
+	  Sets the number of cycles to zero and runs GENLES 3 times.}
+    }
+
+</PRE></FONT>
+To make this customization, put the above in the <FONT FACE="COURIER">localconfig</FONT> 
+file or the 
+<FONT FACE="COURIER">~/.gsas_config</FONT> or 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+file.
+<hr>
+<H2>
+Customizing Example 2: Putting DISAGL Results in a Separate Box
+</H2>
+Barbara Reisner has been asking me to put the output from DISAGL in a separate
+window. Sounds like a pretty reasonable request. Here is an example with code 
+to do that as a customization option. Please note that this has now been 
+incorporated into EXPGUI, so do not use this example.
+<FONT FACE="COURIER"><PRE>
+  set expgui(disaglSeparateBox) 1
+  set expgui_cmdlist(disagl) {rundisagl {Hacked Distance/angle calculations}}
+  proc rundisagl {} {
+    global expgui txtvw tcl_version tcl_platform
+    if {$expgui(disaglSeparateBox) && $tcl_platform(platform) != "windows"} {
+	set root [file root $expgui(expfile)] 
+	catch {file rename $root.LST $root.OLS}
+	runGSASwEXP disagl
+	catch {file rename $root.LST $root.DIS}
+	catch {file rename $root.OLS $root.LST}
+
+	# open a new window
+	catch {toplevel .disagl}
+	catch {eval grid forget [grid slaves .disagl]}
+	text .disagl.txt -width 100 -wrap none \
+		-yscrollcommand ".disagl.yscroll set" \
+		-xscrollcommand ".disagl.xscroll set" 
+	if {$tcl_version >= 8.0} {.disagl.txt config -font $txtvw(font)}
+	scrollbar .disagl.yscroll -command ".disagl.txt yview"
+	scrollbar .disagl.xscroll -command ".disagl.txt xview" -orient horizontal
+	grid .disagl.xscroll -column 0 -row 2 -sticky ew
+	grid .disagl.txt -column 0 -row 1 -sticky nsew
+	grid .disagl.yscroll -column 1 -row 1 -sticky ns
+	grid columnconfigure .disagl 0 -weight 1
+	grid rowconfigure .disagl 1 -weight 1
+	wm title .disagl "DISAGL results $expgui(expfile)"
+	wm iconname .disagl "DISAGL $root"
+	set in [open $root.DIS r]
+	.disagl.txt insert end [read $in]
+	close $in
+	bind all <Control-KeyPress-c> {destroy .disagl}
+	bind .disagl <KeyPress-Prior> ".disagl.txt yview scroll -1 page"
+	bind .disagl <KeyPress-Next> ".disagl.txt yview scroll 1 page"
+	bind .disagl <KeyPress-Right> ".disagl.txt xview scroll 1 unit"
+	bind .disagl <KeyPress-Left> ".disagl.txt xview scroll -1 unit"
+	bind .disagl <KeyPress-Up> ".disagl.txt yview scroll -1 unit"
+	bind .disagl <KeyPress-Down> ".disagl.txt yview scroll 1 unit"
+	bind .disagl <KeyPress-Home> ".disagl.txt yview 0"
+	bind .disagl <KeyPress-End> ".disagl.txt yview end"
+	# don't disable in Win as this prevents the highlighting of selected text
+	if {$tcl_platform(platform) != "windows"} {
+	    .disagl.txt config -state disabled
+	}
+    } else {
+	runGSASwEXP disagl
+    }
+  }
+
+if {$tcl_platform(platform) != "windows"} {
+  append expgui(initstring) {
+      $expgui(fm).option.menu add checkbutton  -label "DISAGL window" \
+	      -variable expgui(disaglSeparateBox) -underline 0;
+  }
+} 
+
+</PRE></FONT>
+To make this customization, put the above in the <FONT FACE="COURIER">localconfig</FONT> 
+file or the 
+<FONT FACE="COURIER">~/.gsas_config</FONT> or 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+file.
+<P>
+Note that the <font face="courier">expgui(initstring)</font> option became available in EXPGUI
+version 1.21. (Previous versions will ignore this). This code must be executed
+after all the menus and other GUI code has been run. When executed, it
+creates a checkbutton on the Options menu to 
+turn the "separate DISAGL window mode" mode on and off.
+
+<hr><H2>
+Customizing Example 3: Adding a new page to EXPGUI
+</H2>
+The steps for creating support for additional functionality, implementation 
+of atom constraints, is outlined here. Routines described here can be found in
+file <font face="courier">atomcons.tcl</font> unless otherwise noted.
+<OL>
+<LI>Create a routine to read and write the appropriate records 
+from the .EXP file. In this case, a new routine, constrinfo, 
+was added to file <font face="courier">readexp.tcl</font>. 
+This takes considerable care and manual testing.
+<LI>Create a routine that places the appropriate widgets into a frame 
+(in this case MakeAtomsConstraintsPane). This routine will be called only once.
+Note that in this example expcons(atommaster) is defined to be the name of the 
+frame.
+<LI>Create a routine to display and edit the information shown in the 
+frame. In this case, DisplayAtomConstraints. This routine will be called each
+time the page is displayed. Note that this routine and the previous can be 
+tested in a separate toplevel until they work well.
+<LI>In this particular example, the previous frame is located on a notebook
+widget that in turn placed on a notebook page, so MakeConstraintsPane is used
+to create this inner notebook when the "Constraints" notebook page is first 
+shown. This in turn calls MakeAtomsConstraintsPane and DisplayAtomConstraints.
+To update this page each time it is displayed, DisplayConstraintsPane is 
+called.
+<LI>Edit file <font face="courier">expgui</font> to make the following changes:
+<UL>
+<P><LI>load the <font face="courier">atomcons.tcl</font> file:
+<FONT FACE="COURIER"><PRE>
+# commands for constraints
+source [file join $expgui(scriptdir) atomcons.tcl]
+</PRE></FONT>
+<P><LI>Define a notebook page for the option. The -createcmd option
+is used only once, but the -raisecmd option is used every time
+the page is exposed.
+<FONT FACE="COURIER"><PRE>
+set expgui(consFrame) [\
+	    .n insert end consPane -text Constraints \
+	    -raisecmd "set expgui(pagenow) consFrame; DisplayConstraintsPane"\
+	    -createcmd MakeConstraintsPane]
+lappend expgui(frameactionlist) "consFrame DisplayConstraintsPane"
+</PRE></FONT>
+Note that if we were displaying the atoms constraint page directly on 
+the main notebook widget, the previous command would have been 
+<font face="courier">-raisecmd DisplayAtomConstraints -createcmd MakeAtomsConstraintsPane</font>
+<P>
+Since the frame will need to be updated when information in the .EXP file 
+changes, the name of the frame and a command to execute are added into list 
+expgui(frameactionlist) using the <FONT FACE="COURIER">lappend expgui(frameactionlist)</FONT>
+command.
+</PRE></FONT>
+</UL>
+</OL>
+
+<hr><H2>
+Customizing Example 4: Changing the fonts used in the GUI
+</H2>
+<B>Question: </B>
+<I>I am not happy with the fonts available via the Option/Screen Font 
+menu option. Is there a way to select different font size(s)/families?
+</I>
+<UL>
+<B>Answer: </B>
+The fonts used in EXPGUI can be customized by adding some code to the 
+<FONT FACE="COURIER">localconfig</FONT> file or the 
+<FONT FACE="COURIER">~/.gsas_config</FONT> or 
+(or <FONT FACE="COURIER">c:\gsas.config</FONT>)
+file.
+By default, fonts are 14 point for the menus, buttons, labels,... and 
+12 point for the histogram and atom lists.
+<P>
+If you add a command like this: 
+<UL><FONT FACE="COURIER"><PRE>
+option add *Coord.Listbox.Font "Courier -18 bold italic" 20
+</PRE></FONT></UL>
+<P>
+you will override the menu command and force the atom coordinates 
+to be displayed at 18 points in a bold & italicied Courier font. 
+(See the Tk documentation if this is not clear). The value 20 is a 
+priority, which overrides the priority value of 10 in the
+standard initialization. Here are the options that can be specified:
+<DL><DL>
+<DT><FONT FACE="COURIER">*Graph*Font</FONT><DD>Used for Graph labels
+<DT><FONT FACE="COURIER">*Graph.font</FONT><DD>Used for Graph title
+<DT><FONT FACE="COURIER">*Canvas.font</FONT><DD>Used for notebook tabs
+<DT><FONT FACE="COURIER">*Button.font</FONT><DD>Used on most buttons
+<DT><FONT FACE="COURIER">*Menu.font</FONT><DD>Used on menu commands
+<DT><FONT FACE="COURIER">*Menubutton.font</FONT><DD>Used on "menu buttons" (e.g. Print options)
+<DT><FONT FACE="COURIER">*Label.font</FONT><DD>Used on labels
+<DT><FONT FACE="COURIER">*Scale.font</FONT><DD>Used on sliders (e.g. Marquardt damping)
+<DT><FONT FACE="COURIER">*TitleFrame.font</FONT><DD>Used on title frames (e.g. box labels such as 
+the "Diffractometer Constants" label
+<DT><FONT FACE="COURIER">*SmallFont.Button.font</FONT><DD>Used for buttons with smaller letters
+<DT><FONT FACE="COURIER">*Coord.Listbox.font</FONT><DD>Used for coordinate listings, best as a
+mono-spaced font, such as Courier
+<DT><FONT FACE="COURIER">*HistList.Listbox.font</FONT><DD>Used for histogram listings
+<DT><FONT FACE="COURIER">*MonoSpc.Label.font</FONT><DD>Used in other places where a mono-spaced
+font is required
+</DL></DL>
+<P>
+It should be noted that the appearance of fonts depends on many factors --
+the fonts installed on your computer, the screen size and resolution and your 
+eyes, so it is wise to experiment with different values.
+</UL>
+<hr>
+<blockquote>
+
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/gsas.html">
+GSAS</A>
+is written by Allen C. Larson and 
+Robert B. Von Dreele while at Los Alamos National Laboratory. 
+Problems, questions
+or kudos concerning GSAS should be sent to Robert B. Von Dreele at <A HREF="MAILTO:vondreele@anl.gov">vondreele@anl.gov</A>
+
+<P>EXPGUI was written by Brian H. Toby while at the NIST Center for Neutron Research,
+<A HREF="MAILTO:Brian.Toby@ANL.GOV">Brian.Toby@ANL.GOV</A>.
+
+<P>GSAS is Copyright, 1984-1997, The Regents of the University of California.
+The GSAS software was produced under a U.S. Government contract (W-7405-ENG-36)
+by the Los Alamos National Laboratory, which is operated by the University
+of California for the U.S. Department of Energy. The U.S. Government is
+licensed to use, reproduce, and distribute this software. Permission is
+granted to the public to copy and use this software without charge, provided
+that this notice and any statement of authorship are reproduced on all
+copies. Neither the Government nor the University makes any warranty, express
+or implied, or assumes any liability or responsibility for the use of this
+software.
+
+<P>EXPGUI is not subject to copyright. Have fun.
+</blockquote>
+<P><hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<BR>
+$Revision$ $Date$
+</blockquote>
+</BODY>
+</HTML>

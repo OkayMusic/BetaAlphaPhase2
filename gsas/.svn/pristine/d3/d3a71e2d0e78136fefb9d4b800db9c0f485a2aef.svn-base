@@ -1,0 +1,3059 @@
+#!/bin/sh
+# the next line restarts this script using wish found in the path\
+exec wish "$0" "$@"
+# If this does not work, change the #!/usr/bin/wish line below
+# to reflect the actual wish location and delete all preceeding lines
+#
+# (delete here and above)
+#!/usr/bin/wish
+# $Id$
+set Revision {$Revision$ $Date$}
+
+package require Tk
+bind all <Control-KeyPress-c> {destroy .}
+# process command line arguments
+set exitstat 0
+set expnam [file root [lindex $argv 0]]
+#if {$expnam == ""} {catch {puts "error -- no experiment name"}; set exitstat 1}
+if $exitstat {
+    catch {puts "usage: $argv0 expnam \[hist #\] \[legend\]"}
+    exit
+}
+# work in .EXP directory (in case files will be exported).
+catch {
+    cd [file dirname $expnam]
+}
+# get name of script
+set expgui(script) [info script]
+# what are we running here?
+set program [file tail $argv0]
+# fix up problem with starkit tcl
+if {$program != "liveplot" && $program != "bkgedit"} {
+	set program [file tail $expgui(script)]
+}
+# for debug
+#set program bkgedit
+
+if {[lindex $argv 1] == ""} {
+    set hst 1
+} else {
+    set hst [lindex $argv 1]
+}
+if {[lindex $argv 2] == ""} {
+    set graph(legend) 1
+} else {
+    set graph(legend) [lindex $argv 2]
+}
+set plot_title "(None)"
+
+set graph(backsub) 0
+
+if {$tcl_platform(platform) == "windows"} {
+    set graph(printout) 1
+    set expgui(tcldump) tcldump.exe
+} else {
+    set graph(printout) 0
+    set expgui(tcldump) tcldump
+}
+
+# default values
+set cmprdir {};     # location for the cmpr package
+set weightlist {}
+set graph(outname) out.ps
+set graph(outcmd) lpr
+set xunits {}
+set yunits {}
+set graph(chi2) 0
+set graph(OmCoS) 0
+set graph(xunits) 0
+set graph(yunits) 0
+set graph(autoraise) 1
+set graph(setfiletitle) 0
+set graph(color_diff) blue
+set graph(color_chi2) magenta
+set graph(color_OmCoS) magenta
+set graph(color_bkg) green
+set graph(color_obs) black
+set graph(color_input) magenta
+set graph(color_fit) blue
+set expgui(debug) 0
+catch {if $env(DEBUG) {set expgui(debug) 1}}
+#set expgui(debug) 1
+set expgui(font) 14
+set expgui(lblfontsize) 15
+set expgui(fadetime) 10
+set expgui(hklbox) 1
+set expgui(autotick) 1
+set expgui(phaselabel) 0
+set expgui(pixelregion) 5
+# location for web pages, if not found locally
+set expgui(website) 11bm.xor.aps.anl.gov/expguidoc/
+set peakinfo(obssym) scross
+if {$program == "bkgedit"}  {
+    set peakinfo(obssize) 0.15
+    set graph(color_calc) pink
+} else {
+    set peakinfo(obssize) 1.0
+    set graph(color_calc) red
+}
+set peakinfo(inpsym) triangle
+set peakinfo(inpsize) 1.0
+# create a set of markers for each phase
+for {set i 1} {$i < 10} {incr i} {
+    set peakinfo(flag$i) 0
+    set peakinfo(max$i) Inf
+    set peakinfo(min$i) -Inf
+    set peakinfo(dashes$i) 1
+    set graph(label$i) Phase$i
+}
+set expgui(RadiiList) {}
+set ::expmap(phaselist) {}
+
+proc waitmsg {message} {
+    set w .wait
+    # kill any window/frame with this name
+    catch {destroy $w}
+    pack [frame $w]
+    frame $w.bot -relief raised -bd 1
+    pack $w.bot -side bottom -fill both
+    frame $w.top -relief raised -bd 1
+    pack $w.top -side top -fill both -expand 1
+    label $w.msg -justify left -text $message -wrap 3i
+    catch {$w.msg configure -font \
+                -Adobe-Times-Medium-R-Normal--*-180-*-*-*-*-*-*
+    }
+    pack $w.msg -in $w.top -side right -expand 1 -fill both -padx 3m -pady 3m
+    label $w.bitmap -bitmap info
+    pack $w.bitmap -in $w.top -side left -padx 3m -pady 3m
+    update 
+}
+
+proc donewaitmsg {} {
+    catch {destroy .wait}
+    update
+}
+
+waitmsg "Loading histogram, Please wait"
+
+#--------------------------------------------------------------
+# define constants
+array set peakinfo {
+    color1 magenta 
+    color2 cyan 
+    color3 black 
+    color4 sienna 
+    color5 orange 
+    color6 DarkViolet 
+    color7 HotPink 
+    color8 salmon 
+    color9 LimeGreen
+}
+set cycle -1
+set modtime 0
+
+#----------------------------------------------------------------
+# find location of other files relative to the current script
+# 1st, translate links -- go six levels deep
+foreach i {1 2 3 4 5 6} {
+    if {[file type $expgui(script)] == "link"} {
+	set link [file readlink $expgui(script)]
+	if { [file  pathtype  $link] == "absolute" } {
+	    set expgui(script) $link
+	} {
+	    set expgui(script) [file dirname $expgui(script)]/$link
+	}
+    } else {
+	break
+    }
+}
+
+# fixup relative paths
+if {[file pathtype $expgui(script)] == "relative"} {
+    set expgui(script) [file join [pwd] $expgui(script)]
+}
+set expgui(scriptdir) [file dirname $expgui(script) ]
+set expgui(gsasdir) [file dirname $expgui(scriptdir)]
+set expgui(gsasexe) [file join $expgui(gsasdir) exe]
+set expgui(docdir) [file join $expgui(scriptdir) doc]
+
+source [file join $expgui(scriptdir) gsascmds.tcl]
+source [file join $expgui(scriptdir) readexp.tcl]
+source [file join $expgui(scriptdir) opts.tcl]
+#----------------------------------------------------------------
+# use EXPGUI directory for packages
+lappend auto_path $expgui(scriptdir)
+
+if {$program == "bkgedit"}  {
+    lappend auto_path $expgui(scriptdir)
+    if {$tcl_version < 8.1} {
+	MyMessageBox -parent . -title "La Load Error" \
+		-message "$program requires Tcl/Tk version 8.1 or higher" \
+		-helplink "expgui.html La" \
+		-icon error -type Exit -default exit
+	exit
+    }
+    if [catch {package require La} errmsg] {
+	MyMessageBox -parent . -title "La Load Error" \
+		-message "Error -- Unable to load the La (Linear Algebra) package; cannot run $program" \
+		-helplink "expgui.html La" \
+		-icon error -type Exit -default exit
+	exit
+    }
+}
+
+if [catch {package require BLT} errmsg] {
+    MyMessageBox -parent . -title "BLT Error" \
+	    -message "Error -- Unable to load the BLT package; cannot run $program" \
+	    -helplink "expgui.html blt" \
+	    -icon error -type Exit -default exit
+    exit
+}
+# handle Tcl/Tk v8+ where BLT is in a namespace
+#  use the command so that it is loaded
+catch {blt::graph}
+catch {
+    namespace import blt::graph
+    namespace import blt::vector
+}
+# old versions of blt don't report a version number
+if [catch {set blt_version}] {set blt_version 0}
+# option for coloring markers: note that GH keeps changing how to do this!
+# also element -mapped => -show
+if {$blt_version < 2.3 || $blt_version >= 8.0} {
+    # version 8.0 is ~same as 2.3
+    set graph(MarkerColorOpt) -fg 
+    # mapped is needed in 8.0, both are OK in 2.3
+    set graph(ElementShowOption) "-mapped 1"
+    set graph(ElementHideOption) "-mapped 0"
+} elseif {$blt_version >= 2.4} {
+    set graph(MarkerColorOpt) -outline
+    set graph(ElementShowOption) "-hide 0"
+    set graph(ElementHideOption) "-hide 1"
+} else {
+    set graph(MarkerColorOpt) -color
+    set graph(ElementShowOption) "-mapped 1"
+    set graph(ElementHideOption) "-mapped 0"
+}
+
+# called by a trace on expgui(lblfontsize)
+proc setfontsize {a b c} {
+    global expgui graph
+    catch {
+	font config lblfont -size [expr -$expgui(lblfontsize)]
+	# this forces a redraw of the plot by changing the title to itself
+	.g configure -title [.g cget -title]
+    }
+}
+# define a font used for labels
+if {$tcl_version >= 8.0} {
+    font create lblfont -family Helvetica -size [expr -$expgui(lblfontsize)]
+    trace variable expgui(lblfontsize) w setfontsize
+}
+
+proc readdata {box} { 
+    global expgui modtime expnam
+    if [catch {
+	set loadtime [time {
+	set modtime 0
+            if {$::topasfile != ""} {
+                set p "TOPAS import"
+		readdata_topas $box
+            } elseif {$expgui(tcldump) == ""} {
+                set modtime [file mtime $expnam.EXP]
+		set p HSTDMP
+		readdata_hst $box
+	    } else {
+                set modtime [file mtime $expnam.EXP]
+		set p TCLDUMP
+		readdata_tcl $box
+	    }
+	}]
+	if $expgui(debug) {
+	    tk_dialog .time "Timing info" \
+		    "Histogram loading took $loadtime" "" 0 OK
+	}
+    } errmsg] {
+	if $expgui(debug) {
+	    catch {console show}
+	    error $errmsg
+	}
+	$box config -title "Read error"
+	MyMessageBox -parent . -title "$p Error" \
+		-message "There was an error running the $p program. The most common reason for this is that POWPREF & GENLES have not been run.\n\nError message: $errmsg" \
+		-icon error -type Continue -default continue \
+		-helplink "expguierr.html TCLDUMPError"
+	update
+    }
+    $box element show [lsort -decreasing [$box element show]]
+    global program
+    if {$program == "bkgedit"}  bkghstInit
+}
+   
+proc readdata_hst {box} {
+    global expgui expnam reflns
+    global lasthst
+    global hst peakinfo xunits weightlist
+    $box config -title "(Histogram update in progress)"
+    update
+    # parse the output of a file
+    set lasthst $hst
+###########################################################################
+#	set input [open histdump.inp w]
+#	puts $input "$hst"
+#	close $input
+#	set input [open "| $expgui(gsasexe)/hstdump $expnam  < histdump.inp" w+]
+###########################################################################
+    # use histdmp for histogram info
+    set input [open histdump$hst.inp w]
+    puts $input "$expnam"
+    puts $input "L"
+    puts $input "$hst"
+    puts $input "0"
+    close $input
+    # use hstdmp without an experiment name so that output 
+    # is not sent to the .LST file
+    set input [open "| $expgui(gsasexe)/hstdmp < histdump$hst.inp" r]
+    
+    # initalize arrays
+    set num -1
+    set xlist {}
+    set obslist {}
+    set calclist {}
+    set bcklist {}
+    set xunits {}
+    set weightlist {}
+    # define a list of reflection positions for each phase
+    for {set i 1} {$i < 10} {incr i} {
+	set reflns($i) {}
+    }
+    set i 0
+    while {[gets $input line] >= 0} {
+	incr i
+	# run update every 50th line
+	if {$i > 50} {set i 0; update}
+	if [scan $line %d num] {
+	    if {$num > 0} {
+		set Ispec 0
+		set X -999
+		scan [string range $line 8 end] %e%e%e%e%e%e \
+			X Iobs Icalc Ispec fixB fitB
+		#puts $line
+		# eliminate excluded points
+		if {$Ispec > 0.0 && $X >= 0} {
+		    lappend xlist $X
+		    lappend obslist $Iobs
+		    lappend calclist $Icalc
+		    lappend bcklist [expr {$fixB + $fitB}]
+		}
+		# add peaks to peak lists
+		#    puts "[string range $line 6 6]"
+		# is this 6 or 7; 6 on win & 7 on SGI
+		if [regexp {[1-9]} [string range $line 6 7] ph] {
+		    lappend reflns($ph) $X
+		}
+	    } 
+	} else {
+	    regexp {Time|Theta|keV} $line xunits
+	}
+    }
+    if {$xunits == "Theta"} {set xunits "2-Theta"}
+    close $input
+    catch {file delete histdump$hst.inp}
+    xvec set $xlist
+    obsvec set $obslist
+    calcvec set $calclist
+    bckvec set $bcklist
+    #diffvec set [obsvec - calcvec]
+    foreach vec {obsvec calcvec} {
+	# probably not needed with recent versions of BLT:
+	global $vec
+	# sometimes needed for latest version of BLT (2.4z)
+	catch {$vec variable $vec}
+    }
+    ApplyMag
+    plotdata
+}
+
+proc readdata_tcl {box} {
+    global expgui expnam reflns program
+    global lasthst graph weightlist
+    global hst peakinfo xunits yunits
+    $box config -title "(Histogram update in progress)"
+    update
+    # parse the output of a file
+    set lasthst $hst
+    # use tcldump
+    set input [open histdump$hst.inp w]
+    puts $input "$hst"
+    # x units -- native
+    puts $input "$graph(xunits)" 
+    # y units  -- native
+    if {$program == "bkgedit"} {
+	puts $input "1"
+    } else {
+	puts $input "$graph(yunits)" 
+    }
+    # format (if implemented someday)
+    puts $input "0" 
+    close $input
+    # initalize arrays
+    set X {}
+    set OBS {}
+    set CALC {}
+    set BKG {}
+    set WGT {}
+    global refhkllist refphaselist refpos
+    set refpos {}
+    set refhkllist {}
+    set refphaselist {}
+    for {set i 1} {$i < 10} {incr i} {
+	set reflns($i) {}
+    }
+    eval [exec $expgui(tcldump) $expnam < histdump$hst.inp]
+    catch {file delete histdump$hst.inp}
+    if {$X == ""} {
+	$box config -title "(Error reading Histogram $hst)"
+	foreach elem [$box element show] {
+	   eval $box element config $elem $graph(ElementHideOption)
+	}
+	return
+    }
+    foreach elem [$box element names] {
+	eval $box element config $elem $graph(ElementShowOption)
+    }
+    xvec set $X
+    obsvec set $OBS
+    calcvec set $CALC
+    bckvec set $BKG
+    refposvec set $refpos
+    diffvec set [obsvec - calcvec]
+    set weightlist $WGT
+    if {$graph(chi2)} {
+	wifdvec set $WGT
+	wifdvec set [wifdvec * diffvec]
+	wifdvec set [wifdvec * diffvec]
+	# now do a running sum
+	set sum 0
+	set sumlist {}
+	foreach n [wifdvec range 0 end] {
+	    set sum [expr {$sum + $n}]
+	    lappend sumlist $sum
+	}
+	wifdvec set $sumlist
+	wifdvec set [wifdvec / [wifdvec length]]
+    } elseif {$graph(OmCoS)} {
+	wifdvec set $WGT
+	wifdvec expr sqrt(wifdvec)
+	wifdvec set [wifdvec * diffvec]
+    } else {
+	wifdvec length 0
+    }
+    if $graph(backsub) {
+	obsvec set [obsvec - bckvec]
+	calcvec set [calcvec - bckvec]
+    }
+    ApplyMag
+    plotdata
+}
+
+set ::topasfile ""
+proc get_topas_file {} {
+    set ::topasfile [tk_getOpenFile -title "Select Topas File" -parent . \
+                         -defaultextension .ascii \
+                         -filetypes {
+                             {"Topas ascii export" ".ascii"}
+                             {"all files" "*"}
+                         }]
+    if {$::topasfile == ""} return
+    if {[catch {set input [open $::topasfile r]} errmsg]} {
+	MyMessageBox -parent . -title "Open Error" \
+            -message "An error occured trying to open file $::topasfile: $errmsg" \
+            -icon error -type Ignore -default ignore
+        set ::topasfile ""
+        return
+    }
+    close $input
+    readdata .g
+}
+
+proc readdata_topas {box} {
+    global expgui expnam reflns graph
+    global lasthst
+    global hst peakinfo xunits weightlist
+    #set file "liveplot_output.ascii"
+    if {$::topasfile == ""} return
+    if {[catch {set input [open $::topasfile r]} errmsg]} {
+	MyMessageBox -parent . -title "Open Error" \
+            -message "An error occured trying to open file $::topasfile: $errmsg" \
+            -icon error -type Ignore -default ignore
+        return
+    }
+
+    $box config -title "(TOPAS import in progress)"
+    update
+    # parse the output of a file
+    set lasthst $hst
+    # initalize arrays
+    set num -1
+    set xlist {}
+    set obslist {}
+    set calclist {}
+    set bcklist {}
+    set xunits {}
+    set weightlist {}
+    global refhkllist refphaselist refpos
+    set refhkllist {}
+    set refphaselist {} 
+    set refpos {}
+    # define a list of reflection positions for each phase
+    for {set i 1} {$i < 10} {incr i} {
+	set reflns($i) {}
+    }
+    set i 0
+    while {[gets $input line] >= 0} {
+	incr i
+        if {[string first ":" $line] != -1} continue
+	# run update every 50th line
+	if {$i > 50} {set i 0; update}
+        if {[llength $line] == 5} {
+            scan $line %e%e%e%e%e X d Iobs Icalc Isig
+            if {$Isig > 0} {
+                if {$graph(xunits) == 0} {
+                    lappend xlist $X
+                } elseif {$graph(xunits) == 1} {
+                    lappend xlist $d
+                } else {
+                    lappend xlist [expr {6.283185307179586 / $d}]
+                }
+                lappend obslist $Iobs
+                lappend calclist $Icalc
+                #lappend bcklist 0
+                lappend weightlist [expr {1./($Isig * $Isig)}]
+            }
+        } elseif {[llength $line] == 7} {
+            scan $line %e%e%e%e%e%e%d h k l m d tt ph
+            if {$graph(xunits) == 0} {
+                set x $tt
+            } elseif {$graph(xunits) == 1} {
+                set x $d
+            } else {
+                set x [expr {6.283185307179586 / $d}]
+            }
+            set ph [expr {int($ph)}]
+            lappend reflns($ph) $x
+            lappend refhkllist "$h,$k,$l"
+            lappend refphaselist $ph 
+            lappend refpos $x
+        } elseif {[llength $line] == 3} {
+            scan $line %e%e%e x d b
+            lappend bcklist $b
+        } else {
+            puts "unexpected input: $line"
+        }
+    }
+    close $input
+
+    if {$graph(xunits) == 0} {
+        set xunits "2-Theta"
+    } elseif {$graph(xunits) == 1} {
+        set xunits "d"
+    } else {
+        set xunits "Q"
+    }
+    foreach elem [$box element names] {
+	eval $box element config $elem $graph(ElementShowOption)
+    }
+    xvec set $xlist
+    obsvec set $obslist
+    calcvec set $calclist
+    bckvec set $bcklist
+    #diffvec set [obsvec - calcvec]
+    refposvec set $refpos
+    set ::expmap(phaselist) [lsort -unique $refphaselist]
+    RegisterPhases $::expmap(phaselist)
+    if {$expgui(autotick)} {
+        foreach i $::expmap(phaselist) {
+            set peakinfo(flag$i) 1
+        }
+    }
+    #wifdvec length 0
+    # if {$graph(chi2)} {
+    #     wifdvec set $WGT
+    #     wifdvec set [wifdvec * diffvec]
+    #     wifdvec set [wifdvec * diffvec]
+    #     # now do a running sum
+    #     set sum 0
+    #     set sumlist {}
+    #     foreach n [wifdvec range 0 end] {
+    #         set sum [expr {$sum + $n}]
+    #         lappend sumlist $sum
+    #     }
+    #     wifdvec set $sumlist
+    #     wifdvec set [wifdvec / [wifdvec length]]
+    # } elseif {$graph(OmCoS)} {
+    #     wifdvec set $WGT
+    #     wifdvec expr sqrt(wifdvec)
+    #     wifdvec set [wifdvec * diffvec]
+    # }
+    if $graph(backsub) {
+	obsvec set [obsvec - bckvec]
+	calcvec set [calcvec - bckvec]
+    }
+    foreach vec {obsvec calcvec} {
+	# probably not needed with recent versions of BLT:
+	global $vec
+	# sometimes needed for latest version of BLT (2.4z)
+	catch {$vec variable $vec}
+    }
+    ApplyMag
+    plotdata
+}
+
+proc SetTitle {} {
+    set bx .title
+    toplevel $bx
+    wm title $bx "Edit plot title"
+    wm iconname $bx "Edit plot title"
+    grid [label $bx.txt -text "Enter plot title below"] -row 1 -column 1
+    grid [entry $bx.title -width 70] -row 2 -column 1
+    grid [frame $bx.a] -row 3 -column 1
+    grid [button $bx.a.save -text "Save" \
+              -command "set plot_title \"\[$bx.title get\]\"; destroy $bx" \
+             ] -row 1 -column 1
+    grid [button $bx.a.quit -text "Quit" \
+              -command "destroy $bx" \
+             ] -row 1 -column 2
+    putontop $bx
+    tkwait window $bx
+    afterputontop
+    plotdata
+}
+
+proc lblhkl {plot x} {
+    global blt_version expgui tcl_platform tcl_version
+    global refhkllist refphaselist peakinfo refpos
+    # look for peaks within pixelregion pixels or the entire plot range
+    if {$x == "all"} {
+	foreach {xmin xmax} [$plot xaxis limits] {}
+    } else {
+	set xmin [$plot xaxis invtransform [expr {$x - $expgui(pixelregion)}]]
+	set xmax [$plot xaxis invtransform [expr {$x + $expgui(pixelregion)}]]
+    }
+    set peaknums [refposvec search $xmin $xmax]
+    set peaklist {}
+    # create a box, if needed
+    if {$expgui(hklbox)} {
+	catch {
+	    toplevel .hkl
+	    text .hkl.txt -width 30 -height 10 -wrap none \
+		    -yscrollcommand ".hkl.yscroll set" 
+	    scrollbar .hkl.yscroll -command ".hkl.txt yview"
+	    grid .hkl.txt -column 0 -row 1 -sticky nsew
+	    grid .hkl.yscroll -column 1 -row 1 -sticky ns
+	    grid columnconfigure .hkl 0 -weight 1
+	    grid rowconfigure .hkl 1 -weight 1
+	    wm title .hkl "Liveplot HKL Labels"
+	    wm iconname .hkl HKL
+	    .hkl.txt insert end "Phase\thkl\tPosition"
+	}
+    }
+    set xcen 0
+    set lbls 0
+    foreach peak $peaknums {
+	# put all hkls, all phases in the box
+	if {$expgui(hklbox)} {
+	    catch {
+		.hkl.txt insert end "\n[lindex $refphaselist $peak]"
+		.hkl.txt insert end "\t[lindex $refhkllist $peak]"
+		.hkl.txt insert end "\t[lindex $refpos $peak]"
+		.hkl.txt see end
+	    }
+	}
+	# label phases with tick marks
+	if [set peakinfo(flag[lindex $refphaselist $peak])] {
+	    set pos [refposvec range $peak $peak]
+	    if {$lbls <= 0} {
+		set xcen $pos
+		set peaklist [lindex $refhkllist $peak]
+		set lbls 1
+	    } elseif {abs($xcen/$lbls-$pos) <= $expgui(pixelregion)} {
+		set xcen [expr {$xcen + $pos}]
+		lappend peaklist [lindex $refhkllist $peak]
+		incr lbls
+	    } else {
+		puthkllbl $plot $peaklist $xcen $lbls 
+		set xcen $pos
+		set peaklist [lindex $refhkllist $peak]
+		set lbls 1
+	    }
+	}
+    }
+    puthkllbl $plot $peaklist $xcen $lbls 
+}
+
+proc puthkllbl {plot peaklist xcen lbls} {
+    global blt_version tcl_platform tcl_version expgui
+    if {$peaklist == ""} return
+    set xcen [expr {$xcen / $lbls}]
+    # avoid bug in BLT 2.3 where Inf does not work for text markers
+    if {$blt_version == 2.3} {
+	set ycen [lindex [$plot yaxis limits] 1]
+    } else  {
+	set ycen Inf
+    }
+    # older BLT versions can't rotate text in windows
+    if {$tcl_platform(platform) == "windows" && \
+	    ($blt_version <= 2.3 || $blt_version == 8.0)} {
+	regsub -all { } $peaklist "\n" peaklist
+	set mark [$plot marker create text -coords "$xcen $ycen" \
+		-text $peaklist -anchor n -bg "" -name hkl$xcen] 
+    } else {
+	set mark [$plot marker create text -coords "$xcen $ycen" \
+		-rotate 90 -text $peaklist -anchor n -bg "" -name hkl$xcen]
+    }
+    if {$tcl_version >= 8.0} {
+	$plot marker config hkl$xcen -font lblfont
+    }
+    if {$expgui(fadetime) > 0} {
+	catch {
+	    after [expr {$expgui(fadetime) * 1000 }] \
+		    "catch \{ $plot marker delete $mark \}"
+	}
+    }
+}
+
+proc delallhkllbl {plot} {
+    catch {
+	eval $plot marker delete [$plot marker names hkl*]
+    }
+}
+
+proc plotdata {} {
+    global expnam hst peakinfo xunits yunits cycle reflns modtime
+    global lasthst graph expgui box
+    global obsvec calcvec diffvec bckvec
+
+    if {$graph(yunits) == 0} {
+        diffvec set [obsvec - calcvec]
+        $box element config 1 -label bckgr -line 1 -hide 0
+        $box element config 4 -label diff  -line 1 -hide 0
+    } elseif {$graph(yunits) == 1} {
+        diffvec set [obsvec - calcvec]
+        $box element config 1 -label bckgr -line 1 -hide 0
+        $box element config 4 -label diff  -line 1 -hide 0
+    } elseif {$graph(yunits) == 2} {
+        set yunits {Intensity/sigma(I)}
+	wifdvec set $::weightlist
+	wifdvec expr sqrt(wifdvec)
+        obsvec set [obsvec * wifdvec]
+        calcvec set [calcvec * wifdvec]
+        bckvec set {}
+        diffvec set [obsvec - calcvec]
+	wifdvec set {}
+        $box element config 1 -label {} -line 0 -hide 1
+        $box element config 4 -label diff  -line 1 -hide 0
+    } elseif {$graph(yunits) == 3} {
+        bckvec expr 0*bckvec
+        set msg {}
+        if {[set calcvec(min)] <= 0} {
+            if {$msg != ""} {append msg ", "}
+            append msg "calculated" 
+        }
+        if {[set obsvec(min)] <= 0} {
+            if {$msg != ""} {append msg " & "}
+            append msg "observed" 
+        }
+        if {$msg != ""} {
+            MyMessageBox -parent . -title "Invalid Range" \
+                -message "Log computation impossible due to zero or negative $msg intensity values" \
+                -icon warning -type Continue -default continue
+        } else {
+            set yunits {log(Intensity)}
+            obsvec expr log10(obsvec)
+            calcvec expr log10(calcvec)
+            if {[set bckvec(min)] <= 0} {
+                bckvec set {}
+                $box element config 1 -label {} -line 0 -hide 1
+            } else {
+                bckvec expr log10(bckvec)
+                $box element config 1 -label bckgr -line 1 -hide 0
+            }
+            diffvec set {}
+            $box element config 4 -label {} -line 0 -hide 1
+        }
+    } else {
+        $box element config 1 -label bckgr -line 1 -hide 0
+        $box element config 4 -label diff  -line 1 -hide 0
+    }
+
+    set cmin [set calcvec(min)]
+    set omin [set obsvec(min)]
+    set cmax [set calcvec(max)]
+    set omax [set obsvec(max)]
+    set expgui(min) [expr {$omin < $cmin ? $omin : $cmin}]
+    set expgui(max) [expr {$omax > $cmax ? $omax : $cmax}]
+
+    foreach p $::expmap(phaselist) {
+	if {$expgui(phaselabel)} {
+	    # 20 characters, max
+	    set graph(label$p) [string range [phaseinfo $p name] 0 19]
+	    
+	} else {
+	    set graph(label$p) Phase$p
+	}
+    }
+    # is there a new histogram to load?
+    if {$hst != $lasthst} {
+	xvec set {}
+	xvec notify now
+	set cycle -1
+	set modtime 0
+	$box config -title "Please wait: loading histogram $hst"
+	update
+	return
+    }
+    if {$::graph(setfiletitle) && $::topasfile != ""} {
+        $box config -title "TOPAS import $::topasfile"
+    } elseif {$::graph(setfiletitle)} {
+        $box config -title "$expnam [histinfo $::hst file] cycle $cycle"
+    } elseif {$::plot_title == "(None)"} {
+        $box config -title "$expnam cycle $cycle Hist $hst"
+    } else {
+        $box config -title $::plot_title
+    }
+    $box xaxis config -title $xunits
+    $box yaxis config -title $yunits
+    setlegend $box $graph(legend)
+    # reconfigure the data
+    catch {$box element configure 3 -symbol $peakinfo(obssym)}
+    catch {$box element configure 3 -color $graph(color_obs)}
+    catch {$box element configure 3 -pixels [expr 0.125 * $peakinfo(obssize)]i}
+    if $graph(chi2) {
+	$box element config 0 -dash 0 -line 3
+	catch {$box element config 0 -color $graph(color_chi2)}
+    } else {
+	$box element config 0 -dash 4 -line 2
+	catch {$box element config 0 -color $graph(color_OmCoS)}
+    }
+    catch {$box element config 1 -color $graph(color_bkg)}
+    catch {$box element config 2 -color $graph(color_calc)}
+    catch {$box element config 4 -color $graph(color_diff)}
+    global program
+    if {$program == "bkgedit"}  {
+	catch {$box element config 12 -color $graph(color_input)}
+	catch {$box element config 12 
+	    -pixels [expr 0.125 * $peakinfo(inpsize)]i}
+	catch {$box element config 12 -symbol $peakinfo(inpsym)}
+	catch {$box element config 11 -color $graph(color_fit)}
+    }
+    xvec notify now
+    obsvec notify now
+    calcvec notify now
+    bckvec notify now
+    wifdvec notify now
+    # now deal with peaks
+    #for {set i 1} {$i < 10} {incr i} 
+    set k 0
+    set cmin $expgui(min)
+    foreach i $::expmap(phaselist) {
+	if {[set peakinfo(flag$i)]} {
+            incr k
+            if {$expgui(autotick)} {
+                set div [expr {( $expgui(max) - $expgui(min) )/40.}]
+                set ymin [expr {$expgui(min) - ($k+1) * $div}]
+                set ymax [expr {$expgui(min) - $k * $div}]
+                if {$cmin > $ymin} {set cmin $ymin}
+            } else {
+                set ymin $peakinfo(min$i)
+                set ymax $peakinfo(max$i)
+            }
+            set j 0
+            foreach X $reflns($i) {
+                incr j
+                catch {
+                    $box marker create line -name peaks${i}_$j 
+                }
+                $box marker config peaks${i}_$j  -under 1 \
+                    -coords "$X $ymin $X $ymax" 
+                catch {
+                    $box marker config peaks${i}_$j \
+                        $graph(MarkerColorOpt) [list $peakinfo(color$i)]
+                    if {$peakinfo(dashes$i) && ! $expgui(autotick)} {
+                        $box marker config peaks${i}_$j -dashes "5 5"
+                    }
+                }
+	    }
+	    catch {$box element create phase$i}
+	    catch {
+		$box element config phase$i -color $peakinfo(color$i) \
+                    -label $graph(label$i)
+	    }
+	} else {
+	    eval $box marker delete [$box marker names peaks${i}_*]
+	    eval $box element delete [$box element names phase$i]
+	}
+    }
+    catch {
+        # offset the difference pattern
+        set maxdiff  [set diffvec(max)]
+        if {$expgui(autotick)} {
+            diffvec set [diffvec + [expr {$cmin - $maxdiff}]]
+        } else {
+            diffvec set [diffvec + [expr {$cmin - 1.1*$maxdiff}]]
+        }
+        diffvec notify now
+    }
+    # force an update of the plot as BLT may not
+    $box config -title [$box cget -title]
+    update
+}
+
+proc setlegend {box legend} {
+    global blt_version
+    if {$blt_version >= 2.3 && $blt_version < 8.0} {
+	if $legend {
+	    $box legend config -hide no
+	} else {
+	    $box legend config -hide yes
+	}
+    } else {
+	if $legend {
+	    $box legend config -mapped yes
+	} else {
+	    $box legend config -mapped no
+	}
+    }
+}
+
+proc minioptionsbox {num} {
+    global blt_version tcl_platform peakinfo expgui
+    set bx .opt$num
+    catch {destroy $bx}
+    toplevel $bx
+    wm iconname $bx "Phase $num options"
+    wm title $bx "Phase $num options"
+
+    set i $num
+    pack [label $bx.0 -text "Phase $i reflns" ] -side top
+    pack [checkbutton $bx.1 -text "Show reflections" \
+	    -variable peakinfo(flag$i)] -side top 
+    # remove option that does not work
+    if {$blt_version != 8.0 || $tcl_platform(platform) != "windows"} {
+	pack [checkbutton $bx.2 -text "Use dashed line" \
+		-variable peakinfo(dashes$i)] -side top 
+    }
+    if !$expgui(autotick) {
+	pack [frame $bx.p$i -bd 2 -relief groove] -side top
+	#	pack [checkbutton $bx.p$i.0 -text "Show phase $i reflns" \
+		#		-variable peakinfo(flag$i)] -side left -anchor w
+	pack [label $bx.p$i.1 -text "  Y min:"] -side left
+	pack [entry $bx.p$i.2 -textvariable peakinfo(min$i) -width 5] \
+		-side left
+	pack [label $bx.p$i.3 -text "  Y max:"] -side left
+	pack [entry $bx.p$i.4 -textvariable peakinfo(max$i) -width 5] \
+		-side left
+    }
+    pack [frame $bx.c$i -bd 2 -relief groove] -side top
+    
+    pack [label $bx.c$i.5 -text " color:"] -side left
+    pack [entry $bx.c$i.6 -textvariable peakinfo(color$i) -width 12] \
+	    -side left
+    pack [button $bx.c$i.2 -bg $peakinfo(color$i) -state disabled] -side left
+    pack [button $bx.c$i.1 -text "Color\nmenu" \
+	    -command "setcolor $i"] -side left
+
+    pack [frame $bx.l$i -bd 2 -relief groove] -side top
+    
+    pack [label $bx.l$i.1 -text " Phase label:"] -side left
+    
+    pack [entry $bx.l$i.2 -textvariable graph(label$i) -width 20] \
+	    -side left
+
+    pack [frame $bx.b] -side top
+    pack [button $bx.b.4 -command "destroy $bx; plotdata" \
+	    -text Close ] -side right
+}
+
+proc setcolor {num} {
+    global peakinfo
+    set color [tk_chooseColor -initialcolor $peakinfo(color$num) -title "Choose color"]
+    if {$color == ""} return
+    set peakinfo(color$num) $color
+}
+
+proc setSymcolor {var lbl} {
+    global graph
+    set color [tk_chooseColor -initialcolor $graph(color_$var) \
+	    -title "Choose $lbl color"]
+    if {$color == ""} return
+    set graph(color_$var) $color
+}
+
+proc makepostscriptout {} {
+    global graph box
+    if !$graph(printout) {
+	set out [open "| $graph(outcmd) >& liveplot.msg" w]
+	catch {
+	    puts $out [$box postscript output -landscape 1 \
+		-decorations no -height 7.i -width 9.5i]
+	    close $out
+	} msg
+	catch {
+	    set out [open liveplot.msg r]
+	    if {$msg != ""} {append msg "\n"}
+	    append msg [read $out]
+	    close $out
+	    catch {file delete liveplot.msg}
+	}
+	if {$msg != ""} {
+	    tk_dialog .msg "file created" \
+		    "Postscript file processed with command \
+		    $graph(outcmd). Result: $msg" "" 0 OK
+	} else {
+	    tk_dialog .msg "file created" \
+		    "Postscript file processed with command \
+		    $graph(outcmd)" "" 0 OK
+	}
+    } else {
+	$box postscript output $graph(outname) -landscape 1 \
+		-decorations no -height 7.i -width 9.5i    
+	tk_dialog .msg "file created" \
+		"Postscript file $graph(outname) created" "" 0 OK
+    }
+}
+
+proc setprintopt {page} {
+    global graph
+    if $graph(printout) { 
+	$page.4.1 config -fg black
+	$page.4.2 config -fg black -state normal
+	$page.6.1 config -fg #888 
+	$page.6.2 config -fg #888 -state disabled
+    } else {
+	$page.4.1 config -fg #888 
+	$page.4.2 config -fg #888 -state disabled
+	$page.6.1 config -fg black
+	$page.6.2 config -fg black -state normal
+    }
+}
+
+proc setpostscriptout {} {
+    global graph tcl_platform
+    set box .out
+    catch {destroy $box}
+    toplevel $box
+    focus $box
+    wm title $box "Set PS options"
+    pack [frame $box.4] -side top -anchor w -fill x
+    pack [checkbutton $box.4.a -text "Write PostScript files" \
+	    -variable graph(printout) -offvalue 0 -onvalue 1 \
+	    -command "setprintopt $box"] -side left -anchor w
+    pack [entry $box.4.2 -textvariable graph(outname)] -side right -anchor w
+    pack [label $box.4.1 -text "PostScript file name:"] -side right -anchor w
+    pack [frame $box.6] -side top -anchor w -fill x
+    pack [checkbutton $box.6.a -text "Print PostScript files" \
+	    -variable graph(printout) -offvalue 1 -onvalue 0 \
+	    -command "setprintopt $box" ] -side left -anchor w
+    pack [entry $box.6.2 -textvariable graph(outcmd)] -side right -anchor w
+    pack [label $box.6.1 -text "Command to print files:"] -side right -anchor w
+
+    pack [button $box.a -text "Close" -command "destroy $box"] -side top
+    if {$tcl_platform(platform) == "windows"} {
+	set graph(printout) 1
+	$box.4.a config -state disabled
+	$box.6.a config -fg #888 -state disabled
+    }
+    setprintopt $box
+}
+
+#-------------------------------------------------------------------------
+# export current plot to Grace
+#-------------------------------------------------------------------------
+if {$tcl_platform(platform) == "unix"} {
+    set graph(GraceFile) /tmp/grace_out.agr
+} else {
+    set graph(GraceFile) C:/graceout.agr
+}
+proc exportgrace {} {
+    global graph box
+    global tcl_platform graph
+    catch {toplevel .export}
+    raise .export
+    eval destroy [grid slaves .export]
+    set col 5
+    grid [label .export.1a -text Title:] -column 1 -row 1
+    set graph(title) [$box cget -title]
+    grid [entry .export.1b -width 60 -textvariable graph(title)] \
+	    -column 2 -row 1 -columnspan 4
+    grid [label .export.2a -text Subtitle:] -column 1 -row 2
+    grid [entry .export.2b -width 60 -textvariable graph(subtitle)] \
+	    -column 2 -row 2 -columnspan 4
+    grid [label .export.3a -text "File name:"] -column 1 -row 3
+    grid [entry .export.3b -width 60 -textvariable graph(GraceFile)] \
+	    -column 2 -row 3 -columnspan 4
+    grid [button .export.help -text Help -bg yellow \
+	    -command "MakeWWWHelp liveplot.html grace"] \
+	    -column [incr col -1] -row 4
+    grid [button .export.c -text "Close" \
+	    -command "set graph(export) 0; destroy .export"] \
+	    -column [incr col -1] -row 4
+    if {$tcl_platform(platform) == "unix" && [auto_execok xmgrace] != ""} {
+	grid [button .export.d -text "Export & \nstart grace" \
+	    -command "set graph(export) 1; destroy .export"] \
+		-column [incr col -1] -row 4
+    }
+    grid [button .export.e -text "Export" \
+	    -command "set graph(export) 2; destroy .export"] \
+	    -column [incr col -1] -row 4
+    tkwait window .export
+    if {$graph(export) == 0} return
+    if {[catch {
+	set fp [open $graph(GraceFile) w]
+	puts $fp [output_grace $box $graph(title) $graph(subtitle)]
+	close $fp
+    } errmsg]} {
+	MyMessageBox -parent . -title "Export Error" \
+		-message "An error occured during the export: $errmsg" \
+		-icon error -type Ignore -default ignore
+	return
+    }
+
+    if {$graph(export) == 1} {
+	set err [catch {exec xmgrace $graph(GraceFile) &} errmsg]
+	if $err {
+	MyMessageBox -parent . -title "Grace Error" \
+		-message "An error occured launching grace (xmgrace): $errmsg" \
+		-icon error -type Ignore -default ignore
+	}
+    } else {
+	MyMessageBox -parent . -title "OK" \
+		-message "File $graph(GraceFile) created" \
+		-type OK -default ok
+    }
+}
+#-------------------------------------------------------------------------
+# export current plot as .csv file
+#-------------------------------------------------------------------------
+proc makecsvfile {} {
+    global graph box expnam hst
+    global tcl_platform graph
+    set typelist {
+	{{Comma separated} {.csv}        }
+	{{Text File}       {.txt}        }
+    }
+    set file [tk_getSaveFile -filetypes $typelist \
+	    -initialfile ${expnam}_$hst.csv]
+    if {$file == ""} return
+    foreach vec {xvec obsvec calcvec bckvec diffvec wifdvec} \
+	    var {X    O      C       B      D       CC     } {
+	set $var {}
+	catch {set $var [$vec range 0 end]}
+    }
+    set fp [open $file w]
+    # get x and y axis limits
+    foreach v {x y} {
+	foreach "${v}min ${v}max" [$graph(blt) ${v}axis limits] {}
+	puts $fp "\"$v axis range [set ${v}min] to [set ${v}max]\""
+	global ${v}units
+	puts $fp "\"$v axis label [set ${v}units]\""
+    }
+    puts $fp {"Columns are X I(obs) I(calc) I(bkg) Obs-Calc cum-chi**2 refpos ref-phase ref-hkl"}
+    global refhkllist refphaselist refpos
+    foreach x $X o $O c $C b $B d $D cc $CC \
+	    hkl $refhkllist rphase $refphaselist rp $refpos {
+	# replace commas with spaces
+	regsub -all "," $hkl " " hkl
+	puts $fp ", $x, $o, $c, $b, $d, $cc, $rp, $rphase, [list $hkl],"
+    }
+    close $fp
+}
+
+proc setlblopts {} {
+    global expgui tcl_platform tcl_version
+    set box .out
+    catch {destroy $box}
+    toplevel $box
+    focus $box
+    wm title $box "Set hkl options"
+    pack [frame $box.c] -side top  -anchor w
+    pack [label $box.c.l -text "HKL label\nerase time:"] -side left
+    pack [entry $box.c.e -textvariable expgui(fadetime) -width 8] \
+	    -side left
+    pack [label $box.c.l1 -text seconds] -side left
+    pack [frame $box.d] -side top  -anchor w
+    pack [label $box.d.l -text "HKL label size:"] -side left
+    pack [entry $box.d.e -textvariable expgui(lblfontsize) -width 4] \
+	    -side left
+    pack [label $box.d.l1 -text pixels] -side left
+    # old versions if tcl/tk don't support the font command
+    if {$tcl_version < 8.0} {
+	$box.d.l config -fg #888
+    	$box.d.e config -fg #888 -state disabled
+	$box.d.l1 config -fg #888
+    }
+    pack [frame $box.f] -side top  -anchor w
+    pack [label $box.f.l -text "HKL search region:"] -side left
+    pack [entry $box.f.e -textvariable expgui(pixelregion) -width 3] \
+	    -side left
+    pack [label $box.f.l1 -text pixels] -side left
+    pack [frame $box.e] -side top  -anchor w
+    pack [checkbutton $box.e.b -text "Separate window for HKL labels"\
+	    -variable expgui(hklbox)] -side left
+    pack [button $box.a -text "Close" -command "destroy $box"] -side top
+}
+
+proc getsymopts {"sym obs"} {
+    global expgui peakinfo
+    set box .out
+    catch {destroy $box}
+    toplevel $box
+    focus $box
+    wm title .out "set $sym symbol"
+    pack [frame $box.d] -side left -anchor n
+    pack [label $box.d.t -text "Symbol type"] -side top
+    set expgui(sym) $peakinfo(${sym}sym) 
+    set expgui(size) $peakinfo(${sym}size) 
+    foreach symbol {square circle diamond triangle plus cross \
+	    splus scross} \
+	    symbol_name {square circle diamond triangle plus cross \
+	    thin-plus thin-cross} {
+	pack [radiobutton $box.d.$symbol \
+		-text $symbol_name -variable expgui(sym) \
+		-value $symbol] -side top -anchor w
+    }
+    pack [frame $box.e] -side left -anchor n -fill y
+    pack [label $box.e.l -text "Symbol Size"] -side top
+    pack [scale $box.e.s -variable expgui(size) \
+	    -from .1 -to 3 -resolution 0.05] -side top
+    pack [frame $box.a] -side bottom
+    pack [button $box.a.1 -text "Apply" -command "setsymopts $sym"] -side left
+    pack [button $box.a.2 -text "Close" -command "destroy $box"] -side left
+}
+proc setsymopts {sym} {
+    global peakinfo expgui
+    if {$peakinfo(${sym}sym) != $expgui(sym)} {set peakinfo(${sym}sym) $expgui(sym)}
+    if {$peakinfo(${sym}size) != $expgui(size)} {set peakinfo(${sym}size) $expgui(size)}
+}
+
+# save some of the global options in ~/.gsas_config
+proc SaveOptions {} {
+    global graph expgui peakinfo tcl_platform
+    if {$tcl_platform(platform) == "windows"} {
+	set fp [open c:/gsas.config a]
+    } else {
+	set fp [open [file join ~ .gsas_config] a]
+    }
+    puts $fp "# LIVEPLOT saved options from [clock format [clock seconds]]"
+    foreach v {
+        printout legend outname outcmd autoraise 
+        chi2 xunits yunits OmCoS setfiletitle} {
+	puts $fp "set graph($v) [list $graph($v)]"
+    }
+    foreach v {diff chi2 bkg calc obs input fit OmCoS} {
+	puts $fp "set graph(color_$v) [list $graph(color_$v)]"
+    }
+    foreach v {font lblfontsize fadetime hklbox pixelregion autotick phaselabel} {
+	puts $fp "set expgui($v) [list $expgui($v)]"
+    }
+    foreach v {obssym obssize inpsym inpsize} {
+	puts $fp "set peakinfo($v) [list $peakinfo($v)]"
+    }
+    close $fp
+}
+
+proc aboutliveplot {} {
+    global Revision
+    tk_dialog .warn About "
+GSAS\n\
+R. B. Von Dreele, Argonne National Lab\n
+and A. C. Larson, Los Alamos (retired)\n\n\
+LIVEPLOT\nB. H. Toby, Argonne National Lab\n\n\
+$Revision\n\
+" {} 0 OK
+}
+
+proc getcycle {} {
+    global expnam
+    set cycle -1
+    catch {
+	set fp [open $expnam.EXP r]
+	set text [read $fp]
+	close $fp
+	regexp {GNLS  RUN.*Total cycles run *([0-9]*) } $text x cycle
+    }
+    return $cycle
+}
+
+proc updateifnew {} {
+    global cycle modtime expnam env tcl_platform graph
+    # has the .EXP file been changed?
+    set newmodtime $modtime
+    catch {set newmodtime [file mtime $expnam.EXP]}
+    if {$newmodtime != $modtime} {
+	# are we in windows and are "locked?" If not, OK to update
+	if {$tcl_platform(platform) == "windows" && [file exists expgui.lck]} {
+	    .g config -title "(Experiment directory locked)"
+	} else { 
+	    set modtime [file mtime $expnam.EXP]
+	    set newcycle [getcycle]
+	    if {$newcycle != $cycle} {
+		set cycle $newcycle
+		readdata .g
+	    }
+	    if {$tcl_platform(platform) == "windows" && $graph(autoraise)} {
+		# raise does not seem to be global in Windows, 
+		# but this works in Win-95
+		# nothing seems to work in Win-NT
+		wm withdraw .
+		wm deiconify .
+	    } elseif {$graph(autoraise)} {
+		raise .
+	    }
+	}
+    }
+    # check again in a second
+    after 1000 updateifnew 
+}
+
+proc plotdataupdate {array element action} {
+    global box peakinfo reflns graph
+    # parse the element
+    regexp {([a-z]*)([0-9]*)} $element junk var num
+    if {$var == "color"} {
+	if {$peakinfo($element) == ""} return
+	if [catch {
+	    .opt$num.c$num.2 config -bg $peakinfo($element)
+	} ] return
+	set i $num
+	set j 0
+	if [set peakinfo(flag$i)] {
+	    catch {
+		$box element config phase$i -color $peakinfo(color$i) 
+	    } 
+	    foreach X $reflns($i) {
+		incr j
+		catch {
+		    $box marker config peaks${i}_$j \
+			    $graph(MarkerColorOpt) [list $peakinfo(color$i)]
+		}
+	    }
+	}
+	return
+    }
+    waitmsg {Updating}
+    plotdata
+    donewaitmsg
+}
+proc ShowCumulativeChi2 {} {
+    global graph box
+    if $graph(chi2) {
+	catch {$box y2axis config -min 0}
+	$box y2axis config -title {Cumulative Chi Squared}
+	eval $box y2axis config $graph(ElementShowOption)
+	eval $box element config 0 $graph(ElementShowOption) -label "Chi2"
+	#$box elem conf 0 -dash 0 -line 3
+	set cycle [getcycle]
+	readdata .g
+    } elseif $graph(OmCoS) {
+	catch {$box y2axis config -min ""}
+	$box y2axis config -title {(obs-calc)/sigma}
+	eval $box y2axis config $graph(ElementShowOption)
+	eval $box element config 0 $graph(ElementShowOption) -label "(O-C)/s"
+	#$box elem conf 0 -dash 4 -line 2
+	set cycle [getcycle]
+	readdata .g
+    } else {
+	eval $box element config 0 $graph(ElementHideOption) 
+	eval $box y2axis config $graph(ElementHideOption) 
+	$box element config 0 -label ""
+        # clear the vector
+        wifdvec set {}
+        wifdvec notify now
+    }
+}
+
+# evaluate the Chebyshev polynomial with coefficients A at point x
+# coordinates are rescaled from $xmin=-1 to $xmax=1
+proc chebeval {A x xmin xmax} {
+    set xs [expr {-1 + 2 * (1.*$x - $xmin) / (1.*$xmax - 1.*$xmin)}]
+    set Tpp 0
+    set Tp 0
+    set total 0
+    foreach a $A {
+	if {$Tpp == $Tp && $Tp == 0} {
+	    set T 1
+	} elseif {$Tpp == 0} {
+	    set T $xs
+	} else {	
+	    set T [expr {2. * $xs * $Tp - $Tpp}]
+	}
+	set total [expr {$total + $a * $T}]
+	set Tpp $Tp
+	set Tp $T
+    }
+    return $total
+}
+
+# change the binding of the mouse, based on the selected mode
+proc bkgEditMode {b} {
+    global zoomcommand graph box
+    # save the zoom command
+    if [catch {set zoomcommand}] {
+	set zoomcommand [bind $graph(bindtag) <1>]
+	.bkg.f.fit1 config -state disabled
+	.bkg.f.terms config -state disabled
+    }
+    if {$b == ""} {
+	foreach c {1 2 3} {
+	    if {[.bkg.l.b$c cget -relief] == "sunken"} {set b $c}
+	}
+    }
+    foreach c {1 2 3} {
+	if {$c == $b} {
+	    .bkg.l.b$c config -relief sunken
+	} else {
+	    .bkg.l.b$c config -relief raised
+	}
+    }
+    # reset previous mode; if in the middle
+    if {[string trim [bind $box <Motion>]] != ""} {
+	blt::ResetZoom $box
+    }
+    if {$b == 2} {
+	bind $graph(bindtag) <1> "bkgAddPoint %x %y"
+	.g config -cursor arrow
+    } elseif {$b == 3} {
+	bind $graph(bindtag) <1> "bkgDelPoint %x %y"
+	.g config -cursor circle
+    } else {
+	bind $graph(bindtag) <1> $zoomcommand
+	.g config -cursor crosshair
+    }
+}
+
+# plot the background points
+proc bkgPointPlot {} {
+    global bkglist termmenu expgui expnam hst tmin tmax
+    set l {}
+    set fp [open $expnam.bkg$hst w]
+    puts $fp "y p h e $hst b ! fixed background points for use in BKGEDIT"
+    foreach p $bkglist {
+	puts $fp "i\t$p\t0.0"
+	append l " $p"
+    }
+    if {[llength $bkglist] > 0} {
+	puts $fp "i\t[expr $tmin*0.99] [lindex [lindex $bkglist 0] 1]\t0.0"
+	puts $fp "i\t[expr $tmax*1.01] [lindex [lindex $bkglist end] 1]\t0.0"
+    }
+    close $fp
+    .g element config 12 -data $l
+    # force a replot
+    .g elem show [.g elem show]
+    if {[set l [llength $bkglist]] > 3} {
+	.bkg.f.fit1 config -state normal
+	.bkg.f.terms config -state normal
+	$termmenu delete 0 end
+	set imax {}
+	set termmax [expr {$l/1.5}]
+	if {$termmax > 36} {set termmax 36}
+	for {set i 2} {$i <= $termmax} {incr i 2} {
+	    $termmenu insert end radiobutton -label $i \
+		    -variable expgui(FitOrder) -command "BkgFillTermBoxes nosave"
+	    set imax $i
+	}
+	if {$imax < $expgui(FitOrder)} {set expgui(FitOrder) $imax}
+    } else {
+	.bkg.f.fit1 config -state disabled
+	.bkg.f.terms config -state disabled
+	set expgui(FitOrder) 2
+    }
+}
+
+# add a bkg point at screen coordinates x,y
+proc bkgAddPoint {x y} {
+    global bkglist tmin tmax
+    set xy [.g invtransform $x $y]
+    set x [lindex $xy 0]
+    if {$x < $tmin} {set x $tmin}
+    if {$x > $tmax} {set x $tmax}
+    lappend bkglist [list $x [lindex $xy 1]]
+    set bkglist [lsort -real -index 0  $bkglist]
+    bkgFillPoints
+    bkgPointPlot
+}
+
+# delete the bkg point closest to screen coordinates x,y
+proc bkgDelPoint {x y} {
+    global bkglist
+    set closest {}
+    set dist2 {}
+    set i -1
+    foreach p $bkglist {
+	incr i
+	set sxy [eval .g transform $p]
+	if {$closest == ""} {
+	    set closest $i
+	    set dist2 0
+	    foreach v1 $sxy v2 "$x $y" {
+		set dist2 [expr {$dist2 + ($v1 - $v2)*($v1 - $v2)}]
+	    }
+	} else {
+	    set d2 0
+	    foreach v1 $sxy v2 "$x $y" {
+		set d2 [expr {$d2 + ($v1 - $v2)*($v1 - $v2)}]
+	    }
+	    if {$d2 < $dist2} {
+		set closest $i
+		set dist2 $d2
+	    }		
+	}
+    }
+    set bkglist [lreplace $bkglist $closest $closest]
+    bkgPointPlot
+    bkgFillPoints
+}
+
+# initialize the background plot
+proc bkghstInit {} {
+    global bkglist tmin tmax hst expnam termlist expgui
+    set tmin [histinfo $hst tmin]
+    set tmax [histinfo $hst tmax]
+    if {[catch {expr $tmin}] || [catch {expr $tmax}]} {
+	tk_dialog .err "MIN/MAX Error" "Error -- Unable read tmin or tmax (has POWPREF been run?" \
+		error 0 Quit
+	destroy .
+    }
+
+    set bkglist {}
+    if [file exists $expnam.bkg$hst] {
+	catch {
+	    set fp [open $expnam.bkg$hst r]
+	    gets $fp line
+	    while {[gets $fp line]>=0} {
+		set x [lindex $line 1]
+		set y [lindex $line 2]
+		if {$x >= $tmin && $x <= $tmax} {
+		    lappend bkglist [list $x $y]
+		}
+	    }
+	}
+	close $fp
+    }
+
+    bkgEditMode 1
+    bkgPointPlot
+    bkgFillPoints
+    set termlist ""
+    set expgui(FitOrder) 2
+    BkgFillTermBoxes nosave
+}
+
+proc bkgFit {button} {
+    global bkglist termlist expgui
+    # if there <3 points, a fit is not possible
+    if {[llength $bkglist] < 3} {
+	bell
+	return
+    }
+    # keep the button down while working
+    $button config -relief sunken
+    update
+    # make a list of X & Y values
+    foreach p $bkglist {
+	lappend S 1.
+	foreach v $p var {X Y} {
+	    lappend $var $v
+	}
+    }
+
+    # perform the Fit
+    set termlist [FitBkgFunc $X $Y $expgui(FitOrder) $expgui(FitFunction) \
+	    $expgui(RadiiList)]
+    # set the bkg terms in the edit boxes & update the plot
+    BkgFillTermBoxes
+    $button config -relief raised
+}
+
+# put the Background coefficients into edit widgets
+proc BkgFillTermBoxes {"save {}"} {
+    global termlist expgui
+    global bkgeditbox
+    catch {destroy .bkg.canvas.fr}
+    set top [frame .bkg.canvas.fr]
+    .bkg.canvas create window 0 0 -anchor nw -window $top
+    # delete trace on bkgeditbox
+    foreach v [ trace vinfo bkgeditbox] {
+	eval trace vdelete bkgeditbox $v
+    }
+
+    .bkg.cw config -state normal
+    set k 0
+#    if {$expgui(FitFunction) == 3} {
+#	# o is number of refinable terms
+#	set o [expr {2 + ($expgui(FitOrder) - 2)/2}]
+#	grid [label $top.lbl -text terms] -column $k -row 1
+#	if {$expgui(FitOrder) >= 4} {
+#	    grid [label $top.rlbl -text radii] -column $k -row 2
+#	}
+#	incr k
+#	set width 7
+#    } else {
+	set o $expgui(FitOrder)
+	set width 10
+#    }
+    for {set i 0} {$i < $o} {incr i} {
+	if {$i >= [llength $termlist]} {lappend termlist 0.}
+	set bkgeditbox($i) [lindex $termlist $i]
+	grid [frame $top.$i -relief groove -bd 3] -column $k -row 1
+	grid [label $top.$i.l -text "[expr 1+$i]"] -column 1 -row 1
+	grid [entry $top.$i.e -textvariable bkgeditbox($i) -width $width] \
+		-column 2 -row 1
+#	if {$expgui(FitFunction) == 3 && $i > 1} {
+#	    set j [expr $i-2]
+#	    if {$j >= [llength $expgui(RadiiList)]} {lappend expgui(RadiiList) 0.}
+#	    set bkgeditbox(r$j) [lindex $expgui(RadiiList) $j]
+#	    if {$bkgeditbox(r$j) == 0} {
+#		set bkgeditbox(r$j) ??
+#	    }
+#	    grid [frame $top.r$j -relief groove -bd 3] \
+#		    -column [expr $k-2] -row 2
+#	    grid [label $top.r$j.l -text "[expr -1+$i]"] -column 1 -row 1
+#	    grid [entry $top.r$j.e -textvariable bkgeditbox(r$j) -width $width] \
+#		    -column 2 -row 1	
+#	}
+	incr k
+    }
+    trace variable bkgeditbox w "BkgRecalcPlot $top" 
+    BkgRecalcPlot $top x x x
+    update idletasks
+    set sizes [grid bbox $top]
+    .bkg.canvas config -scrollregion $sizes -height [lindex $sizes 3]
+    # inhibit the save button, if requested
+    if {$save == "nosave"} {
+	.bkg.cw config -state disabled
+	.g element configure 11 -xdata {} -ydata {}
+	update
+    }
+}
+
+# respond to edits made to background terms
+proc BkgRecalcPlot {top var i mode} {
+    global bkgeditbox termlist expgui
+
+    set good 1
+
+    set o $expgui(FitOrder)
+
+    set termlist {}
+    for {set j 0} {$j < $o} {incr j} {
+	lappend termlist $bkgeditbox($j)
+	if {[catch {expr $bkgeditbox($j)}]} {
+	    $top.$j.e config -fg red
+	    set good 0
+	} else {
+	    $top.$j.e config -fg black
+	}
+    }
+
+    # disable fit for invalid values
+    if {$good} {
+	.bkg.cw config -state normal
+	.bkg.f.fit1 config -state normal
+	# plot it
+	set calcb [BkgEval $termlist $expgui(FitFunction) \
+		[xvec range 0 end] $expgui(RadiiList)]
+	.g element configure 11 -xdata xvec -ydata $calcb
+	update
+    } else {
+	.bkg.cw config -state disabled
+	.bkg.f.fit1 config -state disabled
+	.g element configure 11 -xdata {} -ydata {}
+	update
+    }
+}
+
+# put the bkg points into edit widgets
+proc bkgFillPoints {} {
+    global bkglist tmin tmax bkgedit
+    # delete trace on bkgedit
+    foreach v [ trace vinfo bkgedit] {
+	eval trace vdelete bkgedit $v
+    }
+    catch {destroy .bkg.bc.fr}
+    set top [frame .bkg.bc.fr]
+    .bkg.bc create window 0 0 -anchor nw -window $top
+    if {[llength $bkglist] == 0} {
+	grid [label $top.0 -text "(no points defined)"] -column 1 -row 1
+    } else {
+	set i -1
+	foreach p $bkglist {
+	    incr i
+	    grid [frame $top.$i -relief groove -bd 3] -column $i -row 1
+	    grid [label $top.$i.l -text "[expr 1+$i]"] -column 1 -rowspan 2 -row 1
+	    grid [entry $top.$i.ex -textvariable bkgedit(x$i) -width 13] \
+		    -column 2 -row 1
+	    grid [entry $top.$i.ey -textvariable bkgedit(y$i) -width 13] \
+		    -column 2 -row 2
+	    foreach val $p var {x y} {
+		set bkgedit(${var}$i) $val
+	    }
+	}
+	trace variable bkgedit w "BkgRecalcBkg $top" 
+    }
+    update idletasks
+    set sizes [grid bbox $top]
+    .bkg.bc config -scrollregion $sizes -height [lindex $sizes 3]
+}
+
+# respond to edits made to bkg points
+proc BkgRecalcBkg {top var i mode} {
+    global bkgedit bkglist tmin tmax
+    regexp {(.)([0-9]*)} $i junk var num
+    if [catch {expr {$bkgedit($i)}}] {
+	$top.$num.e$var config -fg red
+    } else {
+	$top.$num.e$var config -fg black
+	set p [lindex $bkglist $num]
+	if {$var == "x"} {
+	    set x $bkgedit($i)
+	    if {$x < $tmin} {set x $tmin}
+	    if {$x > $tmax} {set x $tmax}
+	    set bkglist [lreplace $bkglist $num $num \
+		    [list $x [lindex $p 1]]]
+	} else {
+	    set bkglist [lreplace $bkglist $num $num \
+		    [list [lindex $p 0] $bkgedit($i)]]
+	}
+    }
+	bkgPointPlot
+}
+
+# convert x values to Q
+proc bkgtoQ {xlist hst} {
+    global expmap
+    if {[string range $expmap(htype_$hst) 2 2] == "T"} {
+	return [bkgtof2Q $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "C"} {
+	return [tttoQ $xlist $hst]
+    } elseif {[string range $expmap(htype_$hst) 2 2] == "E"} {
+	return [engtoQ $xlist $hst]
+    } else {
+	return {}
+    }
+}
+# convert tof to Q (as done in BKG routines -- no zero or difa)
+proc bkgtof2Q {toflist hst} {
+    set difc [expr {[histinfo $hst difc]/1000.}]
+    set 2pi [expr {4.*acos(0.)}]
+    set ans {}
+    foreach tof $toflist {
+	if {$tof == 0.} {
+	    lappend ans 99999.
+	} elseif {$tof == 1000.} {
+	    lappend ans 0.
+	} else {
+	    lappend ans [expr {$2pi * $difc / $tof}]
+	}
+    }
+    return $ans
+}
+
+# convert two-theta to Q
+proc tttoQ {twotheta hst} {
+    set lamo2 [expr {0.5 * [histinfo $hst lam1]}]
+    set zero [expr [histinfo $hst zero]/100.]
+    set ans {}
+    set cnv [expr {acos(0.)/180.}]
+    set 2pi [expr {4.*acos(0.)}]
+    foreach tt $twotheta {
+	if {$tt == 0.} {
+	    lappend ans 0.
+	} elseif {$tt == 1000.} {
+	    lappend ans 1000.
+	} else {
+	    lappend ans [expr {$2pi * sin($cnv*($tt-$zero)) / $lamo2}]
+	}
+    }
+    return $ans
+}
+# convert energy (edx-ray) to Q 
+# (note that this ignores the zero correction)
+proc engtoQ {eng hst} {
+    set lam [histinfo $hst lam1]
+    set zero [histinfo $hst zero]
+    set ans {}
+    set v [expr {12.398/(2.0*[sind[expr ($lam/2.0)]])}]
+    set 2pi [expr {4.*acos(0.)}]
+    foreach e $eng {
+	if {$e == 0.} {
+	    lappend ans 0.
+	} elseif {$e == 1000.} {
+	    lappend ans 1000.
+	} else {
+	    lappend ans [expr {$2pi * $e / $v}]
+	}
+    }
+    return $ans
+}
+
+proc BkgEval {terms num tlist "rlist {}"} {
+    global expmap hst
+    if {$num == 1} {
+	global tmin tmax
+	foreach x $tlist {
+	    lappend blist [chebeval $terms $x $tmin $tmax]
+	}
+	return $blist
+    } elseif {$num == 2} {
+	set ts 1
+	if {[string range $expmap(htype_$hst) 2 2] == "T"} {
+	    catch {
+		set line [histinfo $hst ITYP]
+		set ts [expr 180./ [lindex $line 2]]
+	    }
+	}
+	foreach tof $tlist {
+	    set tofm [expr {$tof * $ts}]
+	    set bkg 0
+	    set i -1
+	    foreach t $terms {
+		incr i
+		set bkg [expr {$bkg + $t * cos($i * $tofm * 3.14159/180.)}]
+	    }
+	    lappend blist $bkg
+	}
+	return $blist
+    } elseif {$num == 4} {
+	set Qlist [bkgtoQ $tlist $hst]
+	foreach Q $Qlist {
+	    set i -1
+	    set QT 1
+	    foreach t $terms {
+		incr i
+		if {$i == 0} {
+		    set bkg $t
+		} else {
+		    set QT [expr {$QT * $Q * $Q / $i}]
+		    set bkg [expr {$bkg + $t * $QT}]
+		}
+	    }
+	    lappend blist $bkg
+	}
+	return $blist
+    } elseif {$num == 5} {
+	set Qlist [bkgtoQ $tlist $hst]
+	foreach Q $Qlist {
+	    set i -1
+	    set QT 1
+	    foreach t $terms {
+		incr i
+		if {$i == 0} {
+		    set bkg $t
+		} else {
+		    set QT [expr {$QT * $i /($Q * $Q)}]
+		    set bkg [expr {$bkg + $t * $QT}]
+		}
+	    }
+	    lappend blist $bkg
+	}
+	return $blist
+    } elseif {$num == 6} {
+	set Qlist [bkgtoQ $tlist $hst]
+	foreach Q $Qlist {
+	    set i 0
+	    set QT 1
+	    foreach t $terms {
+		incr i
+		if {$i == 1} {
+		    set bkg $t
+		} elseif {$i % 2} {
+		    # odd
+		    set QT1 [expr {1./$QT}]
+		    set bkg [expr {$bkg + $t * $QT1}]
+		} else {
+		    # even
+		    set QT [expr {2*$QT*$Q*$Q/$i}]
+		    set QT1 $QT
+		    set bkg [expr {$bkg + $t * $QT1}]
+		}
+	    }
+	    lappend blist $bkg	    
+	}
+	return $blist
+    }
+}
+
+proc backderivcal {nterms num tof "rlist {}"} {
+    global expmap hst
+    if {$num == 1} {
+	global tmin tmax
+	# rescale x
+	set xs [expr {-1 + 2 * (1.*$tof - $tmin) / (1.*$tmax - 1.*$tmin)}]
+	# compute the Chebyschev term Tn(xs)
+	set deriv {}
+	set Tpp 0
+	set Tp 0
+	for {set i 0} {$i < $nterms} {incr i} {
+	    if {$Tpp == $Tp && $Tp == 0} {
+		set T 1
+	    } elseif {$Tpp == 0} {
+		set T $xs
+	    } else {
+		set T [expr {2. * $xs * $Tp - $Tpp}]
+	    }
+	    lappend deriv $T
+	    set Tpp $Tp
+	    set Tp $T
+	}
+	return $deriv
+    } elseif {$num == 2} {
+	set ts 1
+	if {[string range $expmap(htype_$hst) 2 2] == "T"} {
+	    catch {
+		set line [histinfo $hst ITYP]
+		set ts [expr 180./ [lindex $line 2]]
+	    }
+	    set tofm [expr {$tof * $ts}]
+	} else {
+	    set tofm $tof
+	}
+	set deriv {}
+	for {set i 0} {$i < $nterms} {incr i} {
+	    lappend deriv [expr {cos($i * $tofm * 3.14159/180.)}]
+	}
+	return $deriv
+    } elseif {$num == 3} {
+	set Q [bkgtoQ $tof $hst]
+	set j -1
+	#set n [expr {2 + ($nterms - 2)/2}]
+	for {set i 1} {$i <= $nterms} {incr i} {
+	    if {$i == 1} {
+		set deriv 1
+	    } elseif {$i == 2} {
+		lappend deriv $tof
+	    } else {
+		incr j
+		set r [lindex $rlist $j]
+		set QR [expr {$Q * $r}]
+		lappend deriv [expr {sin($QR)/$QR}]
+	    }
+	}
+	return $deriv
+    } elseif {$num == 4} {
+	set Q [bkgtoQ $tof $hst]
+	set QT 1
+	for {set i 0} {$i < $nterms} {incr i} {
+	    if {$i == 0} {
+		set deriv 1
+	    } else {
+		lappend deriv [set QT [expr {$QT * $Q * $Q / $i}]]
+	    }
+	}
+	return $deriv
+    } elseif {$num == 5} {
+	set Q [bkgtoQ $tof $hst]
+	set QT 1
+	for {set i 0} {$i < $nterms} {incr i} {
+	    if {$i == 0} {
+		set deriv 1
+	    } else {
+		lappend deriv [set QT [expr {$QT * $i /($Q * $Q)}]]
+	    }
+	}
+	return $deriv
+    } elseif {$num == 6} {
+	set Q [bkgtoQ $tof $hst]
+	set QT 1
+	for {set i 1} {$i <= $nterms} {incr i} {
+	    if {$i == 1} {
+		set deriv 1
+	    } elseif {$i % 2} {
+		# odd
+		lappend deriv [set QT1 [expr {1./$QT}]]
+	    } else {
+		# even
+		set QT [expr {2*$QT*$Q*$Q/$i}]
+		lappend deriv [set QT1 $QT]
+	    }
+	}
+	return $deriv
+    }
+}
+
+# evaluate the best-fit background terms to fit GSAS background functions 1-6
+# to a set of X and Y values.
+# num is the function number, 
+# order is the # of terms 
+# rlist is used only for function type 3; there must be (order-2)/2 values
+proc FitBkgFunc {X Y order num "rlist {}"} {
+    if {$num == 3} {
+	set o [expr {2 + ($order - 2)/2}]
+    } else {
+	set o $order
+    }
+    # zero the matrix and vector
+    for {set j 0} {$j < $o} {incr j} {
+	set sum($j) 0.
+	for {set i 0} {$i <= $j} {incr i} {
+	    set sum(${i}_$j) 0.
+	}
+    }
+#global octave
+#set octave {}
+#append octave {des = [}
+    foreach y $Y x $X {
+	# compute derivatives at point x
+	set derivlist [backderivcal $o $num $x $rlist]
+#append octave " $derivlist ;\n"
+	# compute matrix elements
+	for {set j 0} {$j < $o} {incr j} {
+	    set Tj [lindex $derivlist $j]
+	    # weighted
+	    # set sum($j) [expr {$sum($j) + $y * $Tj / ($sigma*$sigma)}]
+	    set sum($j) [expr {$sum($j) + $y * $Tj}]
+	    for {set i 0} {$i <= $j} {incr i} {
+		set Ti [lindex $derivlist $i]
+		# weighted
+		# set sum(${i}_$j) [expr {$sum(${i}_$j) + $Ti * $Tj / ($sigma * $sigma)}]
+		set sum(${i}_$j) [expr {$sum(${i}_$j) + $Ti * $Tj}]
+	    }
+	}
+    }
+    # populate the matrix & vector in La format
+    lappend V 2 $o 0
+    lappend A 2 $o $o
+    for {set i 0} {$i < $o} {incr i} {
+	lappend V $sum($i)
+	for {set j 0} {$j < $o} {incr j} {
+	    if {$j < $i} {
+		lappend A $sum(${j}_$i)
+	    } else {
+		lappend A $sum(${i}_$j)
+	    }
+	}
+    }
+    set termlist {}
+    if {[catch {
+	set termlist [lrange [La::msolve $A $V] 3 end]
+    }]} {
+	tk_dialog .singlar "Singular Matrix" \
+	    "Unable to fit function: singular matrix. Too many terms or something else is wrong." ""\
+	    0 OK
+    }
+    return $termlist
+}
+
+# save the Chebyshev terms in the .EXP file
+proc bkgSave {} {
+# results not saved in the Macro file
+    global hst termlist expgui Revision expmap expnam
+    histinfo $hst backtype set $expgui(FitFunction)
+    # stick the r values into the list
+#    if {$expgui(FitFunction) == 3} {
+#	set t [lrange $termlist 0 1]
+#	foreach a [lrange $termlist 2 end] b $expgui(RadiiList) {lappend t $a $b}
+#    } else {
+	set t $termlist
+#    }
+    histinfo $hst backterms set [llength $t]
+    set num 0
+    foreach v $t {
+	set var "bterm[incr num]"
+	histinfo $hst $var set $v
+    }
+    histinfo $hst bref set 0
+    # add a history record
+    exphistory add " BKGEDIT [lindex $Revision 1] [lindex $expmap(Revision) 1] -- [clock format [clock seconds]]"
+    # now save the file
+    expwrite $expnam.EXP
+}
+
+#-------------------------------------------------------------------------
+# manual zoom option
+proc BLTmanualZoom {} {
+    global graph
+    catch {toplevel .zoom}
+    eval destroy [grid slaves .zoom]
+    raise .zoom
+    wm title .zoom {Manual Scaling}
+    grid [label .zoom.l1 -text minimum] -row 1 -column 2 
+    grid [label .zoom.l2 -text maximum] -row 1 -column 3 
+    grid [label .zoom.l3 -text x] -row 2 -column 1 
+    grid [label .zoom.l4 -text y] -row 3 -column 1 
+    grid [entry .zoom.xmin -textvariable graph(xmin) -width 10] -row 2 -column 2 
+    grid [entry .zoom.xmax -textvariable graph(xmax) -width 10] -row 2 -column 3 
+    grid [entry .zoom.ymin -textvariable graph(ymin) -width 10] -row 3 -column 2 
+    grid [entry .zoom.ymax -textvariable graph(ymax) -width 10] -row 3 -column 3 
+    grid [frame .zoom.b] -row 4 -column 1 -columnspan 3
+    grid [button .zoom.b.1 -text "Set Scaling" \
+	     -command "SetManualZoom set"]  -row 4 -column 1 -columnspan 2
+    grid [button .zoom.b.2 -text Reset \
+	    -command "SetManualZoom clear"] -row 4 -column 3
+    grid [button .zoom.b.3 -text Close -command "destroy .zoom"] -row 4 -column 4 
+    grid rowconfigure .zoom 1 -weight 1 -pad 5
+    grid rowconfigure .zoom 2 -weight 1 -pad 5
+    grid rowconfigure .zoom 3 -weight 1 -pad 5
+    grid rowconfigure .zoom 4 -weight 0 -pad 5
+    grid columnconfigure .zoom 1 -weight 1 -pad 20
+    grid columnconfigure .zoom 1 -weight 1 
+    grid columnconfigure .zoom 3 -weight 1 -pad 10
+    foreach item {min min max max} \
+	    format {3   2   3   2} \
+	    axis   {x   y   x   y} {
+	set val [$graph(blt) ${axis}axis cget -${item}]
+	set graph(${axis}${item}) {(auto)}
+	catch {set graph(${axis}${item}) [format %.${format}f $val]}
+    }
+    bind .zoom <Return> "SetManualZoom set"
+}
+
+proc SetManualZoom {mode} {
+    global graph
+    if {$mode == "clear"} {
+	foreach item {xmin ymin xmax ymax} {
+	    set graph($item) {(auto)}
+	}
+    }
+    foreach item {xmin ymin xmax ymax} {
+	if {[catch {expr $graph($item)}]} {
+	    set $item ""
+	} else {
+	    set $item $graph($item)
+	}
+    }
+    # reset the zoomstack
+    catch {Blt_ZoomStack $graph(blt)}
+    catch {$graph(blt) xaxis config -min $xmin -max $xmax}
+    catch {$graph(blt) yaxis config -min $ymin -max $ymax}
+    global program
+    if {$program == "bkgedit"} {bkgEditMode ""}
+}
+
+# define a binding to show the cursor location
+proc ToggleLiveCursor {} {
+    global box graph
+    if {[bind $box <Any-Motion>] == ""} {
+	.a.options.menu entryconfig $graph(CursorLabel) -label "Hide Cursor Position"
+	pack [frame .bot -bd 2 -relief sunken] -side bottom -fill x
+	pack [label .bot.val1 -textvariable graph(position)] -side left
+	pack [button .bot.close -command ToggleLiveCursor -text "Close cursor display"] -side right
+	bind $box <Any-Motion> {FormatLiveCursor %x %y}
+    } else {
+	.a.options.menu entryconfig $graph(CursorLabel) -label "Show Cursor Position"
+	destroy .bot
+	bind $box <Any-Motion> {}
+    }
+}
+proc FormatLiveCursor {x y} {
+    global graph
+    set graph(position) \
+	    "x=[format %.3f [$graph(blt) xaxis invtransform $x]] y=[format %.3f [$graph(blt) yaxis invtransform $y]]"
+}
+
+#-------------------------------------------------------------------------
+# override options with locally defined values
+set filelist [file join $expgui(scriptdir) localconfig]
+if {$tcl_platform(platform) == "windows"} {
+    lappend filelist "c:/gsas.config"
+} else {
+    lappend filelist [file join ~ .gsas_config]
+}
+if {[catch {
+    foreach file $filelist {
+	if [file exists $file] {source $file}
+    }
+} errmsg]} {
+    set msg "Error reading file $file (aka [file nativename $file]): $errmsg"
+    MyMessageBox -parent . -title "Customize warning" \
+	-message $msg -icon warning -type Ignore -default ignore \
+	-helplink "expguierr.html Customizewarning"
+}
+
+SetTkDefaultOptions $expgui(font)
+
+if [file executable [file join $expgui(gsasexe) $expgui(tcldump)]] {
+    set expgui(tcldump) [file join $expgui(gsasexe) $expgui(tcldump)]
+} else {
+    set expgui(tcldump) {}
+}
+
+# vectors
+if [catch {
+    foreach vec {xvec obsvec calcvec bckvec diffvec refposvec wifdvec} {
+	vector $vec
+	$vec notify never
+    }
+} errmsg] {
+    MyMessageBox -parent . -title "BLT Error" \
+	    -message "BLT Setup Error: could not define vectors \
+(msg: $errmsg). \
+$program cannot be run without vectors." \
+	    -helplink "expgui.html blt" \
+	    -icon error -type Skip -default skip
+    exit
+}
+
+# create the graph
+if [catch {
+    set box [graph .g -plotbackground white]
+    set graph(blt) $box
+} errmsg] {
+    MyMessageBox -parent . -title "BLT Error" \
+	    -message "BLT Setup Error: could not create a graph \
+(error msg: $errmsg). \
+There is a problem with the setup of BLT on your system. \
+See the expgui.html file for more info." \
+	    -helplink "expgui.html blt" \
+	    -icon warning -type Exit -default "exit" 
+    exit
+}
+if [catch {
+    Blt_ZoomStack $box
+} errmsg] {
+    MyMessageBox -parent . -title "BLT Error" \
+	    -message "BLT Setup Error: could not access a Blt_ routine \
+(msg: $errmsg). \
+The pkgIndex.tcl is probably not loading bltGraph.tcl.
+See the expgui.html file for more info." \
+	-helplink "expgui.html blt" \
+	-icon warning -type {"Limp Ahead"} -default "limp Ahead" 
+}
+# modify zoom so that y2axis is not zoomed in for blt2.4u+
+catch {
+    regsub -all y2axis [info body blt::PushZoom] " " b1
+    proc blt::PushZoom {graph} $b1
+}
+# get binding for zoom
+set graph(bindtag) $box
+catch {
+    if {[bind zoom-$box] != ""} {
+	# blt2.4z
+	set graph(bindtag) zoom-$box
+    } elseif {[bind bltZoomGraph] != ""} {
+	# blt2.4?
+	set graph(bindtag) bltZoomGraph
+    }
+}
+
+$box element create 0 -xdata xvec -ydata wifdvec \
+	-line 3 -symbol none -label "Chi2" -mapy y2
+catch {$box element config 0 -color $graph(color_chi2)}
+
+$box element create 1 -label bckgr -symbol none  
+$box element config 1 -xdata xvec -ydata bckvec
+catch {$box element config 1 -color $graph(color_bkg)}
+$box element create 3 -linewidth 0 -label Obs
+catch {$box element configure 3 -symbol $peakinfo(obssym)}
+catch {$box element configure 3 -color $graph(color_obs)}
+catch {$box element configure 3 -pixels [expr 0.125 * $peakinfo(obssize)]i}
+$box element create 2 -label Calc -symbol none  
+catch {$box element config 2 -color $graph(color_calc)}
+$box element create 4 -label diff -symbol none  
+catch {$box element config 4 -color $graph(color_diff)}
+
+if {$program == "liveplot"} {
+    $box y2axis config -title {Cumulative Chi Squared}
+    catch {$box y2axis config -min 0}
+} elseif {$program == "bkgedit"}  {
+    eval $box element config 0 $graph(ElementHideOption) 
+    eval $box y2axis config $graph(ElementHideOption) 
+    $box element config 0 -label ""
+    eval $box element config 1 $graph(ElementHideOption) 
+    $box element config 1 -label ""
+    eval $box element config 4 $graph(ElementHideOption) 
+    $box element config 4 -label ""
+    $box element create 11
+    $box element create 12
+    $box element configure 12 -line 0 -label "bkg pts"
+    catch {$box element config 12 -color $graph(color_input)}
+    catch {$box element config 12 -pixels [expr 0.125 * $peakinfo(inpsize)]i}
+    catch {$box element config 12 -symbol $peakinfo(inpsym)}
+    $box element configure 11 -symbol none -label "bkg fit" -dashes 5 -line 2
+    catch {$box element config 11 -color $graph(color_fit)}
+    $box element show "3 2 11 12"
+}
+$box element config 3 -xdata xvec -ydata obsvec
+$box element config 2 -xdata xvec -ydata calcvec
+$box element config 4 -xdata xvec -ydata diffvec
+
+if {$expgui(tcldump) != ""} {
+    bind . <Key-h> "lblhkl $box %x"
+    bind . <Key-H> "lblhkl $box %x"
+    bind . <Key-a> "lblhkl $box all"
+    bind . <Key-A> "lblhkl $box all"
+    bind . <Key-d> "delallhkllbl $box"
+    bind . <Key-D> "delallhkllbl $box"
+    bind $graph(bindtag) <Shift-Button-1> "lblhkl $box %x"
+    bind $graph(bindtag) <Shift-Button-3> "delallhkllbl %W"
+} else {
+    $box element config 1 -label ""
+    eval $box element config 4 $graph(ElementHideOption) 
+}
+bind . <Key-z> {BLTmanualZoom}
+bind . <Key-Z> {BLTmanualZoom}
+
+$box yaxis config -title {} 
+setlegend $box $graph(legend)
+
+set ps2pdfcmd {}
+set gnuplotpath {}
+# find gnuplot
+if {$::tcl_platform(platform) == "windows"} {
+    set gnuplotpath [file join $::expgui(gsasexe) "gnuplot/gnuplot.exe"]
+    if {![file exists $gnuplotpath]} {
+        set gnuplotpath [auto_execok gnuplot.exe]
+    }
+} else {
+    set ::env(PATH) "${::expgui(gsasexe)}:${::env(PATH)}"
+    auto_reset
+    set gnuplotpath [auto_execok gnuplot]
+}
+# find postscript conversion routine
+if {$::tcl_platform(platform) == "windows"} {
+    set gspath [file join $::expgui(gsasexe) "gs/bin/gswin32c.exe"]
+    if {![file exists $gspath]} {
+        set gspath [auto_execok gswin32c.exe]
+    }
+    if {[file exists $gspath]} {
+        set ps2pdfcmd "$gspath -q -P- -dSAFER -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=\$pdfoutname -c save pop -f \$psoutname"
+    }
+} else {
+    # look for ghostscript
+    set gspath [auto_execok gs]
+    if {[file exists $gspath]} {
+        set ps2pdfcmd "$gspath -q -P- -dSAFER -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=\$pdfoutname -c save pop -f \$psoutname"
+    } else {
+        set gspath [auto_execok pstopdf]; # this is on Mac only
+        if {[file exists $gspath]} {
+            set ps2pdfcmd "$gspath \$psoutname -o \$pdfoutname"
+        }
+    }
+}
+set gnuplotexport {}
+catch {
+    source [file join $expgui(scriptdir) gnuplot.tcl]
+}
+
+#======================================================================
+# make menus
+frame .a -bd 3 -relief groove
+pack [menubutton .a.file -text File -underline 0 -menu .a.file.menu] -side left
+menu .a.file.menu
+.a.file.menu add cascade -label Tickmarks -menu .a.file.menu.tick
+menu .a.file.menu.tick
+.a.file.menu add cascade -label Histogram -menu .a.file.menu.hist -state disabled
+.a.file.menu add command -label "Update Plot" \
+	-command {set cycle [getcycle];readdata .g}
+.a.file.menu add command -label "Set Plot Title" \
+	-command SetTitle
+.a.file.menu add checkbutton -label "Set Plot Title to data file" \
+    -variable graph(setfiletitle) \
+    -command {set cycle [getcycle];readdata .g}
+
+.a.file.menu add cascade -label "Export plot" -menu .a.file.menu.export
+menu .a.file.menu.export
+.a.file.menu.export add command -label "to PostScript" \
+	-command makepostscriptout
+if {$blt_version > 2.3 && $blt_version != 8.0} {
+    source [file join $expgui(scriptdir) graceexport.tcl]
+    .a.file.menu.export add command -label "to Grace" -command exportgrace
+}
+if {$gnuplotpath == {}} {
+    .a.file.menu.export add cascade -label "gnuplot program not found"
+} elseif {$gnuplotexport == ""} {
+    .a.file.menu.export add cascade -label "file gnuplot.tcl not found"
+} elseif {$ps2pdfcmd == ""} {
+    .a.file.menu.export add cascade -label "gs or pstopdf program not found"
+} else {
+    .a.file.menu.export add command -label "to PDF" -command ExportPDF
+}
+
+if {$program == "liveplot"} {
+    .a.file.menu add command -label "Import from Topas" \
+        -command {get_topas_file}
+}
+.a.file.menu add command -label Quit -command "destroy ."
+.a.file.menu.export add command -label "as .csv file" \
+	-command makecsvfile
+# source additional export routines
+set filelist [glob -nocomplain [file join $expgui(scriptdir) liveplot_*.tcl]]
+foreach file $filelist {
+    if [catch {
+	source $file
+	.a.file.menu.export add command -label $label -command $action
+    } errmsg] {catch {puts "source error = $errmsg"}}
+}
+pack [menubutton .a.options -text Options -underline 0 -menu .a.options.menu] \
+	-side left    
+menu .a.options.menu
+.a.options.menu add cascade -label "Configure Tickmarks" -menu .a.options.menu.tick
+menu .a.options.menu.tick
+.a.options.menu.tick add radiobutton -label "Manual Placement" \
+	-value 0 -variable expgui(autotick) -command plotdata
+.a.options.menu.tick add radiobutton -label "Auto locate" \
+	-value 1 -variable expgui(autotick) -command plotdata
+.a.options.menu.tick add separator
+.a.options.menu.tick add radiobutton -label "Label by phase number" \
+    -value 0 -variable expgui(phaselabel) -command plotdata
+.a.options.menu.tick add radiobutton -label "Label by phase name" \
+    -value 1 -variable expgui(phaselabel) -command plotdata
+.a.options.menu.tick add separator
+
+if {$program == "liveplot"} {
+    pack [menubutton .a.mag -text Magnification -underline 0 -menu .a.mag.menu] \
+	-side left
+    menu .a.mag.menu
+}
+set maglist {}
+set mag0 1.0
+# display magnification routines
+proc ShowMag {} {
+    global blt_version tcl_platform peakinfo expgui
+    set bx .opt
+    catch {destroy $bx}
+    toplevel $bx
+    putontop $bx
+    wm iconname $bx "Mag Regs"
+    wm title $bx "Plot Magnification Regions"
+    pack [label $bx.0 -text "Magnification Regions:"] -side top
+    if {[llength $::maglist] == 0} {
+	set lbl "None"
+    } else {
+	set lbl ""
+	set xm $::xvec(min)
+	set ym $::mag0
+	set ::maglist [lsort -real -index 0 $::maglist]
+	foreach pair $::maglist {
+	    foreach {xh ymh} $pair {}
+	    append lbl "\tfrom $xm to $xh: times $ym\n"
+	    set xm $xh
+	    set ym $ymh
+	}
+	set xh $::xvec(max)
+	append lbl "\tfrom $xm to $xh: times $ym"
+    }
+    pack [label $bx.1 -text $lbl -justify left] -side top
+    pack [button $bx.2 -text "Close" -command "destroy $bx"] -side top
+    tkwait window $bx
+    afterputontop
+}
+
+# edit magnification regions
+proc EditMag {} {
+    set ::multrow 1
+    set bx .opt
+    catch {destroy $bx}
+    toplevel $bx
+    putontop $bx
+    wm iconname $bx "Mag Regs"
+    wm title $bx "Edit Magnification Regions"
+    pack [label $bx.0 -text "Vertical Magnification Regions:"] -side top
+    if {[llength $::maglist] == 0} {
+	set lbl "None"
+	pack [label $bx.1 -text $lbl -justify left] -side top
+	pack [button $bx.2 -text "Close" -command "destroy $bx"] -side top
+	tkwait window $bx
+	afterputontop
+	return
+    } else {
+	pack [frame $bx.1] -side top
+	set ::maglist [lsort -real -index 0 $::maglist]
+	set row 0
+	foreach pair $::maglist {
+	    foreach {xh ymh} $pair {}
+	    set row1 [expr {$row + 1}]
+	    set ::xmag($row1) $xh
+	    set ::mag($row1) $ymh
+	    if {$row == 0} {
+		grid [label $bx.1.a$row -text "From "] -column 1 -row $row
+		grid [label $bx.1.b$row -text $::xvec(min)] -column 2 -row $row
+		grid [label $bx.1.c$row -text " to "] -column 3 -row $row
+		grid [entry $bx.1.d$row -textvariable xmag(1) -width 6] -column 4 -row $row
+		grid [label $bx.1.e$row -text " times "] -column 5 -row $row
+		grid [entry $bx.1.f$row -textvariable mag0 -width 4] -column 6 -row $row
+	    } else {
+		grid [label $bx.1.a$row -text "From "] -column 1 -row $row
+		grid [entry $bx.1.b$row -textvariable xmag($row) -width 6] -column 2 -row $row
+		grid [label $bx.1.c$row -text " to "] -column 3 -row $row
+		grid [entry $bx.1.d$row -textvariable xmag($row1) -width 6] -column 4 -row $row
+		grid [label $bx.1.e$row -text " times "] -column 5 -row $row
+		grid [entry $bx.1.f$row -textvariable mag($row) -width 4] -column 6 -row $row
+	    }
+	    incr row
+	}
+	grid [label $bx.1.a$row -text "From "] -column 1 -row $row
+	grid [entry $bx.1.b$row -textvariable xmag($row) -width 6] -column 2 -row $row
+	grid [label $bx.1.c$row -text " to "] -column 3 -row $row
+	grid [label $bx.1.d$row -text $::xvec(max)] -column 4 -row $row
+	grid [label $bx.1.e$row -text " times "] -column 5 -row $row
+	grid [entry $bx.1.f$row -textvariable mag($row) -width 4] -column 6 -row $row
+	set ::multrow $row
+    }
+    pack [label $bx.l -text "\nSet the multiplier to zero to delete a region"] -side top
+    pack [frame $bx.2] -side top
+    pack [button $bx.2.a -text "Edit" -command "destroy $bx"] -side left
+    pack [button $bx.2.b -text "Cancel" -command "set multrow 0; destroy $bx"] -side left
+    tkwait window $bx
+    afterputontop
+    if {$::multrow == 0} return
+    set newmaglist {}
+    set xp $::xvec(min)
+    for {set i 1} {$i <= $::multrow} {incr i} {
+	if {$::mag($i) > 0} {
+	    lappend newmaglist [list $::xmag($i) $::mag($i)]
+	}
+	set xp $::xmag($i)
+    }
+    set ::maglist $newmaglist
+    readdata .g
+}
+
+# show a menu to add a magnification region
+proc AddMag {} {
+    set bx .opt
+    catch {destroy $bx}
+    toplevel $bx
+    putontop $bx
+    wm iconname $bx "Add Regs"
+    wm title $bx "Add Plot Magnification Region"
+    pack [frame $bx.0] -side top
+    pack [label $bx.0.a -text "Magnify from "] -side left
+    pack [entry $bx.0.b -textvariable xmin -width 6] -side left
+    pack [label $bx.0.c -text " to next region. Multiply by "] -side left
+    pack [entry $bx.0.d -textvariable mult -width 4] -side left
+    pack [frame $bx.2] -side top
+    pack [button $bx.2.a -text "Add" -command "destroy $bx"] -side left
+    pack [button $bx.2.b -text "Cancel" -command "set mult {}; destroy $bx"] -side left
+    if {[catch {expr $::mult}]} {set ::mult 1.0}
+    if {$::mult <= 0} {set ::mult 1.0}
+    tkwait window $bx
+    afterputontop
+    catch {
+	if {$::xmin < $::xvec(min)} {set ::xmin $::xvec(min)} 
+	if {$::xmin > $::xvec(max)} {set ::xmin $::xvec(max)} 
+	if {$::mult > 0} {
+	    lappend ::maglist [list $::xmin $::mult]
+	    readdata .g
+	} else {
+	    MyMessageBox -parent . -title "Invalid" \
+		-message "Invalid input, try again" \
+		-icon error -type Continue -default continue
+	}
+    }
+}
+proc AddCursorMag {p m} {
+    set x [.g xaxis invtransform $p]
+    if {$x < $::xvec(min) || $x > $::xvec(max) } {
+	bell
+	return
+    }
+    lappend ::maglist [list $x $m]
+    readdata .g
+}
+
+# scale the data with magnification regions
+proc ApplyMag {} {
+    foreach mrk [.g marker names mag*] {
+	.g marker delete $mrk
+    }
+    if {[llength $::maglist] == 0} return
+    global xvec
+    vector create ymult([xvec length])
+    set xl $xvec(min)
+    set ym $::mag0
+    set i 0
+    set ::maglist [lsort -real -index 0 $::maglist]
+    foreach pair $::maglist {
+	foreach {xh ymh} $pair {}
+	set xr [xvec search $xl $xh]
+	#puts "$xl $xh [lindex $xr 0]:[lindex $xr end] $ym"
+	if {[lindex $xr 0] != [lindex $xr end]} {
+	    set ymult([lindex $xr 0]:[lindex $xr end]) $ym
+	    if {$xl != $xvec(min)} {
+		.g marker create line -coords "$xl -Inf $xl Inf" -name mag[incr i]
+	    }
+	    .g marker create text -coords "$xl Inf" -name mag[incr i] -text "x$ym" -anchor w
+	}
+	set xl $xh
+	set ym $ymh
+    }
+    set xh $xvec(max)
+    set xr [xvec search $xl $xh]
+    set ymult([lindex $xr 0]:[lindex $xr end]) $ym
+    #puts "$xl $xh [lindex $xr 0]:[lindex $xr end] $ym"
+    .g marker create line -coords "$xl -Inf $xl Inf" -name mag[incr i]
+    .g marker create text -coords "$xl Inf" -name mag[incr i] -text "x$ym" -anchor w
+    foreach vec {obsvec calcvec bckvec} {
+	global $vec
+	$vec expr {$vec * ymult}
+    }
+}
+
+# create a PDF using GNUPLOT & GhostScript
+proc ExportPDF {} {
+    set msg {}
+    if {$::gnuplotpath == {}} {
+        append msg "\n\tThe gnuplot program was not found"
+    } 
+    if {$::gnuplotexport == ""} {
+        append msg "\n\tfile gnuplot.tcl not found in $::expgui(scriptdir)"
+    } 
+    if {$::ps2pdfcmd == ""} {
+        append msg "\n\tNo PDF conversion routine (ghostscript or pstopdf on Mac was found"
+    }
+    if {$msg != ""} {
+        MyMessageBox -parent . -title "Gnuplot/GS Error" \
+		-message $msg \
+		-icon error -type OK -default OK
+        return 0
+    }
+
+    set pdfoutname [tk_getSaveFile -title "Select output file" -parent . \
+                        -defaultextension ".pdf" \
+                        -initialdir [pwd] \
+                        -initialfile "[file rootname $::expnam].pdf"]
+    if { $pdfoutname == "" } { return }
+    cd [file dirname $pdfoutname]
+    set pdfoutname [regsub -all " " [file tail $pdfoutname] "_"]
+    set rootname [file root $pdfoutname]
+    set csvoutname "$rootname.csv"
+    set gplotname "$rootname.gplot"
+    set psoutname "$rootname.ps"
+    foreach filename [list $pdfoutname $csvoutname $gplotname $psoutname] {
+        catch {file -force delete $filename}
+    }
+    waitmsg "running gnuplot, Please wait"
+    Graph2Gnuplot .g $gplotname $psoutname $csvoutname
+    if {![file exists $gplotname]} {
+        set msg "\n  Output file for gnuplot not created! ($gplotname)"
+    }
+    if {![file exists $csvoutname]} {
+        append msg "\n   Output file for gnuplot not created! ($csvoutname)"
+    }
+    if {$msg == ""} {
+        if {[catch { exec $::gnuplotpath $gplotname } err]} {
+	    if {[string first "Warning" $err] == -1} {
+		append msg "Error in running gnuplot: $err"
+	    }
+        }
+        if {![file exists $psoutname]} {
+            append msg "\n   Output file from gnuplot not created! ($psoutname)"
+        }
+    }
+    if {$msg == ""} {
+        if {[catch { eval exec [subst $::ps2pdfcmd]} err]} {
+            append msg "Error in PDF conversion: $err"
+        }
+        if {![file exists $pdfoutname]} {
+            append msg "\n   PDF file not created! ($pdfoutname)"
+        }
+    }
+    donewaitmsg
+    if {$msg == ""} {
+        # clean up
+        foreach filename [list $csvoutname $gplotname $psoutname] {
+            catch {file -force delete $filename}
+        }
+        MyMessageBox -parent . -title "PDF created" \
+            -message "Success: PDF file created ($pdfoutname)" \
+            -type OK -default OK
+        return 1
+    } else {
+        # something failed
+        MyMessageBox -parent . -title "Gnuplot/GS Error" \
+		-message "Error: $msg" \
+		-icon error -type OK -default OK
+        return 0
+    }
+}
+
+# resize graph font only
+proc ResizeGraphFont {graph font} {
+    foreach w {legend xaxis yaxis xaxis yaxis \
+                   x2axis y2axis x2axis y2axis} \
+        o {-font -tickfont -tickfont -titlefont -titlefont \
+               -tickfont -tickfont -titlefont -titlefont} {
+                   catch {
+                       $graph $w configure $o $font
+                   }
+               }
+    catch {
+        set curfont [$graph cget -font]
+        if {[string tolower [lindex $curfont 0]] == "symbol"} {
+            $graph configure -font "Symbol [lrange $font 1 end]"
+        } else {
+            $graph configure -font $font
+        }
+    }
+}
+
+if {$program == "liveplot"} {
+    .a.mag.menu add command -label "Add region" -command "AddMag"
+    .a.mag.menu add command -label "Edit Regions" -command "EditMag"
+    .a.mag.menu add separator
+    .a.mag.menu add command -label "Clear" \
+	-command "set maglist {}; readdata .g"
+    .a.options.menu add command -label "Obs symbol" -command getsymopts
+    foreach i {1 2 3 4 5 6 7 8 9} {
+	bind . <Control-Key-$i> "AddCursorMag %x $i"
+    }
+} else {
+    .a.options.menu add cascade -label "Symbol Type" -menu .a.options.menu.sym
+    menu .a.options.menu.sym
+    foreach var {obs inp} lbl {Observed "Input bkg"} {
+	.a.options.menu.sym add command -label $lbl -command "getsymopts $var"
+    }
+}
+.a.options.menu add cascade -label "Symbol color" -menu .a.options.menu.color
+menu .a.options.menu.color
+set l1 {obs calc diff bkg chi2 OmCoS}
+set l2 {Observed Calculated Obs-Calc Background Cumulative-Chi2 (obs-calc)/sig}
+if {$program != "liveplot"} {
+    lappend l1 input fit
+    lappend l2 "Input points" "bkg fit"
+}
+    
+foreach var $l1 lbl $l2 {
+    .a.options.menu.color add command -label $lbl \
+	-command "setSymcolor $var $lbl; plotdata"
+}
+if {$expgui(tcldump) != "" && $program == "liveplot"} {
+    .a.options.menu add cascade -label "X units" -menu .a.options.menu.xunits
+    menu .a.options.menu.xunits
+    .a.options.menu.xunits add radiobutton -label "As collected" \
+	    -variable graph(xunits) -value 0 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu.xunits add radiobutton -label "d-space" \
+	    -variable graph(xunits) -value 1 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu.xunits add radiobutton -label "Q" \
+	    -variable graph(xunits) -value 2 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu add cascade -label "Y units" -menu .a.options.menu.yunits
+    menu .a.options.menu.yunits
+    .a.options.menu.yunits add radiobutton -label "As collected" \
+	    -variable graph(yunits) -value 0 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu.yunits add radiobutton -label "Normalized" \
+	    -variable graph(yunits) -value 1 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu.yunits add radiobutton -label "I/Sigma(I)" \
+	    -variable graph(yunits) -value 2 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu.yunits add radiobutton -label "log(I)" \
+	    -variable graph(yunits) -value 3 \
+	    -command {set cycle [getcycle];readdata .g}
+    .a.options.menu add command -label "HKL labeling" -command setlblopts
+    .a.options.menu add checkbutton -label "Subtract background" \
+	    -variable graph(backsub) \
+	    -command {set cycle [getcycle];readdata .g}
+} else {
+    set graph(xunits) 0
+}
+    
+.a.options.menu add checkbutton -label "Include legend" \
+	-variable graph(legend) \
+	-command {setlegend $box $graph(legend)}
+.a.options.menu add command -label "Show Cursor Position" \
+	-command ToggleLiveCursor
+set graph(CursorLabel) [.a.options.menu index "Show Cursor Position"]
+.a.options.menu add command -label "Set PS output" -command setpostscriptout
+.a.options.menu add cascade -menu  .a.options.menu.font \
+	-label "Screen font"
+menu .a.options.menu.font
+foreach f {10 11 12 13 14 16 18 20 22} {
+    .a.options.menu.font add radiobutton \
+	    -command {SetTkDefaultOptions $expgui(font); ResizeFont .} \
+	-label $f -value $f -variable expgui(font) -font "Helvetica -$f"
+}
+if {$program == "liveplot"} {
+    .a.options.menu add cascade -menu  .a.options.menu.gfont \
+	-label "Graph font"
+    menu .a.options.menu.gfont
+    foreach f {12 14 16 18 20 22 24 26 28 32 36 40} {
+        .a.options.menu.gfont add radiobutton \
+            -command "ResizeGraphFont .g \[list Helvetica -$f\]" \
+            -label $f -font "Helvetica -$f"
+    }
+    .a.options.menu add checkbutton -label "Raise on update" \
+	    -variable graph(autoraise)
+    .a.options.menu add checkbutton -label "Cumulative Chi2" \
+	    -variable graph(chi2) \
+	    -command "set graph(OmCoS) 0; ShowCumulativeChi2"
+    .a.options.menu add checkbutton -label "(Obs-Calc)/sig" \
+	    -variable graph(OmCoS) \
+	    -command "set graph(chi2) 0; ShowCumulativeChi2"
+    .a.options.menu add command -label "Save Options" -underline 1 \
+	    -command "SaveOptions"
+    ShowCumulativeChi2
+} elseif {$program == "bkgedit"}  {
+    catch {pack [frame .bkg -bd 3 -relief sunken] -side bottom -fill both}
+#    grid [label .bkg.top -text "Background Point Editing"] \
+#	    -column 0 -row 0 -columnspan 4
+#    grid [button .bkg.help -text Help -bg yellow \
+#	    -command "MakeWWWHelp liveplot.html bkgedit"] \
+#	    -column 5 -row 0 -rowspan 2 -sticky n
+    
+    grid [frame .bkg.l -bd 3 -relief groove] \
+	    -column 0 -row 1 -columnspan 2 -sticky nse
+    grid [label .bkg.l.1 -text "Mouse click\naction"] -column 0 -row 0
+    foreach c {1 2 3} l {zoom add delete} {
+	grid [button .bkg.l.b$c -text $l -command "bkgEditMode $c"] \
+		-column $c -row 0
+    }
+    # leave a small blank space
+    grid columnconfigure .bkg 2 -pad 0 -min 10
+    grid [frame .bkg.f -bd 3 -relief groove] \
+	    -column 3 -row 1 -columnspan 2 -sticky nsw
+    grid [button .bkg.f.fit1 -text "Fit" -command {bkgFit .bkg.f.fit1}] \
+	    -column 1 -row 1
+    grid [label .bkg.f.tl -text "with"] -column 3 -row 1
+    set termmenu [tk_optionMenu .bkg.f.terms expgui(FitOrder) 0]
+    grid .bkg.f.terms -column 4 -row 1
+    grid [label .bkg.f.tl1 -text "terms"] -column 5 -row 1
+
+    grid [frame .bkg.c1 -bd 3 -relief groove] \
+	    -column 0 -row 5 -rowspan 2 -sticky nsew
+    grid [label .bkg.c1.0 -text "Background\nfunction #"] -column 0 -row 0
+    set bkgmenu [tk_optionMenu .bkg.c1.1 expgui(FitFunction) stuff]
+    grid .bkg.c1.1 -column 0 -row 1
+    $bkgmenu delete 0 end
+    foreach item {
+	"1 - Shifted Chebyschev polynomial"
+	"2 - Cosine Fourier series"
+	"4 - Power series in Q**2n/n!"
+	"5 - Power series in n!/Q**2n"
+	"6 - Power series in Q**2n/n! and n!/Q**2n"
+    } {
+	set val [lindex $item 0]
+	$bkgmenu insert end radiobutton -variable expgui(FitFunction) \
+		-label $item -value $val \
+		-command "set termlist {};BkgFillTermBoxes nosave"
+    }
+#	"3 - Radial distribution peaks"
+    set expgui(FitFunction) 1
+
+    grid [canvas .bkg.canvas \
+	    -scrollregion {0 0 5000 500} -width 0 -height 0 \
+	    -xscrollcommand ".bkg.scroll set"] \
+	    -column 1 -row 5 -columnspan 3 -sticky nsew
+    grid [scrollbar .bkg.scroll -command ".bkg.canvas xview" \
+	    -orient horizontal] -column 1 -row 6 -columnspan 3 -sticky nsew
+    grid [button .bkg.cw -text "Save in\nEXP file\n& Exit" \
+	    -command "bkgSave;exit"] \
+	    -column 4 -columnspan 2 -row 5 -rowspan 2 -sticky ns
+
+    grid [frame .bkg.bl -bd 3 -relief groove] \
+	    -column 0 -row 3 -rowspan 2 -sticky nsew
+    grid [label .bkg.bl.1 -text "Background\npoints"] -column 0 -row 0
+    grid [canvas .bkg.bc \
+	    -scrollregion {0 0 5000 500} -width 0 -height 0 \
+	    -xscrollcommand ".bkg.bs set"] \
+	    -column 1 -row 3 -columnspan 5 -sticky nsew
+    grid [scrollbar .bkg.bs -command ".bkg.bc xview" -orient horizontal] \
+	    -column 1 -row 4 -columnspan 5 -sticky nsew
+
+    grid columnconfigure .bkg 1 -weight 1
+    grid columnconfigure .bkg 2 -weight 1
+    grid columnconfigure .bkg 3 -weight 1
+    grid rowconfigure .bkg 3 -weight 1
+    grid rowconfigure .bkg 5 -weight 1
+    .g config -title ""
+}
+
+pack [menubutton .a.help -text Help -underline 0 -menu .a.help.menu] -side right
+menu .a.help.menu -tearoff 0
+if {$program == "bkgedit"}  {
+    .a.help.menu add command -command "MakeWWWHelp liveplot.html bkgedit" \
+	    -label "Web page"
+} else {
+    .a.help.menu add command -command "MakeWWWHelp liveplot.html" \
+	    -label "Web page"
+}
+if {![catch {package require tkcon} errmsg]} {
+    .a.help.menu add command -label "Open console" -command {tkcon show}
+} elseif {$tcl_platform(platform) == "windows"} {
+    .a.help.menu add command -label "Open console" -command {console show}
+}
+.a.help.menu add command -command aboutliveplot -label About
+
+pack .a -side top -fill both
+pack $box -fill both -expand yes
+
+# assume cmpr is in the same location as GSAS 
+lappend cmprdir [file join [file dirname $expgui(scriptdir)] cmpr]
+
+# append to the list a number of other likely places where CMPR might be found
+if {$tcl_platform(platform) == "windows"} {
+    lappend cmprdir c:/cmpr "c:/Program files/cmpr"
+} else {
+    lappend cmprdir /usr/local/cmpr ~/cmpr
+}
+# add the CMPR & LOGIC interface options
+set CMPR_OK 0
+foreach dir $cmprdir {
+    if {[file exists [set file [file join $dir cellgen.tcl]]]} {
+	if {[catch {source $file} errmsg]} {
+	    catch {puts "source $file error = $errmsg"}
+	} else {
+	    if {$CMPR_OK} {
+		catch {
+		    pack [menubutton .a.peaks -text "Peak Gen" \
+			    -underline 0 -menu .a.peaks.menu] \
+			    -side left    
+		    menu .a.peaks.menu
+		}
+		.a.peaks.menu add command -label "Display a cell" \
+			-command {cellgen .cell}
+		break
+	    }
+	}
+    }
+}
+
+set CMPR_OK 0
+foreach dir $cmprdir {
+    if {[file exists [set file [file join $dir logic icddcmd.tcl]]]} {
+	if {[catch {source $file} errmsg]} {
+	    catch {puts "source $file error = $errmsg"}
+	} else {
+	    if {$CMPR_OK} {
+		catch {
+		    pack [menubutton .a.peaks -text "Peak Gen" \
+			    -underline 0 -menu .a.peaks.menu] \
+			    -side left    
+		    menu .a.peaks.menu
+		}
+		.a.peaks.menu add command -label "Plot ICDD Entry" \
+			-command MakeLogicWin
+		break
+	    }
+	}
+    }
+}
+
+if {$expnam != ""} {
+    expload $expnam.EXP
+    mapexp
+    if {$expgui(autotick)} {
+        foreach i $::expmap(phaselist) {
+            set peakinfo(flag$i) 1
+        }
+    }
+} else {
+    mapexp
+}
+
+# fill the histogram menu
+if {[llength $expmap(powderlist)] > 15} {
+    set expgui(plotlist) {}
+    .a.file.menu entryconfigure Histogram -state normal
+    menu .a.file.menu.hist
+    set i 0
+    foreach num [lsort -integer $expmap(powderlist)] {
+	incr i
+	# for now include, but disable histograms
+	set state disabled
+	if {[string range $expmap(htype_$num) 3 3] != "*"} {
+	    set state normal
+	    lappend expgui(plotlist) $num
+	}
+	if {$i == 1} {
+	    set num1 $num
+	    menu .a.file.menu.hist.$num1
+	}
+	.a.file.menu.hist.$num1 add radiobutton -label $num -value $num \
+		-variable hst -state $state \
+		-command {set cycle [getcycle];readdata .g}
+	if {$i >= 10} {
+	    set i 0
+	    .a.file.menu.hist add cascade -label "$num1-$num" \
+		    -menu .a.file.menu.hist.$num1
+	}
+    }
+    if {$i != 0} {
+	.a.file.menu.hist add cascade -label "$num1-$num" \
+		-menu .a.file.menu.hist.$num1
+    }
+} elseif {[llength $expmap(powderlist)] > 1} {
+    set expgui(plotlist) {}
+    .a.file.menu entryconfigure Histogram -state normal
+    menu .a.file.menu.hist
+    foreach num [lsort -integer $expmap(powderlist)] {
+	# for now include, but disable unprocessed histograms
+	set state disabled
+	if {[string range $expmap(htype_$num) 3 3] != "*"} {
+	    set state normal
+	    lappend expgui(plotlist) $num
+	}
+	.a.file.menu.hist add radiobutton -label $num -value $num \
+		-variable hst -state $state \
+		-command {set cycle [getcycle];readdata .g}
+    }
+} else {
+    set expgui(plotlist) [lindex $expmap(powderlist) 0]
+}
+
+proc RegisterPhases {phaselist } { 
+    foreach num $phaselist {
+        .a.file.menu.tick add checkbutton -label "Phase $num" \
+	    -variable  peakinfo(flag$num) \
+	    -command plotdata
+        if {$::program != "bkgedit"}  {
+            bind . <Key-$num> ".a.file.menu.tick invoke [.a.file.menu.tick index end]"
+        }
+        .a.options.menu.tick add command -label "Phase $num opts" \
+	    -command "minioptionsbox $num"
+    }
+}
+RegisterPhases $expmap(phaselist)
+
+# N = load next histogram
+bind . <Key-n> {
+    set i [lsearch $expgui(plotlist) $hst]
+    incr i
+    if {$i >= [llength $expgui(plotlist)]} {set i 0}
+    set hst [lindex $expgui(plotlist) $i]
+    set cycle [getcycle];readdata .g
+}
+bind . <Key-N> {
+    set i [lsearch $expgui(plotlist) $hst]
+    incr i
+    if {$i >= [llength $expgui(plotlist)]} {set i 0}
+    set hst [lindex $expgui(plotlist) $i]
+    set cycle [getcycle];readdata .g
+}
+bind . <Key-l> {ToggleLiveCursor}
+bind . <Key-L> {ToggleLiveCursor}
+# move the zoom region around
+proc ScanZoom {box key frac} {
+    foreach var  {xl xh yl yh} axis {xaxis  xaxis  yaxis  yaxis} \
+	    flg  {-min -max -min -max} {
+	set $var [$box $axis cget $flg]
+	if {$var == ""} return
+    }
+    catch {
+	switch -- $key {
+	    Right {set a x; set l $xl; set h $xh; set d [expr {$frac*($h-$l)}]}
+	    Left {set a x; set l $xl; set h $xh; set d [expr {-$frac*($h-$l)}]}
+	    Up   {set a y; set l $yl; set h $yh; set d [expr {$frac*($h-$l)}]}
+	    Down {set a y; set l $yl; set h $yh; set d [expr {-$frac*($h-$l)}]}
+	}
+	$box ${a}axis configure -min [expr {$l + $d}] -max [expr {$h + $d}]
+    }
+}
+bind . <Key-Up> "ScanZoom $box %K .1"
+bind . <Key-Left> "ScanZoom $box %K .1"
+bind . <Key-Right> "ScanZoom $box %K .1"
+bind . <Key-Down> "ScanZoom $box %K .1"
+bind . <Control-Key-Up> "ScanZoom $box %K 1.0"
+bind . <Control-Key-Left> "ScanZoom $box %K 1.0"
+bind . <Control-Key-Right> "ScanZoom $box %K 1.0"
+bind . <Control-Key-Down> "ScanZoom $box %K 1.0"
+# seems to be needed in OSX
+update
+wm geom . [winfo reqwidth .]x[winfo reqheight .]
+#
+updateifnew
+donewaitmsg
+trace variable peakinfo w plotdataupdate

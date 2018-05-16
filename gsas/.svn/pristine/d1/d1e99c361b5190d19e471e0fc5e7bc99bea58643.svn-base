@@ -1,0 +1,325 @@
+<HTML>
+<HEAD>
+   <TITLE>Windows Installation Information for EXPGUI</TITLE>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI, Windows">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<blockquote><font face="arial, helvetica, sans-serif">
+
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR>
+<TH>
+<a href="gsas+expgui.html">self-installer notes</a></TH>
+<TH><A  Href="win_old_notes.html">Windows install details</A></TH>
+<TH><A  Href="expgui.html">EXPGUI home</A></TH>
+</TR></TABLE><BR CLEAR=ALL>
+
+
+<CENTER><H1>
+<HR noshade width="75%" size="2" align="center">
+Installating and Updating
+<BR>
+<A HREF="expgui.html">EXPGUI</A>
+(& 
+<a href="http://www.ncnr.nist.gov/xtal/software/gsas.html">GSAS</a>)
+on Windows
+<HR noshade width="75%" size="2" align="center">
+</H1></CENTER>
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=CENTER><TR><TH>
+<B>Please note:</B>
+A new mechanism for installing GSAS & EXPGUI is now recommended. See
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallWindows">
+this link</a>. If this method is used, EXPGUI or a batch file can
+be used to update GSAS & EXPGUI quickly and easily.
+The installer described below will be updated for the foreseeable
+   future, but likely with less frequency.
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<EM>Please note that <A HREF="expgui.html">EXPGUI</A>
+ is always under development and gets 
+less testing by the author 
+in Windows than in other platforms. 
+Please report problems, including improvements on 
+these instructions to
+<A HREF="mailto:brian.toby@anl.gov">Brian Toby</A>.
+Otherwise, Windows-specific issues are unlikely to be addressed or repaired.
+</EM>
+
+<H2>Installing GSAS and EXPGUI in Windows</H2>
+Most users who install 
+<a href="http://www.ncnr.nist.gov/xtal/software/gsas.html">GSAS (General Structure Analysis System)</a>
+and 
+<a href="https://subversion.xray.aps.anl.gov/EXPGUI/trunk/doc/expgui.html">EXPGUI</a>
+will do so by downloading a single file that installs the GSAS programs, 
+the Tcl/Tk package (with some extensions), the EXPGUI scripts, as well as
+makes registry entries & defines shortcuts. This will
+be described in brief in the next section of this page. 
+It is also possible to download and install GSAS, Tcl/Tk & EXPGUI from 
+separate distributions; please see the 
+<A Href="win_old_notes.html">Windows install details</A> web page 
+for more details.
+<P>More information about EXPGUI, including information on how it
+can be customized, can be found on web pages <A HREF="expgui.html">expgui.html</A>
+and <A HREF="expgui_cfg.html">expgui_cfg.html</A>. These files are also 
+found in the <TT>...\gsas\expgui\doc</TT> directory after EXPGUI is installed.
+
+
+<H3>Using the GSAS and EXPGUI self-installer for Windows</H3>
+<DL><DL>
+You can download a single file that installs 
+  <a href="http://www.ncnr.nist.gov/xtal/software/gsas.html">GSAS</A>
+and 
+<a href="expgui.html">EXPGUI</a>,
+as well as the Tcl/Tk package, needed by EXPGUI. This self-installing 
+file uncompresses itself, copies the required files
+to a selected directory and 
+creates the appropriate registry entries needed to run the programs. 
+A 
+<a href="gsas+expgui.html">
+separate web page</a>
+provides details a detailed description on this self-installer.
+
+  Here are the steps in brief:
+
+<OL>
+<P><LI><B>Download 
+gsas+expgui.exe
+from 
+<a href="http://11bm.xray.aps.anl.gov/downloads/gsas/windows/">Argonne</a>
+(http://11bm.xray.aps.anl.gov/downloads/gsas/windows/)
+or 
+<a href="http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/">
+CCP14 </A>
+(http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/)  
+
+  <P><LI><B>Run the gsas+expgui.exe file</B>
+
+<P><LI><B>Page through the installation screens & select install options</B>
+
+<P><LI><B>Wait while the files are installed. </B>
+
+<P><LI><B>Delete the gsas+expgui.exe file (optional)</B>
+</OL>
+<P>
+For more details on the sequence of operations and the installation 
+options refer to the detailed
+<a href="gsas+expgui.html">
+Windows self-installer instructions</a> web page.
+
+</DL></DL>
+
+<H2>Updating to a new GSAS release</H2>
+<DL><DL>
+It is quite common that Bob Von Dreele will release an update to the
+GSAS programs more frequently than the combination gsas+expgui.exe 
+package can be updated. It is possible to update a previous version of the
+GSAS software. 
+First, make a note where you have installed the GSAS/EXPGUI software.
+The default is <TT>C:\GSAS</TT>, but you can check by looking at the properties for the
+PC-GSAS or EXPGUI icon. Second, note the GSAS package date, by 
+running a GSAS program, such as EXPEDT or SPACEGRP and noting the 
+date where it says "Distributed on ..."
+Then download the latest GSAS release from CCP14:
+<DL>
+<DT>UK:<DD>
+<A HREF="http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe">
+http://www.ccp14.ac.uk/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe</A>
+<BR>or<BR>
+<A HREF="
+ftp://ftp.ccp14.ac.uk/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe">ftp://ftp.ccp14.ac.uk/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe</A>
+
+<DT>Canada:<DD>
+<A HREF="http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe">http://ccp14.sims.nrc.ca/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe</A>
+
+<DT>Australia:<DD>
+<A HREF="
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe">
+http://ccp14.minerals.csiro.au/ccp/ccp14/ftp-mirror/gsas/public/gsas/windows/gsaskit.exe</A>
+</DL>
+<P>When you run the downloaded file, you will be asked where the GSAS software
+should be installed (with a default of <tt>C:\GSAS</TT>). Make sure to use the same 
+location as before. 
+<P>
+Finally, check that GSAS has indeed been updated by 
+again running a GSAS program, such as EXPEDT or SPACEGRP and noting the 
+date where it says "Distributed on ..."
+</DL></DL>
+
+<H2>Updating to a new EXPGUI release</H2>
+<DL><DL>
+It is also common that new features will be added to EXPGUI or 
+bug fixes will be made without an update to the
+combination gsas+expgui.exe 
+package. 
+The absolute latest release (which may not have gotten 
+a lot of testing)
+is found as a .tar or .zip file in 
+<A HREF="http://11bm.xray.aps.anl.gov/downloads/gsas/">
+  http://11bm.xray.aps.anl.gov/downloads/gsas/</A>.
+On the newest versions of Windows, support for .zip files is built in, but
+for older versions, you will need an unzip program, such as WinZip or pkZip.
+<P>
+To update EXPGUI,
+first, make a note where you have installed the GSAS/EXPGUI software.
+The default is <TT>C:\GSAS\EXPGUI</TT>, but you can check by looking at the 
+properties for the PC-GSAS or EXPGUI icon. 
+Second, note the EXPGUI package date, by 
+using the Help/About menu command in EXPGUI.
+You then want to download file expgui.zip from :
+is distributed as
+<DL>
+<A HREF="http://11bm.xray.aps.anl.gov/downloads/gsas/">
+  http://11bm.xray.aps.anl.gov/downloads/gsas/</A>.
+</DL><P>
+ and unpack it to subdirectory <tt>...\gsas\expgui\</tt>.
+Depending how you work with the zip directory, you may want to copy the 
+files in the .zip archive into the existing <tt>gsas\expgui</tt> directory or
+rename the original <tt>expgui</tt> in <tt>gsas</tt> 
+and then drag the new expgui directory into the gsas folder.
+Finally, you can check if the EXPGUI program has been updated, by restarting 
+it and again using the Help/About menu option.
+</DL></DL>
+<H2>Problems & Questions</H2>
+<OL>
+<LI>Where can the software be installed?
+<UL>
+Do not install the software on a directory containing a space (for example,
+C:\Program files\GSAS). This will cause some of the shortcuts to break.
+<P>
+On Windows-95/-98 or -ME, if you install in a location other than C:\GSAS, 
+you will need to define the GSAS environment variable in your AUTOEXEC.BAT file 
+by adding a line like this:
+<FONT FACE="COURIER"><PRE>
+        SET GSAS=G:\MySoftware\GSAS
+</PRE></FONT>
+</UL>
+
+<LI>How do I increase the Environment variable space
+<UL>This is only needed on -95/-98 or -ME.
+To add more environment space in Win95/98, add the following line to the 
+CONFIG.SYS file in the root directory 
+<FONT FACE="COURIER"><PRE>
+        SHELL=C:\WINDOWS\COMMAND.COM /P /E:4096 
+</PRE></FONT>
+Also add the following line to the SYSTEM.INI file (in c:\windows) under
+the heading [NonWindowsApp]
+<FONT FACE="COURIER"><PRE>
+
+        CommandEnvSize=2424 
+</PRE></FONT>
+(thanks to Louis Farrugia [louis@chem.gla.ac.uk] for this).
+
+</UL>
+<LI>What versions of Windows can I use?
+<UL>As far as I am aware, EXPGUI will run under all releases of Windows from 
+-95/-98/-ME/-NT/-2000 through -XP, but it is not tested 
+here on most of those platforms. 
+I depend on feedback from users to tell me of OS conflicts, but none have
+been reported.
+</UL>
+<LI>EXPGUI seems pretty slow, or is it my imagination?
+<UL>
+Well, actually the problem is Windows. EXPGUI is pretty zippy in LINUX, 
+but some operations
+(reading a histogram in liveplot for example) can take 3-5 times 
+longer in Windows than in UNIX on the exact same hardware.
+By all means, take this up with the folks in Redmond, WA.
+
+</UL>
+<LI>When I run one of the GSAS graphics programs (POWPLOT, RAWPLOT,...) the
+program starts, and I can answer questions, but when it comes to the part 
+of the program that should display a plot, I get no plot (and possibly 
+the DOS window disappears without a trace.)
+<UL>
+There are two problems I know of that can cause graphics errors:
+One is that the graphics package (PGPLOT) cannot find the PGPLOT_FONT 
+environment variable (that points to file GRFONT.DAT). EXPGUI does this 
+for you and warns if it can't find this file, so the likely reason is
+that you are out of environment space (see 2, above).
+<P>
+The other appears to be a graphics mode problem. Not all modes work 
+on all machines. Try mode A. If you still have problems, see if it is an 
+EXPGUI problem: Try using a plotting program 
+(RAWPLOT is a good choice) from PC-GSAS or GSAS.BAT.  If the plotting 
+program does not work there either, first check PGPLOT_FONT is defined
+(by opening a DOS box and type SET, also see question 2, above.) 
+If the plotting program runs in PC-GSAS or GSAS.BAT but not EXPGUI, you have a
+real EXPGUI bug and should bug me.
+
+</UL>
+<a name="NetPath"></a>
+<LI>Can GSAS and EXPGUI be located on a shared network drive?
+<UL>
+Yes. With earlier versions of GSAS path had to be mapped to a 
+"logical drive." (e.g. F:). In the current versions of GSAS, this does not
+seem to be needed, but 
+EXPGUI will warn you, if you try to do this, since I am not certain
+that this works. 
+<P>
+I do not know if GSAS will work properly with 
+experiment and data files on a networked drive without mapping the
+path to a "logical drive." 
+There are some definite problems in GSAS where directory and file 
+names contain 
+spaces so EXPGUI generates warning messages if you do this. 
+</UL>
+
+</OL>
+
+<H2>
+Acknowledgements</H2>
+<P>
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/gsas.html">
+GSAS</A>
+is written by Allen C. Larson and Robert B. Von Dreele,  MS-H805,
+Los Alamos National Laboratory, Los Alamos, NM 87545. Problems, questions
+or kudos concerning GSAS should be sent to Robert B. Von Dreele at 
+<A HREF="MAILTO:vondreele@anl.gov">vondreele@anl.gov</A>
+<P>EXPGUI is written by Brian H. Toby of the NIST Center for Neutron Research,
+<A HREF="MAILTO:Brian.Toby@ANL.GOV">Brian.Toby@ANL.GOV</A> 
+with help from Jonathan Wasserman.
+
+<P>
+<hr><blockquote>
+GSAS is Copyright, 1984-1997, The Regents of the University of California.
+The GSAS software was produced under a U.S. Government contract (W-7405-ENG-36)
+by the Los Alamos National Laboratory, which is operated by the University
+of California for the U.S. Department of Energy. The U.S. Government is
+licensed to use, reproduce, and distribute this software. Permission is
+granted to the public to copy and use this software without charge, provided
+that this notice and any statement of authorship are reproduced on all
+copies. Neither the Government nor the University makes any warranty, express
+or implied, or assumes any liability or responsibility for the use of this
+software.
+
+<P>EXPGUI is not subject to copyright. Have fun with it.
+
+<p>Neither the U.S. Government nor any author makes any warranty, 
+expressed or implied, or assumes any liability or responsibility 
+for the use of this information or the software described
+here. Brand names cited here are used for
+identification purposes and do not consitute an endorsement by NIST.
+</blockquote>
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR>
+<TH>
+<a href="gsas+expgui.html">self-installer notes</a></TH>
+<TH><A  Href="win_old_notes.html">Windows install details</A></TH>
+<TH><A  Href="expgui.html">EXPGUI home</A></TH>
+</TR></TABLE><BR CLEAR=ALL>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>
+$Revision$ $Date$
+</blockquote>
+</body>
+</html>

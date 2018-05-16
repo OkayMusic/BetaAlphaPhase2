@@ -1,0 +1,6 @@
+INST   NAME  Test of a constant wavelength xray source                          
+INST  ATTNCU 1.54       1.0     3.02    1.0     1.0     1.0     1.0             
+INST  ATTNMO 0.71069    1.0    16.23    1.0     1.0     1.0     1.0             
+INST  CHIR     1.                                                               
+INST  OMGR     1.                                                               
+INST  PHIR    -1.                                                               

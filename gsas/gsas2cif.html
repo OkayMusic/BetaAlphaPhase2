@@ -1,0 +1,285 @@
+<html>
+<head>
+   <title>Use of the GSAS2CIF program</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI, CIF">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<img src="http://www.gsas.org/Articles/gsas-logo.gif" alt="Greater Seattle Aquarium Sociey Logo (www.gsas.org) used with permission" HEIGHT=80 WIDTH=150 ALIGN=RIGHT>
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+Using the GSAS2CIF program
+<BR>
+to export
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/gsas.html">
+GSAS</A>
+results
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<P>
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org/iucr-top/cif/">
+The crystallographic information file,
+(CIF</A>) was developed by the 
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org">
+IUCr</A> 
+as a standardized format to document single-crystal 
+structure determinations and to exchange the results between laboratories.
+More recently, the 
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org/iucr-top/cif/pd/">
+pdCIF</A> dictionary was developed to allow CIF to 
+document powder diffraction measurements, as well as, Rietveld results.
+A very short introduction to CIF is included at the 
+<a href="#CIFintro">end of this document.</a>
+<P>
+The GSAS2CIF program is used to create CIFs from GSAS results.
+This web page documents ideas behind the program as well as how the program
+is used.
+<P>
+<H4>Overview of the steps to create a CIF in GSAS</H4>
+<BLOCKQUOTE>
+<OL>
+<LI>Complete (<I>ha!</I>) your refinement
+<LI>Run DISAGL to compute interatomic distances and angles
+<LI>(Optional) Edit the "publication flags" in the distance and angle listings
+<LI>(Optional) Copy previously completed CIF templates to the current directory
+<LI>Run GSAS2CIF
+<LI>Edit the template files to include additional information
+<LI>Run GSAS2CIF<P>... <I>and if you are like me</I>...<P>
+<LI>try out a few more ideas in GENLES
+<LI>Run DISAGL
+<LI>Run GSAS2CIF<P>... <I>repeat steps 8-10 until really finished</I>...
+(<a href="#ps">see quote</a>)
+</OL>
+</BLOCKQUOTE>
+<H4>Structure of the GSAS2CIF program</H4>
+<BLOCKQUOTE>
+<P>
+
+The GSAS2CIF program is used to prepare CIF files containing results
+from GSAS. It should be noted many important types of information that
+are needed to describe the sample and the measurement are not 
+supplied as input to GSAS. A few examples of information that 
+should likely be included in a CIF, but are not defined within GSAS are:
+the data measurement temperature, sample prepartion conditions, 
+etc. If the CIF will be used as supplimentary material, to accompany a
+publication, this sort of documentary information certainly should be 
+supplied, so that the CIF has value as archival and database materials.
+If a CIF is being prepared for submission to 
+an <I>Acta Cryst.</I> journal, the IUCr has
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=ftp://ftp.iucr.org/pub/rietform.cif">
+template with a recommended list of CIF data items.
+</A>
+<P>
+Since the GSAS2CIF program cannot supply many items that need 
+be present in a well-documented CIF, the GSAS2CIF program copies information
+from template files into each CIF. Three separate template files are
+used: 
+<OL>
+<LI>one with publication and other overall information,
+<LI> one with information about the sample & specimen and
+<LI> one with information about diffraction instrumentation and
+data collection parameters.
+</OL>
+The intent is that users will modify copies of these template files and
+thus can avoid inputing the same information multiple times.
+<P>
+When GSAS2CIF is used to create a CIF file for an experiment named 
+<I>expnam</I> (e.g. from file <I>expnam</I>.EXP), the GSAS2CIF program 
+creates CIF file <I>expnam</I>.cif containing GSAS results. Information 
+from a series of template files is copied directly into the CIF. There will 
+be N+M+1 template files, where N is the number of phases and M is the number
+of data histograms. The files are named as follows:
+<OL>
+<LI><I>expnam</I>_publ.cif for the publication/overall information template file;
+<LI><I>expnam</I>_phase<U>n</U>.cif for the N sample/specimen template file(s);
+<LI><I>expnam</I>_<I>INST</I><U>mm</U>.cif for the 
+the M instrument/data sample/specimen template file(s), where <I>INST</I> is the instrument name
+(<a href="#iname">see below</a>).
+</OL>
+If these files do not exist, they are created and filled 
+with the contents of master vesrsions of the template files. 
+In the case of the
+<I>expnam</I>_publ.cif and <I>expnam</I>_phase<U>n</U>.cif files,
+template files named template_publ.cif and template_phase.cif
+are read, if present from the same directory where the <I>expnam</I>.EXP
+file is found, and if not there, from the GSAS data directory.
+In the case of the <I>expnam</I>_<I>INST</I><U>mm</U>.cif file(s), the 
+program first looks for files named template_<I>INST</I>.cif in the 
+current directory and the GSAS data directory and if that file is not
+found, file  template_instrument.cif is read from the current directory 
+and if not found, the GSAS data directory.
+<P>
+This somewhat complex series of template files allows for the creation
+default template files for commonly-used instruments as well as the 
+potential for reuse of the other template files, by copying these files 
+as needed. 
+Also, if information is added only to template files, rather 
+than editing the final <I>expnam</I>.cif file, if GSAS2CIF is rerun at a later
+stage in the refinement, 
+the crystallographic results in the .CIF are updated and the 
+template information is retained automatically.
+Note that at present, there is very little applicable software for
+editing a CIF, so editing these template files must be done with a text 
+editor.
+<P>
+In addition to the reading the GSAS experiment file (file <I>expnam</I>.EXP), 
+GSAS2CIF also reads the variance-covariance matrix created in GENLES
+(from file <I>expnam</I>.CMT) and a table of interatomic distances and angles
+created from program DISAGL (file <I>expnam</I>.DISAGL). If these files
+cannot be read, GSAS2CIF produces a warning message, since the CIF will be
+incomplete without this information.
+</BLOCKQUOTE>
+<a name="iname"></a><H4>Instrument Name</H4>
+<BLOCKQUOTE>
+An instrument name is needed for every GSAS histogram. It is best if this
+name is unique to a specific instrument, so for commercial instruments, 
+it is best if this name contains part of the instrument serial number
+or the institution name, etc.
+The instrument name may be defined in the instrument parameter file, 
+by inclusion of a record of type 
+<Font type=fixed>"INS nn INAME  </font><I>Instrument name</I>".
+If this name is not defined in the original instrument parameter file, 
+when GSAS2CIF is run, it will request an instrument name for each histogram,
+and this information will be added to the GSAS experiment file.
+Note that the vertical bar character, (|), should not be used in instrument 
+names.
+</BLOCKQUOTE>
+<H4>Publication/Non-Publish Flag for Distances and Angles</H4>
+<BLOCKQUOTE>
+The DISAGL program will tabulate all interatomic distances within 
+specified interatomic radii. This information is recorded in a 
+file named <I>expnam</I>.DISAGL. These radii may be modified using EXPEDT
+(but not at present EXPGUI). The IUCr journals use a special flags
+(_geom_bond_publ_flag and _geom_angle_publ_flag) to indicate distances
+that will be tabulated in publication. When DISAGL is first run, this flag 
+is set to zero, meaning "do not publish". 
+If this flag is changed to a digit between 1 and 9 (at present, this must 
+be done with a text editing program), the 
+distance/angle flag is set to "publish." If DISAGL is rerun at later time, 
+to update the distances and angles, these publication flags are transferred
+to the updated <I>expnam</I>.DISAGL file.
+</BLOCKQUOTE>
+<H3>Acknowledgements</H3>
+<BLOCKQUOTE>
+Richard L. Harlow first got me interested in the problem of a 
+universal file format for powder diffraction data, leading eventually to this 
+effort. I may forgive him someday.
+</BLOCKQUOTE>
+<P>
+
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<hr>
+<a name="ps">"A Rietveld refinement is never perfected, merely abandoned." 
+Peter Stephens</a>
+<hr>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+<P>
+<a name="CIFintro">
+<H3>Appendix: A quick & incomplete introduction to CIF</H3>
+</a><BLOCKQUOTE>
+A CIF file consists of logical groups of information that are 
+called data blocks, 
+since each block is initiated by a label of form data_<I>label</I>.
+In the simple case, where a single crystallographic model is determined 
+from a single diffraction dataset (histogram), the CIF can be a 
+single block. In the case where either multiple datasets (histograms) 
+or where multiple phases are used in the refinement, a CIF will
+require several data blocks to describe the data and results.
+<P>
+CIF consists of a series of tags, called data names, and values 
+associated with these data names. Together the data name and value
+are called a data item. A separate document, the CIF (or pdCIF) 
+dictionary defines the meaning of each data name. If a value does not
+contain any spaces, may be specifed without quotes, but either single or
+double quotes may be used to delimit strings. A data value of one ore more
+lines is quoted with semicolon characters (;). The semicolons must be 
+the first character on a line and the final semicolon is expected to be
+the only non-blank character on the line.
+With the exception of semicolon location, CIF ignores spaces.
+The following lines give
+examples of a few CIF data items.
+
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+_pd_calc_method   'Rietveld Refinement'
+
+_cell_volume   1811.00(5)
+
+_symmetry_space_group_name_H-M   "I a 3 d"
+
+_pd_proc_ls_background_function
+;   GSAS Background function number 1 with 4 terms.
+ Shifted Chebyshev function of 1st kind
+      1:    139.025     2:   -11.5408     3:    9.75652     4:    3.90497    
+;
+</PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+CIF also allows multiple values to be associated with a CIF data item. 
+This is done by preceeding the data name with the keyword loop_. If 
+two or more data names follow the loop_ keyword, a table can be 
+constructed, as is shown in the following examples.
+
+<BLOCKQUOTE>
+<BLOCKQUOTE>
+<PRE>
+loop_  _symmetry_equiv_pos_as_xyz
+       +x,+y,+z     +z,+x,+y 
+       +y,+z,+x     +x+1/2,+y,-z+1/2 
+
+
+loop_
+      _atom_site_label
+      _atom_site_fract_x
+      _atom_site_fract_y
+      _atom_site_fract_z
+Y1      0.125        0.0          0.25     
+FE2     0.0          0.0          0.0      
+AL3     0.375        0.0          0.25     
+O4     -0.02946(5)   0.05385(5)   0.15068(6)
+</PRE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+Finally, it should be pointed out that two values in CIF have special meanings.
+If a value is supplied as a single period (.), the meaning is the
+value is not defined or is inappropriate. If the value is a question mark
+(?), this means that the value is unknown or not specified.
+<P>
+For more information, see: 
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org/iucr-top/cif/">
+The CIF home page</A>; short intros to 
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org/iucr-top/cif/powder-announce.html">
+pdCIF</A>
+&
+<A HREF="http://www.nist.gov/cgi-bin/exit_nist.cgi?url=http://www.iucr.org/iucr-top/cif/powder-intro.html">
+CIF syntax</A>
+
+</BLOCKQUOTE>
+
+<P><font size=-1><A HREF="MAILTO:crystal@NIST.gov?subject=WWW page <?=$PHP_SELF?>">Comments, corrections or questions: crystal@NIST.gov</A></font><BR>
+<font size=-1><? lastmod(); ?></font>
+$Revision: 0.0 $ $Date: 2002/?/? $
+</font></blockquote>
+
+</BODY>
+</HTML>

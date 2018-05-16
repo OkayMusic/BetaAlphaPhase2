@@ -1,0 +1,421 @@
+# $Id$
+# $Revision$ $Date$
+# menu information for GSAS programs
+
+# menu items to be created (N.B. File, Options & Help already exist)
+set expgui(menunames) {Powder Xtal Graphs Results Calc Macro Import/Export}
+
+# contents of each menu
+array set expgui_menulist {
+    file {
+	revert
+	EraseHistory
+	convert
+	dlst
+    }
+    option {
+	{liveplot_options}
+    }
+    powder {
+	expedt
+	powpref
+	genles
+	powplot
+	rawplot
+	fitspec
+	bkgedit
+	excledt
+	seqgsas
+	mustrplot
+	instedit
+    }
+    xtal {
+	expedt
+	genles
+	cad4rd
+	p3r3data
+	sxtldata
+	scabs
+	scmerge
+    }
+    graphs {
+	forsrh
+	forplot
+	polfplot
+	powplot
+	ortep
+	rawplot
+	gsas2map
+	liveplot
+	vrstplot
+	widplt 
+	absplt 
+	seqplot
+	mustrplot
+    }
+    calc {
+	cllchg
+	composition
+	hklgen
+	rducll
+	spcgroup
+	seqgsas
+	seqplot
+	unimol
+    }
+    import/export {
+	hklsort
+	pubtable
+	convert
+	cad4rd
+	dbwscnv
+	x17bcnv
+	p3r3data
+	sxtldata
+	gsas2pdb
+	ref2asc
+	ref2bin
+	gsas2map
+    }
+    results {
+	bijcalc
+	disagl
+	disaglviewer
+	reflist
+	geometry
+	hstdmp
+	istats
+	rcalc
+	composition
+	lstview
+	ramafit
+	seqplot
+    }
+}
+
+array set expgui_cmdlist {
+
+    Save {- {
+	Saves modifications to the current experiment file to disk}
+    }
+
+    {Save As} {- {
+	Saves modifications to the current experiment file to disk
+	under a new file name }
+    }
+
+    {Reread .EXP file} {- {
+	Reread the last saved version of the experiment file from disk.
+
+	This causes any unsaved changes to be lost.}
+    }
+
+    {Sort atoms by}  {- {
+	Determines the order that atoms are displayed on the "Phase" page
+	Atoms may be displayed sorted by atom number, atom type, 
+	or by x, y or z}
+    }
+
+    {Sort histograms by}  {- {
+	Determines the order that histograms are displayed on the 
+	Histogram, Scaling and Profile pages
+
+	Histograms may be sorted by histogram number, histogram type, 
+	original bank number, or diffraction angle/wavelength}
+    }
+
+    {Multiple hist. selection}  {- {
+	When this mode is off, it is possible to modify parameters
+	and refinement flags for only a single histogram. For other settings,
+	it is possible to modify parameters and flags for groups of 
+	histograms (see help for Mouse actions). 
+
+	It does not make sense, however, to globally modify
+	instrument-related parameters and flags for histograms of different
+	types (e.g. TOF, CW Neutron,...). So if all histogram types can
+	be selected, the Histogram and Profile pages are disabled. If the
+	multiple histogram selection is set to TOF, CW Neutron,... 
+	it is possible to modify Histogram and Profile parameters for
+        groups of similar type histograms.
+
+	Note that profile terms may also be grouped together when more than
+	one phase has the same profile function, or may not be grouped 
+	together, depending on the "Group Phases Together" option.}
+    }
+
+    {Mouse actions}  {- {
+	A range of atoms or (in multiple selection mode) histograms may be 
+	selected by dragging (holding down) the left mouse button. It is also 
+	possible to select a range by using the Shift key with the 
+	left mouse button. To select or deselect individual entries, use the 
+	Control key with the left mouse button. The right mouse button selects
+	all entries.}
+   }
+
+    expnam {readnewexp {
+    	Select an existing or new GSAS experiment to be used}
+    }
+
+    revert {{readnewexp archive} {
+    	Select an old version of the current GSAS file}
+    }
+
+    {archive EXP} {- {
+	Toggles archiving of .EXP files. When on, files are 
+	saved prior to each save or run of expedt in a file named 
+
+	<expnam>.Oxx where xx = 01, 02... FF}
+    }
+
+    showhelp    {showhelp {
+	Show the help information for commands and actions}
+    }
+
+    powpref	{{runGSASwEXP $cmd} {
+	Powder data preparation}   
+	{-underline 0}
+    }
+
+    bijcalc	{{runGSASwEXP $cmd} {
+	Thermal parameter analysis}  
+    }
+
+    powplot	{{runGSASwEXP $cmd 1} {
+	Display powder patterns}
+    }
+
+    cllchg	{{runGSASwEXP $cmd} {
+	Transform unit cell}
+    }
+
+    expedt	{{runGSASwEXP $cmd} {
+	Run GSAS experiment editor}
+	{-underline 0}
+    }
+
+    genles	{{runGSASwEXP $cmd} {
+	Run General Least Squares program}
+	{-underline 0}
+    }
+
+    disagl	{rundisagl {
+	Distance/angle calculations}
+    }
+
+    disaglviewer {Geo_Viewer {
+        Show distances and angles in a nice format}
+    }
+
+    forplot	{{runGSASwEXP $cmd} {
+	Display Fourier maps (set Fourier options in EXPEDT 
+	and then compute with FOURIER)}
+    }
+
+    hstdmp	{{runGSASwEXP $cmd} {
+	List powder histogram data}
+    }
+
+    cad4rd	{{runGSASwEXP $cmd} {
+	Prepare CAD4 single crystal data}
+    }
+
+    fourier	{{runGSASwEXP $cmd} {
+	Generate Fourier map}
+    }
+
+    gsas2map	{{runGSASwEXP $cmd} {
+	Export GSAS Fourier maps in other formats}
+    }
+
+    geometry	{{runGSASwEXP $cmd} {
+	Molecular geometry calculations}
+    }
+
+    ortep	{{runGSASwEXP $cmd} {
+	Draw crystal structure}
+    }
+
+    rawplot	{{runGSASprog $cmd} {
+	Plot powder data}
+    }
+
+
+    p3r3data	{{runGSASwEXP $cmd} {
+	Prepare Siemens/Brucker P3R3 single crystal data}
+    }
+
+    forsrh	{{runGSASwEXP $cmd} {
+	Search Fourier map for peaks}
+    }
+
+    hklsort	{{runGSASwEXP $cmd} {
+	Prepare HKL tables}
+    }
+
+    polfplot	{{runGSASwEXP $cmd} {
+	Display polefigures}
+    }
+
+    rducll	{{runGSASprog $cmd} {
+	Unit cell reduction}
+    }
+
+    sxtldata	{{runGSASwEXP $cmd} {
+	Prepare generic single crystal data}
+    }
+
+    scabs	{{runGSASwEXP $cmd} {
+	Single crystal absorption}
+    }
+
+    istats	{{runGSASwEXP $cmd} {
+	HKL Intensity statistics}
+    }
+
+    reflist	{{runGSASwEXP $cmd} {
+	List reflection data}
+    }
+
+    scmerge	{{runGSASwEXP $cmd} {
+	Sort and merge single crystal data}
+    }
+
+    pubtable	{{runGSASwEXP $cmd} {
+	Prepare atom parameter tables}
+    }
+
+    spcgroup	{{runGSASprog $cmd} {
+	Space group symbol interpreter}
+    }
+
+    rcalc	{{runGSASwEXP $cmd} {
+	Compute reflection resuduals}
+    }
+
+    unimol	{{runGSASwEXP $cmd} {
+	Unique molecule assembler}
+    }
+
+    gsas2cif	{{runGSASwEXP $cmd} {
+	Prepare IUCr crystallographic information (CIF) file}
+    }
+
+    vrstplot    {{runGSASwEXP $cmd} {
+	Create a "virtual reality" (.wrl) plot file}
+    }
+
+    fitspec	{{runGSASprog $cmd} {
+	Fit a TOF vanadium scattering spectrum}
+    }
+
+    dbwscnv	{{runGSASprog $cmd} {
+	Convert a powder diffraction data file from DBWS format}
+    }
+
+    x17bcnv	{{runGSASprog $cmd} {
+	Convert an energy dispersive diffractogram data file from NSLS X17b}
+    }
+    gsas2pdb	{{runGSASprog $cmd} {
+	Import (using GSAS2PDB & EXPEDT) and export coordinates (for 
+	macromolecular phases) to/from Protein Data Base files.}
+    }
+    ramafit	{{runGSASprog $cmd} {
+	Fits torsion angle distributions, particularly in peptide chains,
+	for use in restraints.}
+    }
+    ref2asc	{{runGSASprog $cmd} {
+	Exports a GSAS reflection file to ASCII for use in non-GSAS programs}
+    }
+    ref2bin	{{runGSASprog $cmd} {
+	Imports an ASCII reflection file to the GSAS binary format.}
+    }    
+    seqgsas	{{runGSASwEXP $cmd} {
+	Run a set of sequential GSAS refinements}
+    }
+    seqplot	{{runGSASwEXP $cmd} {
+	Plot results from set of sequential GSAS refinements}
+    }
+    mustrplot	{{runGSASwEXP $cmd} {
+	Create surface plot (display in GNUPLOT) showing effect of 
+	Stephens microstrain model}
+    }
+
+    composition	{{composition} {
+	Compute the unit cell and asymmetric unit contents for each phase
+	taking occupancies and site multiplicities into account}
+    }
+
+    exp2xtl	{{exp2xtl} {
+	Save coordinates for a phase in an MSI xtl format file}
+    }
+
+    liveplot	{{liveplot} {
+	Create a plot of powder data (automatically updated) }
+    }
+
+    bkgedit	{{bkgedit} {
+	Fit background function to fixed background points}
+    }
+    excledt	{{excledit} {
+	Edit data limits and excluded data regions}
+    }
+    instedit	{{EditInstFile} {
+	Edit an instrument parameter file}
+    }
+    {New InstParm file}	{- {
+	Create a new instrument parameter file}
+    }
+
+    {liveplot_options} {liveplotopt {
+	Used to set options for liveplot, for example, the 
+	histogram to be plotted}
+    }
+    
+    convert	{convfile {
+	Convert a standard ASCII file to the direct access format used by GSAS (and for UNIX, the reverse)}
+    }
+
+    lstview     {lstview {
+	Create a box with scrollbars containing the current .LST file}
+    }
+
+    widplt	{widplt {
+	Displays the FWHM as a function of Q, 2Theta,... for UVWXY values input or read from an EXP file}
+    }
+    absplt	{"widplt absplt" {
+	Displays the intensity loss (1/Absorption Correction) Q, 2Theta,... for parameter values read from an EXP file}
+    }
+
+    "Override backspace" {- {
+	This option is available in UNIX only, as there are different
+	ways that backspace can be implemented. When option is set 
+	as "On," the backspace key is overridden to send a "delete" 
+	character. If backspace does not work in a program such as 
+	EXPEDT, change try the other setting for this option.}	
+    }
+    SaveOptions {- {
+	Save the current values for "Override backspace", 
+	"Sort atoms by", "Sort histograms by" and "archive EXP", etc.
+	in ~/.gsas_config (c:\gsas.config)}
+    }
+    EraseHistory {DeleteHistoryRecords {
+	Delete all but a selected number of history records; note that 
+	this speeds EXPGUI somewhat. Since the largest number for a 
+	history record is 999, the default is to also renumber the 
+	records starting with 1}
+    }
+    exit	{- {
+	Exit EXPGUI}
+    }
+}
+
+# this defines the button bar contents
+set expgui(buttonlist) {
+	expnam
+	expedt
+	genles
+	powpref
+	powplot
+	lstview
+	liveplot
+}	

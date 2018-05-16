@@ -1,0 +1,313 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui4.html">Next page</A>
+</TH><TH><A Href="expgui2.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 3
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+<h3>A.3 Powder panel</h3> 
+<DL><DL>
+The Powder panel (previously called the Histogram panel) is used to edit background
+and diffractometer constants for powder histogram(s), as well as 
+set damping and refinement flags for these parameters.
+<P>
+If 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> is set to "All", 
+this panel is disabled. For other settings of this mode, 
+groups of histograms can be selected and modified 
+collectively.
+<P>
+If the EXPTOOL program 
+<A href="expgui.html#installation">(see the installation instructions)</A>
+is installed, a button for adding histograms will
+appear on the bottom right on this panel, as seen below. If the
+program is not properly installed, no errors occur, but the button
+does not appear.
+<P>
+Note that the order that histograms appear in this 
+panel is determined by the <a href="expguic.html#sorthist">"Sort histograms by"</a> option in 
+the Options Menu.
+</DL></DL>
+</blockquote>
+<img SRC="3.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<blockquote>
+<br clear=all>
+
+<a name="EditBackground"></a>
+<h3>A.3.1 Editing background</h3> 
+<DL><DL>
+<img SRC="3b1.gif" align=TEXTOP alt="EXPGUI Screen snapshot">
+When the button labeled "Edit Background", (or "Globally Edit Background"
+or in the case where <A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> is set to a single histogram type) 
+is pressed, a window such as the one
+to the left is displayed. In the case where background coefficients 
+are being edited for more than one histogram 
+(<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> must be 
+set to a single histogram type) the entry boxes will appear blank
+and only those terms that are filled in will be changed when the "Set"
+button is pressed.
+This option is mostly useful when changing the background function or the 
+number of terms for several histograms at a single time.
+Note that no changes are made until the "Set"
+button is pressed.
+<P>
+
+The "Fit Background Graphically" button is displayed only when a single 
+histogram is selected for background editing. When this button is
+pressed, the <A HREF="liveplot.html#bkgedit">BKGEDIT</A> program is
+called to fit a background function to user-input fixed background points.
+See the <A HREF="liveplot.html#bkgedit">BKGEDIT documentation</A> for more 
+information.
+</DL></DL>
+<br clear=all>
+
+<a name="EditAbsorption"></a>
+<h3>A.3.2 Editing absorption/reflectivity</h3> 
+<DL><DL>
+<img SRC="3h.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+The refinement flag and damping factor for correction for absorption
+effects (or for flat-plate samples, reflectivity corrections) can be 
+seen in a box near the bottom of the panel. 
+The terms and the type of correction used
+are set using the "Edit Abs./Refl." button in this box. Pressing this 
+button creates a window, shown to the right. A message is shown in the 
+bottom of the window summarizing information about the selected correction.
+<P>
+<a name="AbsorptionSanity"></a>
+Please note, each correction is only appropriate for certain types of data
+and frequently the correction must be fixed rather than refined. It is 
+wise to read the "Powder absorption factor" section of the GSAS manual 
+(p 138-140 in 1/19/01 edition) before using this correction.
+Since some combinations of data types and correction types are unlikely -- 
+but not impossible
+(for example, a cylindical absorption correction and K-alpha1,2 radiation)
+EXPGUI will generate a warning message, such as the one below,
+but not all inappropriate actions can be prevented.
+The user must ultimately understand the role of the correction 
+and the nature of the experiment to decide what is appropriate.
+<br clear=all>
+<img SRC="3h1.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<br clear=all>
+</DL></DL>
+<br clear=all>
+
+<a name="EditParm"></a>
+<h3>A.3.3 Global Editing of Parameters</h3> 
+<DL><DL>
+It is possible to access parameters and settings for more than one histogram 
+at a time when a multiple selection of a specific histogram type 
+is allowed 
+(see 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A>).
+In this mode, the histogram panel
+appears slightly differently, as is shown below.
+</DL></DL>
+</blockquote>
+<img SRC="3c.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<blockquote>
+<br clear=all>
+<DL><DL>
+<img SRC="3d.gif" align=LEFT alt="EXPGUI Screen snapshot">
+Pressing a refinement flag checkbox will set all 
+selected histogram refinement flags either off or on. 
+Pressing a "Globally Edit..." button, will allow a parameter to be set.
+For example, the window to the left shows how 
+a diffractometer constant can be 
+edited for more than one histogram 
+<P>
+A similar window is also used to globally set the 
+<A href="expgui4.html">Phase Fraction</A> in 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection"</A> mode.
+<br clear=all>
+
+</DL></DL>
+
+<a name="AddHist"></a>
+<h3>A.3.4 Entering New Diffractograms</h3> 
+<DL><DL>
+Pressing the "Add New Histogram" button creates the dialog
+shown below. This dialog can be used to enter diffraction data to be used
+in the refinement, or can be used to define parameters for pattern
+simulation, through use of the "dummy histogram" option
+<a href="#Dummy">(see below)</a>.
+<img SRC="3e.gif" align=LEFT alt="EXPGUI Screen snapshot">
+<br clear=all>
+In the case where diffraction data will be input,
+a data file and an instrument parameter file must be 
+selected using the "Select File" buttons. The limit for reflection 
+generation (maximum energy or two-theta, or minimum d-space or TOF) 
+must be entered, as well as the units. 
+If more than one bank is defined, either in the data file or in the 
+instrument parameter file, the bank must be selected as well.
+Note that the data range can be edited at a later time using the 
+<a href="excledt.html">EXCLEDT</a> utility.
+<P>
+<img SRC="3e3.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+
+<h4>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+Plotting Diffraction Patterns</H4>
+
+To view a plot of a data file, so that the range of the data
+may be viewed, the RAWPLOT program may be invoked using the "Run RAWPLOT"
+button. Note that EXPGUI cannot communicate the names
+of the data and instrument parameter files to RAWPLOT, so they must be 
+reentered. The window to the right is shown to aid doing this. 
+When files have been selected in the "add histogram" menu, the "put name in
+clipboard" button can be used to place the file name into the 
+clipboard. The appropriate paste function (for example the Paste button 
+for the DOS window) can be used to avoid typing in the file name.
+<P>
+
+<h4>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+Editing Instrument Parameter Files</H4>
+
+Instrument parameter files can be edited using the "Edit File"
+button to call the <a href="expgui.html#INSTEDIT">INSTEDIT</a> utility. 
+Alternately, to create a new instrument parameter file, you can 
+call the same utility using the "instedit" option in the Powder menu.
+Refer to the documentation on
+<a href="expgui.html#INSTEDIT">INSTEDIT</a> to see how this utility functions.
+
+<P><h4>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+Adding Multiple Diffraction Patterns</H4>
+
+For working with instruments with large numbers of detectors, 
+when the number of datasets in the data file matches the number of 
+instrument parameters, the button "Add multiple banks" becomes available.
+When this button is pressed, a new window is created that shows a 
+checkbutton and a two-theta max (or E-max/TOF-min) for each bank. Banks 
+may be selected and pressing a button causes all selected banks to be loaded.
+
+<P>
+<br clear=all>
+<img SRC="3e1.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+<a name="Dummy"></a><h4>Simulating Diffraction Patterns</H4>
+When the dummy histogram option is selected, diffraction data can 
+be simulated based a set of experimental constants
+described in an instrument parameter file. 
+Note that most of these instrumental parameters,
+such as wavelength or DIFC can be edited on this panel or 
+on the <A HREF="expgui5.html">profile</A> panel 
+(the simulated pattern is also affected by constants on the 
+<A HREF="expgui4.html">scaling</A> panel.)
+The 2-theta/energy/TOF 
+range to be used for the computation, as well as the step size,
+must be entered before pressing the "Add" button. 
+Note that once the histogram is added, this range and step size
+cannot be edited within EXPGUI at present. However,
+EXPEDT can be used to change these values.
+<br clear=all>
+<P>
+<a name="AddHistErr"></a>
+<img SRC="3e2.gif" align=LEFT alt="EXPGUI Screen snapshot">
+If errors are detected in the input, an error message is displayed 
+detailing where the errors are found. Otherwise, the EXPTOOL program is run
+and the output is optionally displayed 
+(See <a href="expguic.html#exptoolout">Show EXPTOOL output</a>).
+</DL></DL>
+<br clear=all>
+<P>
+<h3>A.3.5 Editing the Data Range & Excluded Regions</h3> 
+<DL><DL>
+The button at the bottom of the panel, labeled 
+"Set Data Limits & Excluded Regions" invokes
+the <a href="excledt.html">EXCLEDT</a> utility, which is used to 
+modify the lower and upper data limits and can be used to add or delete 
+excluded regions.
+</DL></DL>
+
+<h3>A.3.6 Setting Histogram Flags</h3> 
+<DL><DL>
+<img SRC="3f.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+The button at the bottom of the panel, labeled "Set Histogram Use Flags" invokes
+a menu where the "Use"/"Do not use" flag for powder histogram can be set.
+When this flag is turned off, the histogram is ignored for
+subsequent computations, effectively removing from the experiment. 
+<P>
+When these "Use" flags are changed, it is necessary to run POWPREF,
+to propogate the changes. After the "Save" button is pressed, a prompt such
+as the example below, is generated to run POWPREF. Note that GENLES may
+fail if POWPREF is not run after changing these flags.
+<br clear=all>
+<P>
+<img SRC="3g.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<br clear=all>
+</DL></DL>
+
+<h3>A.3.7 Setting Phase Flags</h3> 
+<DL><DL>
+If there is more than one phase present in the refinement, 
+an extra box appears at the top of the panel to allow phase flags
+to be selected. This allows a phase to be used in some histograms
+but not in others. It also offers a simple way to effectively "delete" a 
+phase by removing it from all histograms. Be sure to rerun POWPREF after
+changing the phase flags.
+</DL></DL>
+</blockquote>
+<img SRC="3a.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+<blockquote>
+
+<h3>A.3.8 Setting Resonant Scattering (Anomolous Dispersion) terms</h3> 
+<DL><DL>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+The button on the lower left of the Powder Panel, labeled "Edit
+  (Delta) f' and f''" is used to enter the anomolous dispersion
+  terms for x-rays.
+  These terms are automatically defined for elements near
+  standard x-ray tube wavelengths (Cu Kalpha, etc), but need to be
+  entered for synchrotron datasets when significant.
+<P>
+  They can be estimated from <A HREF="http://it.iucr.org/C/">
+  Volume C of the International Tables</A>. Alternately,
+  a Python program,
+  <A HREF="https://subversion.xray.aps.anl.gov/trac/pyFprime/">
+  pyFPRIME</A>, for estimating
+  these terms at arbitrary wavelengths can be run with a <A
+  href="http://11bm.xray.aps.anl.gov/absorb/absorb.php">web
+  interface</A> or can be downloaded and installed.
+<img SRC="3g1.png" align=TEXTTOP alt="EXPGUI Screen snapshot">
+</DL></DL>
+
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui4.html">Next page</A>
+</TH><TH><A Href="expgui2.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

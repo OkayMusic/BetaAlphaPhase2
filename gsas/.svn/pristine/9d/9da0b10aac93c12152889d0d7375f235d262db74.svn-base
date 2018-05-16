@@ -1,0 +1,64 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui5.html">Next page</A>
+</TH><TH><A Href="expgui3.html">Previous page</A>
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI, part 4
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+
+<h3>A.4 Scaling panel</h3> 
+<DL><DL>
+The Scaling panel is used to edit the scale factor for a 
+histogram as well as the phase fractions for each phase
+present in that histogram. Damping and refinement flags
+for the scaling terms can also be set here.
+<P>
+If 
+<A href="expgui.html#multiplehistogram">
+"Multiple Histogram Selection" mode</A> is set to 
+any value other than "Off,"
+groups of histograms can be selected and modified 
+collectively.
+<P>
+Note that the order that histograms appear in this 
+panel is determined by the <a href="expguic.html#sorthist">"Sort histograms by"</a> option in 
+the Options Menu.
+</DL></DL>
+<img SRC="4.gif" align=TEXTTOP alt="EXPGUI Screen snapshot">
+
+<hr>
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH><TH><A Href="expgui5.html">Next page</A>
+</TH><TH><A Href="expgui3.html">Previous page</A>
+</TH></TR></TABLE>
+
+</blockquote>
+</body>
+</html>

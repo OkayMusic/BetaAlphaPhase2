@@ -1,0 +1,9 @@
+            123456789012345678901234567890123456789012345678901234567890        
+INS   BANK      1                                                               
+INS  1 IRAD     0                                                               
+INS   HTYPE   PXER                                                              
+INS  1 ICONS   7.81476                                                          
+INS  1I HEAD  DUMMY INCIDENT SPECTRUM FOR EDS DIFFRACTOMETER                    
+INS  1I ITYP    0    0.0000  150.0000         1                                 
+INS  1PRCF1     1    4      0.01                                                
+INS  1PRCF11   0.173000E-03  -0.161000E-01   0.401000E+00   0.000000E+00        

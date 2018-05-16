@@ -1,0 +1,38 @@
+HEADER    Na benzoate test
+TITLE
+COMPND
+SOURCE
+KEYWDS
+EXPDTA
+REVDAT
+JRNL
+REMARK 1
+REMARK 2
+REMARK 3
+DBREF
+SEQRES
+CRYST1   16.073    5.387    3.641  90.00  92.87  90.00 P 21
+ORIGX1      1.000000   .000000   .000000         .00000
+ORIGX2       .000000  1.000000   .000000         .00000
+ORIGX3       .000000   .000000  1.000000         .00000
+SCALE1       .062216   .000000   .003123         .00000
+SCALE2       .000000   .185640   .000000         .00000
+SCALE3       .000000   .000000   .274981         .00000
+HETATM    1 NA   XXX2    1      15.178   4.697    .937  1.00  3.03          NA
+HETATM    2  O   xxx1    1       8.274   1.667   3.167  1.00  2.16           O
+HETATM    3  C   xxx1    1       9.656   1.748   3.060  1.00  1.33           C
+HETATM    4  C   xxx1    1      10.244   2.868   2.480  1.00  1.56           C
+HETATM    5  C   xxx1    1      10.452    .709   3.534  1.00   .89           C
+HETATM    6  C   xxx1    1      11.630   2.949   2.373  1.00  1.16           C
+HETATM    7  C   xxx1    1      11.838    .790   3.426  1.00  1.69           C
+HETATM    8  C   xxx1    1      12.427   1.910   2.846  1.00   .58           C
+HETATM    9  H   xxx1    1       9.642   3.653   2.122  1.00  1.40           H
+HETATM   10  H   xxx1    1      10.007   -.138   3.972  1.00   .27           H
+HETATM   11  H   xxx1    1      12.075   3.795   1.934  1.00  1.18           H
+HETATM   12  H   xxx1    1      12.440    .005   3.784  1.00   .51           H
+HETATM   13  C   xxx1    1      13.906   1.996   2.731  1.00  2.67           C
+HETATM   14  O   xxx1    1      14.467   3.127   2.512  1.00  2.70           O
+HETATM   15  O   xxx1    1      14.621    .940   2.851  1.00  1.74           O
+HETATM   16  H   xxx1    1       7.675    .149   3.772  1.00  7.53           H
+MASTER    3    0    0    0    0    0    6   16    0    0    1
+END    

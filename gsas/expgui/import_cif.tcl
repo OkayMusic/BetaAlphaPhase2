@@ -1,0 +1,194 @@
+# $Id: import_cif.tcl 1251 2014-03-10 22:17:29Z toby $
+
+#-------------------------------------------------
+# define info used in addcmds.tcl
+catch {
+    # make sure vars get set at global level
+    global CIF
+    source [file join $expgui(scriptdir) browsecif.tcl]
+    set description "Crystallographic Information File (CIF)"
+    set extensions .cif
+    set procname ReadCIFFile
+}
+#-------------------------------------------------
+
+proc ReadCIFFile {filename} {
+    global expgui CIF
+    set fp [open $filename r]
+    pleasewait "Reading CIF file"	   
+
+    catch {destroy [set file .file]}
+    toplevel $file
+    #bind $file <Key-F1> "MakeWWWHelp gsas2cif.html filltemplate"
+    set CIF(txt) $file.t
+    grid [text $CIF(txt) -height 10 -width 80 -yscrollcommand "$file.s set"] \
+	    -column 0 -row 0 -sticky news
+    grid [scrollbar $file.s -command "$CIF(txt) yview"] \
+	    -column 1 -row 0 -sticky ns
+    grid columnconfig $file 0 -weight 1
+    grid rowconfig $file 0 -weight 1
+    # hide it
+    wm withdraw $file
+    set blocks [ParseCIF $CIF(txt) $filename]
+    if {$blocks == ""} {
+	donewait
+	MyMessageBox -parent . -type ok -icon warning \
+		-message "Note: no valid CIF blocks were read from file $filename"
+	return 
+    }
+    set allblocks {}
+    set coordblocks {}
+    # search each block for coordinate
+    for {set i 1} {$i <= $blocks} {incr i} {
+	lappend allblocks $i
+	global block$i
+	set flag 1
+	foreach id {_atom_site_fract_x _atom_site_fract_y _atom_site_fract_z} {
+	    if {[array name block$i $id] == ""} {set flag 0}
+	}
+	if $flag {lappend coordblocks $i}
+    }
+    donewait
+    if {$coordblocks == ""} {
+	MyMessageBox -parent . -type ok -icon warning \
+		-message "Note: CIF $filename contains no coordinates"
+	return
+    }
+    set expgui(choose) [lindex $coordblocks 0]
+    # there is more than one appropriate block
+    if {[llength $coordblocks] > 1} {
+	catch {destroy .choose}
+	toplevel .choose
+	wm title .choose "Choose CIF Block"
+	bind .choose <Key-F1> "MakeWWWHelp expguierr.html ChooseCIF"
+	grid [label .choose.0 -text \
+		"More than one block in CIF $filename\ncontains coordinates.\n\nSelect the block to use" \
+		] -row 0 -column 0 -columnspan 2
+	set row 0
+	foreach i $coordblocks {
+	    incr row
+	    set name ""
+	    catch {set name [set block${i}(data_)]}
+	    grid [radiobutton .choose.$row -value $i \
+		    -text "block $i ($name)" -variable expgui(choose)] \
+		    -row $row -column 0 -sticky w
+	}
+	grid [button .choose.browse -text CIF\nBrowser -command \
+		"CallBrowseCIF $CIF(txt) [list $allblocks] [list $coordblocks] .choose.cif" \
+		] -row 1 -rowspan $row -column 1 
+	grid [button .choose.ok -text OK -command "destroy .choose"] \
+		-row [incr row] -column 0 -sticky w
+	grid [button .choose.help -text Help -bg yellow \
+	    -command "MakeWWWHelp expguierr.html ChooseCIF"] \
+	    -column 1 -row $row -sticky e
+	putontop .choose
+	tkwait window .choose
+	# fix grab...
+	afterputontop
+    }
+
+    set i $expgui(choose)
+    # get the space group
+    set spg {}
+    set sgnum {}
+    set msg {}
+    catch {
+	set spg [ValueFromCIF block${i} _symmetry_space_group_name_h-m]
+    }
+    set cell {}
+    foreach var {_cell_length_a _cell_length_b _cell_length_c \
+	    _cell_angle_alpha _cell_angle_beta _cell_angle_gamma} {
+	# leave blank any unspecified data items
+	set val {}
+	catch {set val [ValueFromCIF block${i} $var]}
+	lappend cell [lindex [ParseSU $val] 0]
+    }
+    
+    set atomlist {}
+    set lbllist {}
+    catch {
+	set lbllist [ValueFromCIF block${i} _atom_site_label]
+    }
+    set uisolist {}
+    set Uconv 1
+    catch {
+	set uisolist [ValueFromCIF block${i} _atom_site_u_iso_or_equiv]
+    }
+    if {$uisolist == ""} {
+	catch {
+	    set uisolist [ValueFromCIF block${i} _atom_site_b_iso_or_equiv]
+	    set Uconv [expr 1/(8*3.14159*3.14159)]
+	}
+    }
+    set occlist {}
+    catch {
+	set occlist [ValueFromCIF block${i} _atom_site_occupancy]
+    }
+    set typelist {}
+    catch {
+	set typelist [ValueFromCIF block${i} _atom_site_type_symbol]
+    }
+    foreach x [ValueFromCIF block${i} _atom_site_fract_x] \
+	    y [ValueFromCIF block${i} _atom_site_fract_y] \
+	    z [ValueFromCIF block${i} _atom_site_fract_z] \
+	    lbl $lbllist uiso $uisolist occ $occlist type $typelist {
+	# deal with defaults
+	if {$occ == "" || $occ == "."} {set occ 1.0}
+	if {$uiso == "" || $uiso == "."} {set uiso 0.025}
+	# should not be any quotes, but remove them, if there are
+	foreach var {lbl type} {
+	    foreach char {' \"} {
+		set q {\\}
+		append q $char
+		set hidden [regsub -all $q [set $var] \200 $var]
+		if {[string index [set $var] 0] == $char} {
+		    regsub -all $char [set $var] {} $var
+		}
+		if {$hidden} {regsub -all \200 [set $var] $char $var}
+	    }
+	}
+	# CIF specifies types as Cu2+; GSAS uses Cu+2
+	if {[regexp {([A-Za-z]+)([1-9])([+-])} $type junk elem sign val]} {
+	    set type ${elem}${val}$sign
+	}
+	# if type is missing, attempt to parse an element in the label
+	if {$type == "" && $lbl != ""} {
+	    regexp {[A-Za-z][A-Za-z]?} $lbl type 
+	}
+	# get rid of standard uncertainies
+	foreach var {x y z occ uiso} {
+	    catch {
+		set $var [lindex [ParseSU [set $var]] 0]
+	    }
+	}
+	# convert Biso to Uiso (if needed)
+	if {$Uconv != 1} {
+	    catch {set uiso [expr {$Uconv*$uiso}]} err
+	}
+	lappend atomlist [list $lbl $x $y $z $type $occ $uiso]
+    }
+
+    # clean up -- get rid of the CIF arrays & window
+    for {set i 1} {$i <= $blocks} {incr i} {
+	unset block$i
+    }
+    destroy $file
+    return "[list $spg] [list $cell] [list $atomlist] [list $msg]"
+}
+
+
+proc CallBrowseCIF {txt blocklist selected frame} {
+    # is there a defined list of dictionary files?
+    if {[catch {set ::CIF(dictfilelist)}]} {
+	set dictfilelist [glob -nocomplain \
+			      [file join $::expgui(gsasdir) data *.dic]]
+	foreach file $dictfilelist {
+	    lappend ::CIF(dictfilelist) $file
+	    set ::CIF(dict_$file) 1
+	}
+    }
+    # load the initial CIF dictionaries
+    LoadDictIndices
+    
+    BrowseCIF $txt $blocklist $selected $frame
+}

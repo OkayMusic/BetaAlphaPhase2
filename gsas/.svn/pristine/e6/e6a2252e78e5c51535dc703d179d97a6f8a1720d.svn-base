@@ -1,0 +1,63 @@
+# BT1 parameters
+set UVWP(Ge15) {398.5 -343.2  163.0 0}
+set XY(Ge15) {0 0}
+set wave(Ge15) 2.0775
+set lblarr(Ge15) "BT-1 Ge(311) 15'"
+set ttrange(Ge15) "5 160"
+lappend datalist Ge15 
+
+set UVWP(Ge7)  {246.7 -298.6  157.6 0}
+set wave(Ge7) 2.0775
+set XY(Ge7) {0 0}
+set lblarr(Ge7) "BT-1 Ge7(311) 7'"
+set ttrange(Ge7) "5 160"
+lappend datalist Ge7 
+
+set UVWP(Cu15) {239.7 -298.2 180.8 0}
+set wave(Cu15) 1.54
+set XY(Cu15) {0 0}
+set lblarr(Cu15) "BT-1 Cu(311) 15'"
+set ttrange(Cu15) "5 165"
+lappend datalist Cu15 
+
+set UVWP(Cu7)  {181.2 -299.3 186.3 0}
+set wave(Cu7) 1.54
+set XY(Cu7) {0 0}
+set lblarr(Cu7) "BT-1 Cu(311) 7'"
+set ttrange(Cu7) "5 165"
+lappend datalist Cu7 
+
+set UVWP(Ge73315) {49 -104 106 0}
+set wave(Ge73315) 1.197
+set XY(Ge73315) {3.6 0.5}
+set lblarr(Ge73315) "BT-1 Ge(733) 15'"
+set ttrange(Ge73315) "5 165"
+lappend datalist Ge73315 
+
+set UVWP(Ge7337)  {0.407655E+02  -0.115967E+03   0.117892E+03 0}
+set wave(Ge7337) 1.197
+set XY(Ge7337) {3.5 0}
+set lblarr(Ge7337) "BT-1 Ge(733) 7'"
+set ttrange(Ge7337) "5 165"
+lappend datalist Ge7337 
+
+#set UVWP(Ge73315) {79.4 -182.4 174.0 0}
+#set wave(Ge73315) 1.59
+#set XY(Ge73315) {0 0}
+#set lblarr(Ge73315) "BT-1 Ge(533) 15'"
+#set ttrange(Ge73315) "5 165"
+#lappend datalist Ge73315 
+
+#set UVWP(Ge7337)  {59.6 -163.1 166.7 0}
+#set wave(Ge7337) 1.59
+#set XY(Ge7337) {0 0}
+#set lblarr(Ge7337) "BT-1 Ge(533) 7'"
+#set ttrange(Ge7337) "5 165"
+#lappend datalist Ge7337 
+
+set UVWP(Si7)  {59.6 -163.1 166.7 0}
+set wave(Si7) 1.59
+set XY(Si7) {0 0}
+set lblarr(Si7) "BT-1 Si(531) 7'"
+set ttrange(Si7) "5 165"
+lappend datalist Si7 

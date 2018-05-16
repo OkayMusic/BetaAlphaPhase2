@@ -1,0 +1,211 @@
+<html>
+<head>
+   <title>Intro to EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center>
+<h1>
+<HR noshade width="75%" size="2" align="center">
+Intro to EXPGUI
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+<P>
+<B>What is EXPGUI?</B><P>
+<blockquote>
+EXPGUI is a graphical user interface (GUI) editor for 
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/gsas.html">
+GSAS</A>
+experiment (.EXP) files and shell which allows all the other GSAS programs
+to be executed with a GUI.
+EXPGUI is not a replacement for the GSAS program EXPEDT.
+EXPGUI can do at best 10% of what 
+EXPEDT can do -- but that 10% covers most of the
+actions that I use frequently (and that I could code without a major effort).
+EXPGUI is written in the
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/tclpkgs.html">Tcl/Tk</A> scripting language, so it is largely platform independent.
+</blockquote>
+
+<p><br><B>Is there documentation?</B>
+<blockquote>Some. There is:
+<UL>
+<LI>
+<A HREF="http://www.ncnr.nist.gov/xtal/software/EXPGUI_reprint.pdf">
+A journal article</A> 
+(B. H. Toby, <i>EXPGUI</i>, a graphical user interface for <i>GSAS</i>, <i>J. Appl. Cryst.</i> (2001). <b>34</b>, 210-213)
+<LI>
+<A HREF="expgui.html">
+A User's Guide</A> (~20 web pages) complete with lots of screen images
+<LI>
+Installation notes for:
+<A HREF="expgui_Win_readme.html">
+Windows</A>,
+<A HREF="expgui_Unix_readme.html">
+UNIX</A>, or 
+<A HREF="osx.html">
+Mac OS X</A> or plunge ahead to the 
+<A HREF="../downloads.html">
+download links.</A>
+<LI>
+<A HREF="expgui_cfg.html">
+Customization notes</A>
+<LI>
+<A HREF="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial3/index.html">
+A well-annotated CW neutron tutorial (Alumina).</A>
+<B><I>A very good place to start!</I></B>
+<LI>
+<A HREF="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial4/FapatitleExample.htm">
+A well-annotated Lab data tutorial (Fluoroapatite).</A>
+<B><I>Also a good place to start!</I></B>
+<LI>
+<A HREF="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial1/index.html">
+A TOF Tutorial Example (Nickel)</A>
+<LI>
+<A HREF="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial2/index.html">
+A CW Neutron Tutorial Example (Garnet)</A>
+</UL>
+Contributions of additional documents or improvements to existing 
+documentation is greatly encouraged.
+</blockquote>
+
+<P><B>So what can EXPGUI do?</B>
+<blockquote>
+<dt>
+<i>Phase parameters</i>: EXPGUI can edit the cell and atomic parameters
+as well as the cell and atomic damping and refinement flags.</dt>
+<IMG SRC="note.gif" alt="Note!">
+Create new .EXP files, adding phases and atoms. 
+<IMG SRC="new.gif" alt="New!">
+Edit/Delete/Transform atom(s).
+
+<P><dt>
+<i>Histogram parameters</i>: Scale factor, background, diffractometer constants,
+phase fractions, profile terms can all be changed.</dt>
+<IMG SRC="note.gif" alt="Note!">Add additional histograms.
+<IMG SRC="new.gif" alt="New!">Change peak profile functions.
+
+<P><dt>
+<i>Least-Squares options:</i> control the number of cycles, the print options
+and F<sub>obs</sub> extraction parameters.</dt>
+
+<BR><IMG SRC="note.gif" alt="Note!">
+Editing and creating [hard] constraints on atomic and profile parameters.
+
+<BR><IMG SRC="note.gif" alt="Note!">
+Create and edit March-Dollase preferred orientation parameters.
+
+<BR><IMG SRC="note.gif" alt="Note!">
+Create and edit Generalized Spherical Harmonic (ODF) preferred orientation parameters.
+
+<BR><IMG SRC="note.gif" alt="Note!">
+Modify Phase flags for each histogram
+<BR><IMG SRC="new.gif" alt="New!">    
+Edit excluded data regions and the range of data used in the fit.
+
+</dt>
+
+</blockquote>
+
+<p><br><B>So what can't EXPGUI do?</B>
+<blockquote>Much more than it can do. At this time, EXPGUI can't 
+change atom types.
+It cannot create or edit soft constraints
+or many types of hard constraints (other than atomic and profile constraints). 
+It cannot be used on
+magnetic scattering parameters or on single-crystal histograms. 
+It does do most of the things that commonly used in Rietveld. 
+<p>New features are planned for EXPGUI, but this depends on my 
+available free time. It should be noted that the GSAS EXPEDT program is
+huge, so EXPGUI will never have all the features in EXPEDT. 
+I am glad to get suggestions for adding more functionality to EXPGUI 
+(see the 
+<A HREF="wishlist.html">"wish list"</A>). Coming up with 
+ideas for intuitive GUI additions
+is often half the battle.
+</blockquote>
+
+<p><br><B>What type of computers will EXPGUI run on?</B>
+<blockquote>EXPGUI requires a working version of
+<A Href="http://www.ncnr.nist.gov/programs/crystallography/software/tclpkgs.html">Tcl/Tk</A>, scripting language.
+While that is somewhat restrictive,
+it still means that EXPGUI will run on many more platforms than GSAS does.
+Most of the development has been done in LINUX with some testing on SGI. It 
+also runs in Windows (-95 through -XP & -2003?) and in Mac OS X.
+I expect that EXPGUI will run on all platforms
+where GSAS does (except perhaps VMS).</blockquote>
+
+<p><br><B>Where do I get EXPGUI?</B>
+<blockquote>See the 
+<A HREF="../downloads.html">
+download links</A> web page or better yet read the installation instructions
+for <A HREF="expgui_Win_readme.html">
+Windows</A>,
+<A HREF="expgui_Unix_readme.html">
+UNIX</A>, or 
+<A HREF="osx.html">
+Mac OS X</A>.
+</blockquote>
+
+<p><br><B>Who is to blame for EXPGUI?</B>
+<blockquote>The initial version of the GUI part of EXPGUI was created by
+Jonathan Wasserman (thanks Jon!) Brian
+Toby</a> is irresponsible for the rest.</blockquote>
+
+<p><br><B>EXPGUI would be much more of use to me if....</B>
+<blockquote>Gee, you want to add some features... Great! You have all the
+EXPGUI sources and
+Tcl/Tk is free. Oh, you want me to do it. Well, please 
+ask and I will try. In particular, I am looking for good ideas on 
+how to design GUI's for different aspects of experiment editing, 
+with an attractive, intuitive and compact layout.</blockquote>
+
+<p><br><B>Mailing List</B>
+<blockquote>If you would like to get news about EXPGUI, please 
+<a href="http://www.aps.anl.gov/mailman/listinfo/expgui">see this
+link</a>.
+The mailing list is used only to provide 
+information about updates and bug fixes. 
+</blockquote>
+
+<p><br><B>A picture</B>
+<img SRC="2s.gif" align=top
+alt="example picture of the EXPGUI interface">
+
+<P><hr WIDTH="100%">
+<blockquote>
+<p>Neither the author nor the U.S. Government makes any warranty, expressed
+or implied, or assumes any liability or
+responsibility for the use of this information or the software described
+here. Brand names cited here are used for
+identification purposes and do not constitute an endorsement by NIST.
+</blockquote>
+<P><hr><P>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI home</A> 
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>$Revision: 1225 $ $Date: 2012-11-08 19:42:25 +0000 (Thu, 08 Nov 2012) $
+</blockquote>
+</body>
+</html>

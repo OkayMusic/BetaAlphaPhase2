@@ -1,0 +1,34 @@
+Here is the gist of how EXPGUI works.
+
+* read the .exp file into exparray (expload)
+* map the phases & histograms etc with expmap (mapexp)
+
+Here is the tricky part: 
+
+  * I have a set of routines (----info) that read and write various parameters
+
+  * To "map" values from exparray to tcl variables (so that they get updated in the exparray as one edits them), the variables are placed in 
+array entryvar and array entrycmd is used to hold the command to set the value. 
+  * A trace on entryvar is used to execute the appropriate entrycmd code any time a variable is set [in entvartrace]
+
+Example:
+    set entryvar(cycles) [expinfo cycles]
+    set entrycmd(cycles) "expinfo cycles"
+
+    this uses expinfo cycles to get the number of ls cycles
+    if entryvar(cycles) is changed (by changing the contents of the
+    entry associated with the variable), then in entvartrace the command 
+	expinfo cycles set $entryvar(cycles) 
+    is executed to put the value into the exparray and flag that a change 
+    has been made.
+
+This is why the first step is to write a ----info routine where
+	you get the value using    ---info var <otherparms>
+	and set it using           ---info var <otherparms> set value
+
+The next step is to map the various parameters (like P.O. axis) to unique
+array elements in entryvar & entrycmd
+
+And the last step is to create a GUI with various widgets that allow the user to change the appropriate values. In this way, what you change does into the .exp file as soon as you save it.
+
+In some cases, where there is a toplevel with a "Save Changes" & "Cancel Changes" button (e.g. Background, Constraints, changes are done a bit more straightforwardly.

@@ -38,12 +38,12 @@ if __name__ == '__main__':
 
     TestLattice.normalize_total_dist()
 
-    print TestLattice.radii
+    full_ft = []
+    ft_x = np.linspace(0, 10, 1000)
+    for Q in ft_x:
+        full_ft.append(Q * TestLattice.ft_total(Q=Q))
 
-    print TestLattice.norm_up_up
-
-    plt.bar(TestLattice.radii, TestLattice.norm_up_up, width=0.01)
-    # plt.plot(useful_keys, total_counter_parallel)
-    # plt.plot(useful_keys, total_counter_antiparallel)
+    plt.plot(ft_x, full_ft)
+    plt.plot(ft_x, TestLattice.total)
 
     plt.show()

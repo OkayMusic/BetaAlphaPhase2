@@ -1,0 +1,829 @@
+<html>
+<head>
+   <title>EXPGUI</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI<BR>
+A Graphical User Interface for 
+<A Href="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/GSASIntro">
+GSAS</A>
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+<P><P>
+<I><B>
+<blockquote>
+For the impatient, see download/installation instructions for:
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallWindows">
+Windows</A>,
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallOSX">
+Mac (OS X)</A>, or 
+<A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/InstallLinux">
+Linux</A>
+</blockquote>
+</I></B>
+<P><P>
+EXPGUI is a graphical interface for the 
+<A Href="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/GSASIntro">GSAS</A>
+package, developed at Los Alamos and maintained now at Argonne. 
+EXPGUI does two things: 
+it can be used to directly modify the GSAS 
+experiment file with a graphical user interface (GUI) and 
+it can be used to invoke the programs inside the 
+GSAS package such as EXPEDT, GENLES, FOURIER...
+These programs can be run from a menu or in many cases by pressing buttons.
+EXPGUI is written using the
+<A href="#tcltk">Tcl/Tk</A> scripting language.
+<P>
+This web page describes the different actions that
+can be accomplished with the different panels and the 
+contents of the menus. The table below contains links to the other 
+web accessible documentation.
+<P>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=CENTER>
+<TR><TH BGCOLOR="#F0F0F0" rowspan=4>GUI Sections</TH>
+<TH><A Href="expgui1.html">Least Squares</A></TH>
+<TH><A Href="expgui2.html">Phase info</A></TH>
+<TH><A Href="expgui3.html">Histogram info</A></TH>
+</TR>
+<TR>
+<TH><A Href="expgui4.html">Scaling info</A></TH>
+<TH><A Href="expgui5.html">Profile terms</A></TH>
+<TH><A Href="expgui6.html">Constraints</A></TH>
+</TR>
+<TR>
+<TH><A Href="expgui6R.html">Restraints</A></TH>
+<TH><A Href="expgui6A.html">Rigid Bodies</A></TH>
+<TH><A Href="expgui7.html">Preferred Orientation</A></TH>
+</TR>
+<TR>
+<TH><A Href="expguic.html">Menus</A></TH>
+<TH>&nbsp;</TH>
+<TH>&nbsp;</TH>
+</TR>
+<TR><TH BGCOLOR="#F0F0F0" rowspan=3>Utilities:</TH>
+<TH><A Href="liveplot.html">LIVEPLOT</A></TH>
+<TH><A Href="liveplot.html">BKGEDIT</A></TH>
+<TH><A Href="excledt.html">EXCLEDT</A></TH>
+</TR>
+<TR>
+<TH><A Href="#WIDPLT">WIDPLT</A></TH>
+<TH><A Href="#ABSPLT">ABSPLT</A></TH>
+<TH><A Href="#INSTEDIT">INSTEDIT</A></TH>
+</TR>
+<TR>
+<TH><A Href="gsas2cif.html">CIF export</A></TH>
+<TH>&nbsp;</TH>
+<TH>&nbsp;</TH>
+</TR>
+<TR><TH BGCOLOR="#F0F0F0" rowspan=2>Installation Notes:</TH>
+<TH><A Href="expgui_Unix_readme.html">Unix</A></TH>
+<TH><A Href="expgui_Win_readme.html">Windows</A></TH>
+<TH>
+<A Href="osx.html">Mac OS X</A></TH>
+</TR><TR>
+<TH><A Href="expgui_cfg.html">Customization</A></TH>
+<TH>&nbsp;</TH>
+<TH>&nbsp;</TH>
+</TR>
+<TR><TH BGCOLOR="#F0F0F0" rowspan=2>Tutorials:</TH>
+<TH><A Href="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial3/index.html">
+NIST<BR>Neutron data</A></TH>
+<TH><A Href="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial1/index.html">GSAS Manual<BR>Example #1 (TOF)</A></TH>
+<TH><A Href="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial2/index.html">GSAS Manual<BR>Example #2 (Garnet)</A></TH>
+</TR>
+<TR>
+<TH><A Href="https://subversion.xray.aps.anl.gov/EXPGUI/tutorials/tutorial4/FapatitleExample.htm">
+Lab x-ray data<BR>(Fluoroapatite)</A></TH>
+<TH>&nbsp;</TH>
+<TH>&nbsp;</TH>
+</TR>
+<TR><TH BGCOLOR="#F0F0F0">Messages:</TH>
+<TH><A Href="expguierr.html#Error">Error</A></TH>
+<TH><A Href="expguierr.html#Warn">Warning</A></TH>
+<TH><A Href="expguierr.html#Info">Informational</A></TH>
+</TR>
+<TR><TH BGCOLOR="#F0F0F0">Other:</TH>
+<TH><A Href="expgui_intro.html">Introduction</A></TH>
+<TH><A Href="wishlist.html">Recent & Planned<BR>Improvements</A></TH>
+<TH><A Href="http://www.ncnr.nist.gov/xtal/software/EXPGUI_reprint.pdf">
+<I>J. Appl. Cryst.</i><BR>article</A></TH>
+</TR>
+</TABLE><BR CLEAR=ALL>
+<P>
+<B>Citations.</B>
+The appropriate citations to be used for GSAS and EXPGUI are:
+<UL>
+<LI>
+A.C. Larson and R.B. Von Dreele, "General Structure Analysis System (GSAS)", 
+Los Alamos National Laboratory Report LAUR 86-748 (2000).
+<A
+  HREF="https://subversion.xray.aps.anl.gov/EXPGUI/gsas/all/GSAS%20Manual.pdf">
+[link to PDF copy of manual]
+</A>
+<LI>
+B. H. Toby, <i>EXPGUI</i>, a graphical user interface for <i>GSAS</i>, 
+<i>J. Appl. Cryst.</i> <b>34</b>, 210-213 (2001).
+<A HREF="http://www.ncnr.nist.gov/xtal/software/EXPGUI_reprint.pdf">
+[link to PDF file]
+</A>
+</UL>
+<P>
+<B>Mailing List.</B>
+There is a mailing list for users of EXPGUI for news about about new
+features, bug fixes in EXPGUI, etc.
+<A href="http://www.aps.anl.gov/mailman/listinfo/expgui">Subscription info</A>
+<P>
+<hr>
+
+<h2>A. Experiment file editing</h2>
+<P>
+<DL><DL>
+When an experiment (.EXP) file is read, a copy is made in local 
+computer memory. In most cases, values are changed in this 
+"in memory" copy of the experiment file 
+as this information is changed by the user on the screen.
+<img SRC="rederror.gif" align=LEFT BORDER=3 alt="EXPGUI Screen snapshot">
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+If there is an error in the typed value, (for example if "1..0" is typed, or
+"1.5" is typed where an integer is expected), these values are 
+not saved. In this case, the text is turned red, to indicate 
+that an error is present, as shown in the figure to the left, where "90.000x" 
+has been entered for alpha.
+The edited version of the experiment file is written back out to 
+disk when the "File/Save" or "File/Save as" 
+<A Href="expguic.html#1">menu bar options</A>
+are used. The File/Save operation is done automatically before any GSAS
+programs, such as GENLES or EXPEDT, are run.
+<P>
+<A name="badexp">
+The GSAS refinement program, GENLES, will sometimes "blow up", where the
+  program changes varied parameters to values very far from their
+  correct values. This occurs when parameters are highly correlated,
+  are refining to values that are not allowed, or some of the refined parameters have
+  very little impact on the quality of the fit. When this happens,
+  invalid values are written to the GSAS experiment file that contain
+  either asterisks (****) or the string "NAN" (not a number). Such
+  files cannot be used for additional GENLES runs.
+  <P>
+  When EXPGUI reads a .EXP file it scans it for evidence of a previous
+  failure of a GENLES refinement and warns if a problem is
+  noted. Please note that this scan is not perfect and occasionally
+  you may be warned in cases where the file is fine (if possible,
+  please send such .EXP file to Brian Toby so this scan can be improved.)
+  When such a "bad" .EXP file is located, one can "revert" to an
+  archived copy of a previous experiment file (with suffix .Oxx). This
+  can be done with the Revert menu item in the File menu. Note that
+clicking on a file in the file selection window causes it to be
+scanned and shows the status of that refinement. Also note that
+usually the last good archived file has settings that will produce the same bad
+refinement, so it is necessary to either revert further back, or to
+change the refinement options before running GENLES. 
+<P>
+
+Since the GSAS experiment file is quite complex, 
+values are grouped together by function, approximately
+following the outline of the EXPEDT program. 
+Each set of values is given a 
+"tabbed panel" on a window that has the appearance of a notebook (see below).
+<center><B>
+<br>The notebook panel tabs.
+<br><img SRC="panebar1.gif"  BORDER=3 alt="EXPGUI Screen snapshot">
+</center></B>
+In some cases, where values are 
+too numerous or complex to fit onto the notebook panel, one or more buttons
+may be present on a panel that will create a separate window,
+where the associated values can be modified. 
+These values are not recorded in the 
+"in memory" copy of the experiment file unless the "Save" button on this window
+is pressed. If "Cancel" is pressed, no changes are made.
+Each notebook panel is listed below with a link to the web page documenting 
+that panel.
+
+<A Href="expgui1.html">
+<h3>A.1 Least Squares (LS) Controls Panel</h3>
+</A><A Href="expgui2.html">
+<h3>A.2 Phase Panel</h3> 
+</A><A Href="expgui3.html">
+<h3>A.3 Histogram panel</h3> 
+</A><A Href="expgui4.html">
+<h3>A.4 Scaling panel</h3> 
+</A><A Href="expgui5.html">
+<h3>A.5 Profile panel</h3> 
+</A><A Href="expgui6.html">
+<h3>A.6 Constraints panel</h3>
+</A><A Href="expgui7.html">
+<h3>A.7 Preferential Orientation Panel</h3>
+</A>
+<br clear=all>
+</DL></DL>
+<h2>B. Shortcuts</h2></a>
+<a name="multiplehistogram">
+<h3>B.1 Multiple Histogram Selection</h3></a>
+<DL><DL>
+This mode allows parameters to be changed for groups of
+histograms. 
+When the "Multiple Histogram Selection" mode is off, 
+it is possible to modify parameters
+and refinement flags for only a single histogram, but
+the other settings allow groups of histograms 
+to be selected and modified.
+<A href="#mouseactions">(see Mouse Actions)</A>.
+<P>
+It does not make sense, however, to globally modify
+instrument-related parameters and flags for different 
+histogram types.
+So global actions can be limited to a single class 
+of histogram types (e.g. TOF, CW Neutron,...), which 
+allows these parameters to be set for groups of 
+similar histograms. Thus, if this mode is set to "All"
+the Histogram and Profile panels are disabled.
+<P>
+The setting for "Multiple Histogram Selection" mode is 
+displayed above each histogram selection box and is
+selected using the "Multiple Hist. Selection" item on the 
+Options menu to create a submenu or by clicking on the display. 
+Note that another option in this "Multiple Hist. Selection" 
+submenu is an option "Group Phases Together" that controls how 
+EXPGUI treats phases having
+the same profile type that is used when multiple histograms are selected. If 
+the "Group Phases Together" option is on, then the refinement flags for 
+all phases with the same histogram types are grouped together, when possible.
+If this option is off, phases are treated separately.
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+If the left mouse button is used to click on the selection mode display,
+the mode is cycled between the available modes. If the right mouse
+button is used, the mode is reset, to disable multiple histogram selection.
+<p>
+<a name="mouseactions">
+</DL></DL>
+<h3>B.2 Mouse Actions</h3></a>
+<DL><DL>
+A range of atoms or (in multiple selection mode) histograms may be
+selected by dragging (holding down) the left mouse button. It is also
+possible to select a range by using the Shift key with the left mouse
+button. To select or deselect individual entries, use the Control key
+with the left mouse button. Pressing the right mouse button selects all
+entries in a list.
+</DL></DL>
+
+<h2>C. Menu Commands and Programs</h2>
+<p>
+GSAS programs are invoked either through use of the menu bar
+<center><B>
+<br>The menu bar.
+<br><img SRC="menubar.gif" BORDER=3 alt="EXPGUI Screen snapshot">
+</center></B>
+or by "pressing" a button on the button bar. The button bar
+simply provides an easy way to access commonly used 
+actions on the menu bar. Users can 
+<A HREF="expgui_cfg.html">
+configure the menu bar</A> to include their own preferred actions and, with
+some knowledge of the program and Tcl/Tk,
+add their own commands to the menu bar or button bar.
+
+<center><B>
+<br>The button bar.
+<br><img SRC="buttonbar.gif" BORDER=3 alt="EXPGUI Screen snapshot">
+</center></B>
+
+<h3>Invoking of GSAS programs</h3>
+When GSAS programs are invoked, in most cases EXPGUI is suspended while 
+the GSAS program is run in a terminal (or DOS) window. When the terminal 
+window is closed, EXPGUI is restarted. If desired (see the 
+<A Href="expguic.html#Autoicon">
+"Iconify during GSAS"</A>
+option) while this occurs, EXPGUI can be made into an icon 
+to save screen space.
+<P>
+<img src="powpref4a.gif" align=left alt="EXPGUI Screen snapshot">
+Once the GSAS program has finished, if the program has modified 
+the .EXP file, 
+<a Href="expguierr.html#Overwrite">
+"File has been modified..."</a>message box 
+similar to the one to the left is displayed (also see the more complete 
+discussion on the <a Href="expguierr.html#Overwrite">messages page</A>.
+Note that this message can be avoided if the
+<A Href="expguic.html#Autoupdate">
+"Autoload EXP"</A>
+option is used.
+<BR clear=all>
+<P>
+Note that in both Windows-95 and Windows-NT, a file named <tt>EXPGUI.LCK</tt>
+is created while the GSAS program runs. The presence of this file is used 
+to suspend the LIVEPLOT program, since LIVEPLOT has sometimes crashed 
+when run at the same time as GENLES (no such problem has been seen in Unix). 
+This file is deleted when the GSAS program completes.
+<P>
+<img src="lock.gif" align=left alt="EXPGUI Screen snapshot">
+In Windows-9x, the <a Href="expgui_Win_readme.html#Winexec">Winexec</a>
+package is used to execute a command that creates a DOS window. 
+The GSAS programs are then run by a batch file in this DOS window. 
+Due to limitations in Tcl/Tk & Windows, the DOS window runs independently
+of EXPGUI, so the lock file (<tt>EXPGUI.LCK</tt>) is also used to suspend
+EXPGUI. While EXPGUI is waiting, the 
+<a Href="expguierr.html#lock">
+Please wait...
+</a>
+window shown to the left is displayed. When the GSAS program completes, the
+lock file is deleted, the window automatically disappears and EXPGUI resumes. 
+Should a problem arise where the file is not deleted, EXPGUI can be resumed by
+pressing the "Continue" button.
+
+<BR clear=all>
+<h3>GSAS menus</h3>
+
+A description of the EXPGUI menus follows. Use the links to obtain
+more information, including a very 
+brief description of the function of each menu option.
+Note that an option may appear under more than one menu.
+
+<DL><DL>
+
+<A Href="expguic.html#1">
+<H3>C.1 File Menu</H3>
+</A>
+<DL><DL>
+The options on the File menu as is the custom contains the commands 
+for reading and writing experiment files, as well as starting,  
+ending and controlling the program.
+</DL></DL>
+
+<A Href="expguic.html#2">
+<h3>C.2 Options Menu</h3>
+</A>
+<DL><DL>
+This menu contains options that determine how EXPGUI runs.
+</DL></DL>
+
+<A Href="expguic.html#3">
+<h3>C.3 Powder Menu</h3>
+</A>
+<DL><DL>
+This menu contains links to GSAS programs used for powder diffraction
+analysis.
+</DL></DL>
+
+<A Href="expguic.html#4">
+<h3>C.4 Single Crystal Menu</h3>
+</A>
+<DL><DL>
+This menu contains links to GSAS programs used for 
+single-crystal diffraction analysis.
+</DL></DL>
+
+<A Href="expguic.html#5">
+<h3>C.5 Graphics Menu</h3>
+</A>
+<DL><DL>
+This menu contains links to several GSAS and 
+non-GSAS programs (such as LIVEPLOT and WIDPLT)
+used for graphical display of data and results.
+</DL></DL>
+
+<A Href="expguic.html#6">
+<h3>C.6 Results Menu</h3>
+</A>
+<DL><DL>
+This menu contains links to several GSAS and 
+one non-GSAS (LSTVIEW)
+programs that are used for analysis of results.
+</DL></DL>
+
+<A Href="expguic.html#7">
+<h3>C.7 Calculations Menu</h3>
+</A>
+<DL><DL>
+This menu contains programs for useful crystallographic computations.
+</DL></DL>
+
+<A Href="expguic.html#8">
+<h3>C.8 Import/Export Menu</h3>
+</A>
+<DL><DL>
+This menu contains utilities for importing information into GSAS and
+exporting.
+</DL></DL>
+
+<h2>D. EXPGUI Utility Features</h2></a>
+EXPGUI adds a number of useful functions to the GSAS package. Some,
+but not all, of these features are graphically oriented.
+
+<br clear=all>
+<a name="LSTVIEW"></a>
+<H3>D.1 LSTVIEW</H3>
+
+<DL><DL>
+LSTVIEW is used to browse through the GSAS output listing. It is
+invoked by the "lstview" command in the GUI. 
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">LSTVIEW can also be used
+to shorten the .LST file by removing older results from the beginning
+of the file.
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">LSTVIEW can also be used to plot R-factors and parameter shifts
+as a function of the cycle number.
+<CENTER><IMG SRC="textview.gif" alt="EXPGUI Screen snapshot"></CENTER>
+</DL></DL>
+
+<br clear=all>
+<H3>D.2 LIVEPLOT</H3>
+<DL><DL>
+<A HREF="liveplot.html">LIVEPLOT</A> shows the observed, calculated 
+and difference plots for powder
+refinements. The plot is updated as the refinement progresses. The mouse can 
+be used to zoom in on sections of the plot. 
+LIVEPLOT uses the <A href="#blt">BLT</A> graphics package.
+<CENTER><IMG SRC="liveplot.gif" alt="LIVEPLOT Screen snapshot"></CENTER>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+LIVEPLOT can now be enhanced to superimpose peak locations for 
+input unit cells or peaks from JCPDS/ICDD entries. 
+See the <A HREF="liveplot.html">LIVEPLOT web page</A> for
+further documentation, and in particular, the
+See the <A HREF="liveplot.html#customize">
+LIVEPLOT customization information</A>.
+<P>
+</DL></DL>
+<br clear=all>
+<H3>D.3 BKGEDIT</H3>
+<DL><DL>
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+<A HREF="liveplot.html#bkgedit">BKGEDIT</A> is used to 
+fit a GSAS background function to a set of fixed 
+background points that are input using the mouse.
+The mouse can also be used to zoom in on sections of the plot. 
+BKGEDIT uses the <A href="#blt">BLT</A> graphics package.
+<CENTER><IMG SRC="b2.gif" alt="BKGEDIT Screen snapshot"></CENTER>
+See the <A HREF="liveplot.html#bkgedit">BKGEDIT web page</A> for
+further documentation.
+<P>
+</DL></DL>
+<br clear=all>
+<H3>D.4 EXCLEDT</H3>
+<DL><DL>
+<A HREF="excledt.html">EXCLEDT</A> is used to edit the
+range of data used from a histogram. The upper & lower ranges
+can be adjusted to include more data or use less. Also, it is 
+possible to remove sections of the data (exclude regions) that
+have known systematic errors that cannot be modeled.
+EXCLEDT uses the <A href="#blt">BLT</A> graphics package.
+<CENTER><IMG SRC="exc1a.gif" alt="EXCLEDT Screen snapshot"></CENTER>
+See the <A HREF="excledt.html">EXECLEDT web page</A> for
+further documentation.
+<IMG SRC="new.gif" HEIGHT=13 WIDTH=36 alt="New!">
+EXCLEDT can now be used to change the simulation range for dummy histograms.
+<P>
+</DL></DL>
+
+<br clear=all>
+<a name="WIDPLT"></a>
+<a name="ABSPLT"></a>
+<H3>D.5 WIDPLT and ABSPLT</H3>
+<DL><DL>
+WIDPLT is used to plot the peak widths that are generated by a set
+of GSAS profile terms (constant wavelength equations, only). 
+The parameters from each phase & histogram will be
+read from the .EXP file. It is also possible to input parameters manually.
+By creating a special file (<A HREF="expgui_cfg.html#import">
+described in the customization information</A>), it
+is possible to define reference curves 
+that are loaded automatically for comparison.
+<CENTER><IMG SRC="widplt.gif" alt="EXPGUI Screen snapshot"></CENTER>
+<P>
+ABSPLT is used to plot the absorption/reflectivity correction for a
+histogram. Values are loaded from the histogram(s), but can be edited manually.
+<P>
+WIDPLT and ABSPLT both use the <A href="#blt">BLT</A> graphics package.
+</DL></DL>
+
+<br clear=all>
+<a name="INSTEDIT"></a>
+<H3>D.6 INSTEDIT</H3>
+<DL><DL>
+
+The INSTEDIT utility is used to edit or create an instrument parameter file.
+The utility can be started from the "Edit File" button in the 
+<A HREF="expgui3.html#AddHist">"Add New Histogram"</A> dialog, or from the 
+the "instedit" option in the Powder menu. Alternately, to create a new
+  instrument parameter file, choose Powder menu option "New InstParm
+  file". (It is also possible 
+  to create a new file using the standard instedit by selecting
+  "Cancel" when asked for an input file.)
+An example INSTEDIT window appears below.
+<P>
+<img SRC="instedit1.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+<br clear=all>
+<P>
+Note that an instrument parameter file is used for a single type of data,
+as is selected by the menu button at the top of the window.
+However, multiple sets of parameters may be included in a 
+file, to be used for example with differing operating modes for the
+instrument. Each set of parameters is called a bank in GSAS terminology.
+The radiobuttons on the top of the window are used to select 
+which bank's parameters will be viewed.
+The "Add Bank" button adds an additional bank to the file.
+<P>
+The parameters are described briefly below, but in more depth in the 
+GSAS manual (for example, pages 158-166 for profile parameters and 
+page 221-223 for the details of the instrument parameter file.)
+<P>
+<H5>Bank Parameters</H5>
+The parameters available for each bank are:
+<DL>
+<DT>Title<DD>This probably has no real use.
+<DT>Instrument Name<DD>This string is used for creation of CIFs. It is
+best if this name is unique for each instrument.
+<DT>Primary Wavelength<DD>Note, this value is set automatically when 
+the radiation type is selected 
+<DT>Zero Correction<DD>This is the shift to be applied to 2theta 
+values in centidegrees (degrees/100). This value should probably be
+near zero for Debye-Scherrer geometry instruments (unless known from 
+calibration) and will almost always be fixed at zero 
+for Bragg-Brentano geometry.
+<DT>
+</DL>
+<I>X-ray only parameters</I>
+<DL>
+<DT>Radiation type<DD>Used with x-rays. The value set here 
+determines the anomolous dispersion (f' and f'' values) used.
+<DT>Monochromatic/Dual<DD>Used with x-rays. Set to dual when Kalpha1, Kalpha2 
+radiation is present.
+<DT>Secondary Wavelength<DD>Used in "dual" wavelength mode. 
+Note, this value is set automatically when the radiation type is selected 
+<DT>Wavelength Ratio<DD>Typically 0.5 for typical K alpha 1,2 instruments,
+<<I>i.e.</I>when K alpha 1 is double the intensity of K alpha 2.
+<DT>Polarization Correction<DD>There are three modes for this, where the 
+first two modes work similarly. The first mode ("Diffracted Beam") 
+is most common. The third mode ("None") is used when 
+Lorentz-polaraization corrections are applied to the data prior to its input
+to GSAS. See page 144-145 in the GSAS manual for more information on these
+corrections.
+<DT>Polarization Ratio<DD>In "Diffracted Beam" mode: 
+typically 0.5 for lab instruments without monochromators and higher for 
+instruments with a diffracted beam; the value depends on the monochromator
+take-off angle. Typically slightly below unity (0.9-0.98) for synchrotron
+instruments. Ask the instrument scientist for the appropriate value.
+</DL>
+<P>
+Each bank in the instrument parameter file has one or more sets of 
+profile parameters associated. Set number 1 is the default loaded
+when a histogram is added. Increase the number of sets
+using the "Add profile" button. Select the optimal profile type 
+for use with your data for this set, but for most flexibility, define
+default values for all useful profile types (type 1 is of use only for
+CW neutron work) and set these values from fitting a standard with 
+minimal broodening. Note that profiles can be read from a GSAS experiment 
+file using the "Import profile", which raises a dialog 
+such as the one below.
+<P>
+<img SRC="instedit2.gif" align=RIGHT alt="EXPGUI Screen snapshot">
+<br clear=all>
+
+
+</DL></DL>
+
+<br clear=all>
+<a name="ConvertUnix"></a>
+<a name="ConvertWin"></a>
+<h3>D.7 File Conversions</h3> 
+<DL><DL>
+<P>
+GSAS data, experiment and instrument parameter files are
+expected to have a format with exactly 80 characters per line followed 
+by a carriage return and then a linefeed (82 characters total per line). 
+Files in this format can be read in "Direct Access" mode. 
+Recent versions of GSAS will attempt to detect and repair files that
+are not in this format, but if the file is incorrectly formatted and 
+by chance the length of the file is divisible by 82, the problem in the
+file format will not be detected.
+The Convert menu
+in can be used to convert files into the correct format.
+The original version of the 
+file is retained and renamed.
+<P>
+</DL></DL>
+
+<br clear=all>
+<a name="Composition"></a>
+<h3>D.8 Compute Composition</h3> 
+<DL><DL>
+The composition box shows the unit cell and asymmetric unit composition
+for all phases in a material. Site multiplicities and occupancies are 
+taken into account.
+</DL></DL>
+
+<br clear=all>
+<a name="DeleteHistoryRecords"></a>
+<h3>D.9 Delete History Records</h3> 
+<DL><DL>
+Every time a GSAS program (including EXPGUI) is run, an entry is added to 
+the "history records" in the .EXP file. After 999 entries have been written,
+no more can be added to the file. Further, reading large numbers of history
+records can slow the GSAS programs 
+(this is less of a problem on faster computers). For these reasons, it may be 
+a good idea to prune the older history records from the file.
+The File/EraseHistory command can be used to invoke the this option.
+<P>
+On the dialog the number of history records to be retained is specified. 
+Also, after records have been deleted, the remaining records can be renumbered
+starting with 1, so that the 999 record limit is not reached.
+</DL></DL>
+
+<h2>E. Coordinate Export & Import Features</h2></a>
+EXPGUI can be used to read coordinates in formats not 
+supported in GSAS. Coordinates can also be exported in a variety of 
+formats as well. 
+
+<A name="import">
+<h3>E.1 Coordinate Import Formats</h3> 
+Coordinates can be imported using the 
+<A HREF="expgui2.html#addphase">"Add Phase"</A>, 
+<A HREF="expgui2.html#addatoms">"Add Atoms"</A> or
+<A HREF="expgui2.html#replacephase">"Replace Phase"</A> 
+buttons on the <A HREF="expgui2.html">Phase Panel</A>, by choosing
+the format from the pull-down list to the right of the 
+"Import atoms/phase from" button. The formats currently supported
+are listed below.
+Note that it is relatively easy to add new routines for 
+importing coordinates;
+see the <A HREF="expgui_cfg.html#import">
+customization information</A> for more details.
+<DL><DL>
+<DT><B>Crystallographic Information File (CIF)</B><DD>
+Coordinates can be read from single block or multiblock CIF files
+using DDL1. If more than one block containing coordinates is found in the
+file, a CIF browser is available to help select the desired block.
+<DT><B>PowderCell .CEL files</B><DD>
+This format is used by the DOS and Windows PowderCell program, a valuable 
+program for the transformation and visualization of structures.
+<DT><B>GSAS .EXP files</B><DD>
+This routine is used to copy coordinates, unit cell parameters and space group
+information from other GSAS experiment (.EXP) files.
+<DT><B>MSI .xtl format</B><DD>
+<a HREF="#ExportMSI">see below</a>
+<DT><B>PLATON .spf (Standard Parameter File) format</B><DD>
+<a HREF="#ExportSPF">see below</a>
+
+</DL></DL>
+
+<A name="export">
+<h3>E.2 Coordinate Export Formats</h3> 
+Coordinates can be written using the Import/Export=>"Coord Export" menu.
+Note that contents of the submenu will depend on the 
+number of export routines found in the EXPGUI directory when the menu 
+is first created, thus it is relatively easy to add new routines for 
+importing coordinates;
+see the <A HREF="expgui_cfg.html#export">
+customization information</A> for more details.
+<DL><DL>
+<DT><B>Crystallographic Information File (CIF)</B><DD>
+Powder Diffraction Crystallographic Information files (pdCIFs) can 
+be created by the GSAS2CIF program. The GSAS2CIF menu item 
+invokes this program.
+<a name="ExportMSI"></a>
+<DT><B>MSI .xtl format</B><DD>
+This writes a .xtl file, as is used in Insight-II and
+Cerius2 (Molecular Simulations, Inc.). The routine 
+attempts to convert GSAS space group names properly, as well as 
+correctly label "Origin 2" setting, however, the naming conversion
+will not work for all valid GSAS space groups. Some effort may be needed
+by the user to get everything worked out correctly.
+<a name="ExportSPF"></a>
+<DT><B>PLATON .spf (Standard Parameter File) format</B><DD>
+This writes a .spf file, as used in 
+<A HREF="http://www.cryst.chem.uu.nl/platon/">Platon</A> and 
+<A HREF="http://www.cryst.chem.uu.nl/platon/">Pluton</A> by A. L. Spek.
+Some attempt is made to get space group naming right, but there is
+no assurance of quality here.
+<a name="ExportSHELX"></a>
+<DT><B>SHELX .ins format</B><DD>
+This writes coordinates and symmetry, as used in the SHELX-97 program, and
+perhaps as used some other programs, such as CrystalMaker. In addition to 
+exporing the coordinates and displacement parameters, the fields that
+are generated are TITL, CELL, LATT, SYMM and SFAC. Note that the 
+wavelength, included as the first number on the CELL "card", is set to the
+arbitrary value of 1/2.
+</DL></DL>
+
+<A name=tcltk>
+<H2>
+<A Href="http://www.tcl.tk">
+Tcl/Tk</A></H2>
+The 
+<A Href="http://www.tcl.tk">
+Tcl/Tk program</A> is a platform-independent scripting language that is
+used to implement most of EXPGUI. This software is available for free
+and must be loaded in order to use EXPGUI. A somewhat out of date
+version of Tcl/Tk (8.4) is distributed with EXPGUI (ncnrpack.exe, etc.) but
+more recent versions can be used, but note that the BLT package (see
+below) is needed for all features of EXPGUI.
+While learning Tcl/Tk is a great thing to do, it is not a requirement
+for using or installing EXPGUI.
+
+<A name=blt>
+<H3>
+BLT Package</H3>
+<UL>
+The BLT graphics package is used by the WIDPLT, LIVEPLOT, BKGEDIT & 
+EXCLEDT routines. If the
+package can not be found by these routines, an error message, 
+"Error -- Unable to load the BLT package", will be displayed. It is also 
+possible for the package to be installed, but not configured properly. 
+If this is the case, a message, 
+"BLT Setup Error: could not access a Blt_ routine...", will be displayed.
+Use of the ncnrpack file distributed with EXPGUI usually avoids this problem.
+</UL>
+
+<A name=La>
+<H3>
+La (Linear Algebra) Package</H3>
+<UL>
+The
+<A HREF="http://www.hume.com">Hume 
+</A>
+Linear Algebra Tcl Package, 
+<A HREF="http://www.hume.com/la/la.html">
+La</A>, 
+is used by the BKGEDIT
+routine to perform least-squares fitting. If the
+package can not be found, the routine cannot run. 
+If the package cannot be found, a message, 
+"Error -- Unable to load the La package" will be displayed. This 
+should not happen, since the package is included with the EXPGUI files.
+So if get this error you probably have an incomplete installation.
+</UL>
+
+<A name=winexec>
+<H3>
+WINEXEC</H3>
+<UL>
+The WINEXEC package was needed under Windows-95 and its offspring 
+(-98 and -ME). It was found in older versions of EXPGUI, but is no
+  longer included.
+</UL>
+
+<H2>
+Acknowledgments</H2>
+Praise to Larson and 
+Von Dreele for GSAS, <A HREF="http://home.pacbell.net/ouster/">John Ousterhout</A>
+for Tcl/Tk, 
+Przemek Klosowski
+for convincing me to learn Tcl/Tk 
+and Jonathan Wasserman for helping me get this project started.
+Thanks also to
+Charles Lake of Indiana University of PA for working on many recent additions to EXPGUI, including the
+bond-distance restraints module and the (soon to come) rigid body editor;
+Pamela Whitfield of the NRC (Canada) for writing large 
+sections of the 
+<A Href="expgui7.html">Preferential Orientation Panel</A>
+and the 
+<A Href="expgui6.html">Profile Constraints panel</A>
+code and to John Cowgill for the "Export to GRACE" code.
+<P>
+<A Href="https://subversion.xray.aps.anl.gov/trac/EXPGUI/wiki/GSASIntro">
+GSAS</A>
+is written by Allen C. Larson and Robert B. Von Dreele while at 
+Los Alamos National Laboratory. Problems, questions
+or kudos concerning GSAS should be sent to Robert B. Von Dreele at 
+<A HREF="MAILTO:vondreele@anl.gov">vondreele@anl.gov</A>
+EXPGUI was written by Brian H. Toby while at the NIST Center for Neutron Research,
+<A HREF="MAILTO:Brian.Toby@ANL.GOV">Brian.Toby@ANL.GOV</A>.
+
+<P><hr><blockquote>
+<P>GSAS is Copyright, 1984-2000, by 
+the Regents of the University of California.
+The GSAS software was produced under a U.S. Government contract (W-7405-ENG-36)
+by the Los Alamos National Laboratory, which is operated by the University
+of California for the U.S. Department of Energy. The U.S. Government is
+licensed to use, reproduce, and distribute this software. Permission is
+granted to the public to copy and use this software without charge, provided
+that this notice and any statement of authorship are reproduced on all
+copies. Neither the Government nor the University makes any warranty, express
+or implied, or assumes any liability or responsibility for the use of this
+software.
+
+<P>EXPGUI was written by a U.S. Government employee, which means that
+EXPGUI is not subject to copyright. Have fun with it. Modify it. Please write 
+new sections and make them available to the rest of the world. 
+
+<p>Neither the U.S. Government nor any author makes any warranty, 
+expressed or implied, or assumes any liability or responsibility 
+for the use of this information or the software described
+here.
+</blockquote>
+
+<P><hr WIDTH="100%">
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>$Revision$ $Date$
+</blockquote>
+</body>
+</html>

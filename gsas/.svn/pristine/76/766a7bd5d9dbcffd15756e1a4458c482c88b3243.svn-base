@@ -1,0 +1,448 @@
+<html>
+<head>
+   <title>EXPGUI Messages</title>
+   <meta name="keywords" content="crystallography, Rietveld, diffraction,
+   GSAS, EXPGUI">
+</HEAD>
+<style>
+A:link {text-decoration:none}
+A:vlink {text-decoration:none}
+</style>
+
+<BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+<? 
+   include("/var/www/include/navigation.inc");
+   include("/var/www/include/utility.inc"); 
+?>
+<blockquote><font face="arial, helvetica, sans-serif">
+
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH></TR></TABLE><BR CLEAR=ALL>
+
+<center><h1>
+<HR noshade width="75%" size="2" align="center">
+EXPGUI Informational, Warning and Error Messages
+<HR noshade width="75%" size="2" align="center">
+</h1></center>
+This page contains additional information about various warning 
+and error screens that may occur in EXPGUI as well as descriptions
+for a number of utility functions.
+
+<a name="Info"></a>
+<H2>Informational Messages</H2>
+<a name="Overwrite"></a>
+<h3>File has been modified...</h3> 
+<DL><DL>
+This message occurs when EXPGUI detects that the experiment file has 
+been changed by another program. (EXPGUI only tracks the file 
+modification date, so that the file could have been opened for writing,
+but no actual changes were made.) This can be normal behavior -- for example
+after a refinement cycle has been run, 
+or this can signal a problem, such as two people 
+or sessions trying to edit the same .EXP file.
+This warning is made because a choice must be made: to keep the version
+currently displayed in EXPGUI, or to use the new version
+written by the other program. 
+On UNIX, this message can be avoided by setting the 
+<a href="expguic.html#Autoupdate">Autoupdate EXP</a> flag
+to "on" causes .EXP files to be loaded automatically after GSAS
+programs are run, eliminating most occurrences where this message is
+displayed, but with the disadvantage that a bad refinement run can not
+be reversed easily.
+<UL>
+<LI>
+If you choose to keep the 
+currently displayed version and make changes and then save the file, either
+by using the File/Save menu option or by running a GSAS program,
+the new version just written will be lost, 
+if any changes are made in EXPGUI and are then saved. 
+This can be useful -- to discard the
+results of a refinement that has gone awry -- 
+but in other cases may not be desirable.
+<LI>
+If you opt to load the new .EXP file, by pressing "Load new", 
+the version currently displayed in 
+the EXPGUI window will be lost. This is normally what you will want to do, 
+but if you unsure, you can select "Continue with old", use File/Save As to 
+save the version in EXPGUI and then use "EXPNAM" to load the new version, 
+so they can be compared.
+</UL>
+If changes have been made to the experiment file in EXPGUI 
+since it was last saved, and 
+the file is changed by an external program, the message "you have made 
+changes to this version" is added and a third button, 
+"Save edited version", is shown. Under this circumstance, the usual action,
+pressing "Load new" could result in valuable changes being lost. Pressing 
+"Save edited version" results brings you to the File/"Save as" menu, 
+where the modified version of the experiment file in EXPGUI can be 
+saved under a new name.
+<br clear=all>
+</DL></DL>
+
+<a name="lock"></a>
+<h3>Please wait while GSAS program finishes...</h3> 
+<DL><DL>
+A window labeled "<font face="courier">Please wait while GSAS program finishes." 
+If a problem occurs, close the DOS box and press the "Continue" button</font> 
+is created in Windows-9x while GSAS programs are run. As this window 
+is created, a "lock" file (<font face="courier">expgui.lck</font>) is also created. When the 
+DOS batch file running the GSAS program completes, this file is deleted.
+The EXPGUI process waits until the <font face="courier">expgui.lck</font> lock file 
+is deleted. Should the DOS process crash before the file is deleted, 
+the "Continue" button can be pressed. This causes 
+EXPGUI to continue and deletes the lock file.
+<br clear=all>
+</DL></DL>
+
+<br clear=all>
+<a name="Inputtitle"></a>
+<h3>Input a value for the title</h3> 
+<DL><DL>
+A dialog with "Enter a value for the title for experiment..."  appears
+when a new experiment is created. Note that this title can be edited 
+later on the 
+<a href="expgui1.html">Least Squares Control Page</a>.
+</DL></DL>
+
+
+
+<br clear=all>
+<a name="ChooseCIF"></a>
+<h3>Choose CIF Block</h3> 
+<DL><DL>
+When coordinates/cell parameters are read from a CIF, all blocks in the file
+are read. If more than block containing coordinates is found, a message
+saying "More than one block in CIF contains coordinates. Select the block to use."
+One must then select one of these blocks from the list of blocks. 
+The blocks with coordinates are listed, both numbered and with the 
+block (data_) name. The "CIF Browser"
+button can be pressed to view the data names and their values for each block.
+</DL></DL>
+
+
+<br clear=all>
+<a name="open"></a>
+<h3>Open Experiment File</h3> 
+<DL><DL>
+The Open Experiment windows is displayed to select a
+experiment file to read or write, as well as a 
+directory to use. When the message at the top reads 
+"Select an experiment file to read" either an
+existing experiment file should be selected, or a new
+name may be typed in at the box at the bottom to enter
+a name manually. If the file is not found, 
+you will be warned and given the option of 
+creating a new experiment with that name.
+
+When the message at the top reads 
+"Select an experiment file to create",
+typically after a "Save as" command, 
+the directory may be changed, but typically 
+a file name will be typed into the bottom box.
+If the file exists, you will be warned before the
+file is overwritten and you will have the option 
+to enter a different file name.
+<P>
+Note that the files in the list can be sorted 
+alphabetically or can be sorted by the date the
+experiment file was last modified, according to 
+the checkbuttons to the upper right.
+<P>
+The "Include Archived Files" checkbox allows archive files
+named <xxxxxx>.Onn to be read
+(see the 
+<A href="expguic.html#archive">archive option</A>).
+See the <A href="#LoadArchived">Load Archived File</A>, below, for 
+further discussion.
+</DL></DL>
+
+<br clear=all>
+<a name="LoadArchived"></a>
+<h3>Load Archived File</h3> 
+<DL><DL>
+When a archived experiment file is read, the "Load Archived File" 
+window is displayed to select the name to be used for the experiment.
+There are two choices. One is to reuse existing name. 
+This will cause the current version of the experiment file to be
+archived so that it is not lost. The selected [older] archived
+version will then be read and will be saved as the latest version of the
+experiment file.
+The other option is to save the experiment 
+under a new name. 
+</DL></DL>
+
+<br clear=all>
+<a name="ExcludeRegion"></a>
+<h3>Exclude Data...<BR>Delete Region...</h3> 
+<DL><DL>
+This message is shown before adding or deleting an excluded region using
+<a href="excledt.html">EXCLEDT</a> to confirm an action. 
+See the <a href="excledt.html#AddRegion">discussion on Adding Regions</a>
+in EXCLEDT.
+Note that this 
+confirmation message can be eliminated if desired, (see the
+EXCLEDT Options menu item <a href="excledt.html#prompt">Prompt on add/del</a>.)
+<br clear=all>
+</DL></DL>
+
+<br clear=all>
+<a name="ProcessRegions"></a>
+<h3>The upper (lower) limit has changed...<BR>The excluded regions have changed...</h3>
+<DL><DL>
+This message is shown 
+if the upper data limit is raised (or d-min ls lowered) so that 
+<a href="excledt.html">EXCLEDT</a> can display the data that have been added. 
+It is also shown when 
+<a href="excledt.html">EXCLEDT</a> exits so that the new data limits
+can be processed. GENLES will not run properly until POWPREF is run.
+</DL></DL>
+
+<br clear=all>
+<a name="RegionTooBig"></a>
+<h3>The upper (lower) data point...</h3>
+<DL><DL>
+This message is shown when the upper data limit (lower d-min limit)
+well outside the range of data. 
+It is probably best to accept this suggestion. See the 
+<a href="excledt.html#LimitTooHigh">discussion on data limits</a>
+in the EXCLEDT web page for more information.
+</DL></DL>
+
+<br clear=all>
+<a name="ProcessUse"></a>
+<h3>You have changed histogram flags...</h3>
+<DL><DL>
+This message is shown 
+after changing histogram flags so that a different set of histograms
+will be included or excluded in a refinement.
+GENLES will not run properly until POWPREF is run.
+</DL></DL>
+
+<a name="Warn"></a>
+<H2>Warning Messages</H2>
+
+<br clear=all>
+<a name="AbandonEditConstraints"></a>
+<a name="AbandonAtomConstraints"></a>
+<h3>Abandoning Constraint Editing</h3> 
+<DL><DL>
+If the "Cancel Changes" button is pressed when
+a profile or atom constraint is being edited or created, a message saying 
+"Do you want to lose any changes made to this constraint?" is displayed, even
+if no changes have been made to the constraint. Changes are recorded only when the
+"Save" button is pressed.
+</DL></DL>
+
+
+<br clear=all>
+<a name="OpenErr"></a>
+<h3>File ... does not exist in ...</h3> 
+<DL><DL>
+When an attempt is made to open a file that does not
+already exists, for example when the EXPNAM command
+is used, this warning is displayed. The answer can be 
+"Select other" or "Create", where "Select other" will
+return you to a file selection dialog and "Create" 
+will create a new dialog with this name.
+</DL></DL>
+
+<br clear=all>
+<a name="OverwriteErr"></a>
+<a name="OverwriteCnv"></a>
+<h3>File ... already exists in ... OK to overwrite?</h3> 
+<DL><DL>
+When an attempt is made to using the File/"Save As" 
+command to write the current experiment file 
+with a new name, but 
+a file with the newly specified name already exists,
+this message is displayed. Choose "Select other"
+to specify a different file name or "Overwrite"
+to use this name in which case the older file 
+is replaced.
+<P>
+A similar warning will occur in UNIX when converting files.
+If the intended output file already exists,
+this message is displayed. Choose "Cancel"
+to specify a different file name or "Overwrite"
+to use this name in which case the older file 
+is replaced. 
+This message can be seen in Windows when converting files, 
+for slightly different reasons. When files are converted, the 
+converted file keeps the same name as the original version. However,
+th original file is renamed to XXXX.ord, where XXXX.YYY is the 
+original file name. If a file named XXXX.ord already exists, this message
+is displayed.
+</DL></DL>
+
+<br clear=all>
+<a name="NoValidHist"></a>
+<h3>No histograms are ready to plot. Run GENLES and try again.</h3> 
+<DL><DL>
+This happens when LIVEPLOT is run but no valid histograms are available 
+to plot. LIVEPLOT can plot histograms only when they have been processed by 
+both POWPREF and GENLES.
+</DL></DL>
+
+<br clear=all>
+<a name="Customizewarning"></a>
+<h3>Error reading localconfig or .gsas_config:</h3> 
+<DL><DL>
+This happens when an invalid command is encountered in files 
+<FONT FACE="COURIER">localconfig</FONT>, 
+<FONT FACE="COURIER">~/.gsas_config</FONT>
+or
+<FONT FACE="COURIER">c:\gsas.config</FONT>. 
+Some or all of the commands in these files 
+will be skipped over, 
+but nothing serious wrong will likely result. Note that the 
+<FONT FACE="COURIER">localconfig</FONT> 
+file is located in the expgui directory 
+(typically 
+<FONT FACE="COURIER">/home/gsas/expgui/localconfig</FONT> or
+<FONT FACE="COURIER">C:\gsas\expgui\localconfig</FONT>) 
+and the <FONT FACE="COURIER">.gsas_config</FONT>
+or <FONT FACE="COURIER">gsas.config</FONT> file
+is located in your home directory in UNIX or 
+<FONT FACE="COURIER">c:\</FONT> in Windows.
+If you rename or move these files, the error should go away. 
+At that point you can decide if you want to track the error down to retain 
+your <a href="expgui_cfg.html">customizations</a>. 
+</DL></DL>
+
+<br clear=all>
+<a name="RunPowpref"></a>
+<h3>You are attempting to run GENLES...:</h3> 
+<DL><DL>
+The POWPREF program maps reflections to every data point. If you 
+add/remove phases or histograms, or change the diffractometer constants, 
+cell parameters, profile parameters, and so on, you need to run POWPREF
+before running GENLES. If EXPGUI catches you forgetting to do this, it
+reminds you. However, not all possible changes that would require POWPREF are 
+caught.
+</DL></DL>
+
+<br clear=all>
+<a name="BadLaue"></a>
+<h3>Error processing Laue code:</h3> 
+<DL><DL>
+The message "Error processing Laue code: XXXX
+Error in space group YYYY..." occurs when the Laue class for a space group
+could not be determined when editing unit cell constants. This is likely
+due to you entering an invalid space group or else a bug in EXPGUI in 
+parsing the output from program SPACEGROUP. The former is more likely,
+but if you encounter a bug, please send it in</A>, be sure
+to specify how where spaces were used in the string (e.g. "P 21 21 21" vs. 
+"P21 21 21").
+
+
+</DL></DL>
+
+<a name="Error"></a>
+<H2>Error Messages</H2>
+
+<br clear=all>
+<a name="NoPGPLOT"></a>
+<h3>Unable to find file GRFONT.DAT...</h3> 
+<DL><DL>
+The file <font face="courier">grfont.dat</font> is expected to be in the ...\gsas\fonts directory
+in DOS/Windows platforms and files <font face="courier">grfont.dat</font> and 
+<font face="courier">pgxwin_server</font> are expected to be found in the .../gsas/pgl directory
+in UNIX. If these files cannot be found, GSAS will not be able to produce 
+graphics in programs such as POWPLOT, RAWPLOT,...
+If GSAS and EXPGUI are correctly installed this error will not occur
+(see the installation notes for 
+<A HREF="expgui_Win_readme.html">Windows</A>
+and 
+<A HREF="expgui_Unix_readme.html">UNIX</A>.
+
+</DL></DL>
+
+<br clear=all>
+<a name="ConvNotFound"></a>
+<h3>Sorry, file ... not found in ...</h3> 
+<DL><DL>
+The specified input file was not found for conversion
+</DL></DL>
+
+<br clear=all>
+<a name="ConvSameName"></a>
+<h3>Sorry, filenames must differ</h3> 
+<DL><DL>
+For UNIX file conversions, the input and output file names
+must be different. You have specified the same name twice.
+</DL></DL>
+
+<br clear=all>
+<a name="NoRename"></a>
+<h3>Unable to rename <I>XXXXX</I>.LST</h3> 
+<DL><DL>
+This message is displayed if the GSAS .LST file could not 
+be renamed prior to running DISAGL in a separate window. 
+On Windows it appears that LSTVIEW can prevent EXPGUI
+from renaming the .LST file. Either exit LSTVIEW
+while running DISAGL or reset the DISAGL option
+DISAGL so that output goes to the .LST file.
+</DL></DL>
+
+<br clear=all>
+<a name="OldEXPTOOL"></a>
+<h3>You must upgrade the EXPTOOL program...</h3> 
+<DL><DL>
+The original version of the EXPTOOL program used within 
+EXPGUI to add histograms does not work with dummy histograms.
+Versions of GSAS distributed prior to October 2001 do not contain this updated
+routine. A more recent version of the EXPTOOL program can
+be downloaded from 
+<A Href="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_win/">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_win/</A>,
+<A Href="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_linux/">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_linux/</A> or
+<A Href="ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_sgi/">
+ftp://ftp.ncnr.nist.gov/pub/cryst/gsas/exe_sgi/</A>.
+Alternately, EXPEDT can be used to add dummy histograms.
+</DL></DL>
+
+<br clear=all>
+<a name="TCLDUMPError"></a>
+<h3>Error running TCLDUMP (LIVEPLOT or BKGEDIT)</h3> 
+<DL><DL>
+The program TCLDUMP (or program HSTDMP if TCLDUMP is not found) is used to read
+the binary <I>expnam</I>.Pxx and <I>expnam</I>.Rxx files produced by 
+POWPREF and GENLES so that refinement results can be plotted.
+If there is an error reading these files, an error message is produced
+reading "There was an error running the TCLDUMP program..." 
+and the text of the error message reads something like 
+"Invalid command name 'FORTRAN'".
+The most common reason for this error is that the 
+<I>expnam</I>.Pxx and <I>expnam</I>.Rxx files do not exist (because you have
+not run POWPREF or have moved/renamed the .EXP file. It is possible, 
+but less common for this error to occur if TCLDUMP tries to read files
+produced by an older version of GSAS (since the internal format of the 
+binary files sometimes changes). If you see this message, run POWPREF & GENLES
+to force these files to be written. If the GSAS results can be plotted in
+POWPLOT, but not in LIVEPLOT or BKGEDIT, please contact Brian Toby at
+<a href="mailto:brian.toby@anl.gov">Brian.Toby@ANL.GOV</a>.
+</DL></DL>
+
+<br clear=all>
+<a name=""></a>
+<h3></h3> 
+<DL><DL>
+</DL></DL>
+
+<hr>
+<TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+<TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+</TH></TR></TABLE>
+
+<P>
+<font size=-1><? lastmod(); ?> </font>
+<br>
+$Revision$ $Date$
+</blockquote>
+</body>
+</html>

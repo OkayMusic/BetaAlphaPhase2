@@ -1,0 +1,396 @@
+set CIF_file_name cif_pd.dic
+set CIF_file_size 117025
+set CIF_index_version 1.1
+set CIF_file_mtime 918278280
+array set CIF_dataname_index {
+	_pd_block_[pd] 	{{cif_pd.dic 6936 1489} {{} {} {} 0 {} category_overview 0}}
+	_pd_block_diffractogram_id 	{{cif_pd.dic 8650 489} {c {} {} 0 {} pd_proc 1}}
+	_pd_block_id 	{{cif_pd.dic 9503 3612} {c {} {} 0 {} pd_block 1}}
+	_pd_meas_[pd] 	{{cif_pd.dic 13996 1306} {{} {} {} 0 {} category_overview 0}}
+	_pd_meas_2theta_fixed 	{{cif_pd.dic 15570 245} {n -180.0:360.0 {} 1 {} pd_meas_method 0}}
+	_pd_meas_2theta_range_min 	{{cif_pd.dic 16169 255} {n -180.0:360.0 {} 0 {} pd_meas_method 0}}
+	_pd_meas_2theta_range_max 	{{cif_pd.dic 16169 255} {n -180.0:360.0 {} 0 {} pd_meas_method 0}}
+	_pd_meas_2theta_range_inc 	{{cif_pd.dic 16169 255} {n -180.0:360.0 {} 0 {} pd_meas_method 0}}
+	_pd_meas_2theta_scan 	{{cif_pd.dic 16720 970} {n -180.0:360.0 {} 1 {} pd_data 1}}
+	_pd_meas_angle_chi 	{{cif_pd.dic 18104 268} {n -180.0:360.0 {} 0 {} pd_data 1}}
+	_pd_meas_angle_omega 	{{cif_pd.dic 18104 268} {n -180.0:360.0 {} 0 {} pd_data 1}}
+	_pd_meas_angle_phi 	{{cif_pd.dic 18104 268} {n -180.0:360.0 {} 0 {} pd_data 1}}
+	_pd_meas_angle_2theta 	{{cif_pd.dic 18104 268} {n -180.0:360.0 {} 0 {} pd_data 1}}
+	_pd_meas_counts_total 	{{cif_pd.dic 18794 1551} {n 0: {} 0 {} pd_data 1}}
+	_pd_meas_counts_background 	{{cif_pd.dic 18794 1551} {n 0: {} 0 {} pd_data 1}}
+	_pd_meas_counts_container 	{{cif_pd.dic 18794 1551} {n 0: {} 0 {} pd_data 1}}
+	_pd_meas_counts_monitor 	{{cif_pd.dic 18794 1551} {n 0: {} 0 {} pd_data 1}}
+	_pd_meas_datetime_initiated 	{{cif_pd.dic 20592 389} {c {} {} 0 {} pd_meas_method 0}}
+	_pd_meas_detector_id 	{{cif_pd.dic 21249 584} {c {} {} 0 {} pd_data 1}}
+	_pd_meas_info_author_address 	{{cif_pd.dic 22127 183} {c {} {} 0 {} pd_meas_info 1}}
+	_pd_meas_info_author_email 	{{cif_pd.dic 22600 189} {c {} {} 0 {} pd_meas_info 1}}
+	_pd_meas_info_author_fax 	{{cif_pd.dic 23075 356} {c {} {} 0 {} pd_meas_info 1}}
+	_pd_meas_info_author_name 	{{cif_pd.dic 23660 295} {c {} {} 0 {} pd_meas_info 1}}
+	_pd_meas_info_author_phone 	{{cif_pd.dic 24245 362} {c {} {} 0 {} pd_meas_info 1}}
+	_pd_meas_intensity_total 	{{cif_pd.dic 25045 1440} {n {} {} 1 {} pd_data 1}}
+	_pd_meas_intensity_background 	{{cif_pd.dic 25045 1440} {n {} {} 1 {} pd_data 1}}
+	_pd_meas_intensity_container 	{{cif_pd.dic 25045 1440} {n {} {} 1 {} pd_data 1}}
+	_pd_meas_intensity_monitor 	{{cif_pd.dic 25045 1440} {n {} {} 1 {} pd_data 1}}
+	_pd_meas_number_of_points 	{{cif_pd.dic 26714 89} {n 1: {} 0 {} pd_meas_method 0}}
+	_pd_meas_position 	{{cif_pd.dic 27129 995} {n {} {} 1 mm pd_data 1}}
+	_pd_meas_rocking_angle 	{{cif_pd.dic 28462 164} {n 0:360.0 {} 0 deg pd_data 1}}
+	_pd_meas_rocking_axis 	{{cif_pd.dic 28962 187} {c {} {{chi {}} {omega {}} {phi {}}} 0 {} pd_meas_method 1}}
+	_pd_meas_scan_method 	{{cif_pd.dic 29649 336} {c {} {{step {step scan]}} {cont {continuous scan]}} {tof {time of flight]}} {disp energy-dispersive\]} {fixed {stationary detector]}}} 0 {} pd_meas_method 0}}
+	_pd_meas_special_details 	{{cif_pd.dic 30176 291} {c {} {} 0 {} pd_meas_method 0}}
+	_pd_meas_step_count_time 	{{cif_pd.dic 30841 340} {n 0.0: {} 1 s pd_data 1}}
+	_pd_meas_time_of_flight 	{{cif_pd.dic 31557 194} {n 0: {} 1 {\ms} pd_data 1}}
+	_pd_meas_units_of_intensity 	{{cif_pd.dic 32175 360} {c {} {} 0 {} pd_meas_method 0}}
+	_pd_calib_[pd] 	{{cif_pd.dic 34135 533} {{} {} {} 0 {} category_overview 0}}
+	_pd_calib_2theta_offset 	{{cif_pd.dic 35239 765} {n -180.0:180.0 {} 0 deg pd_calib 1}}
+	_pd_calib_2theta_off_point 	{{cif_pd.dic 35239 765} {n -180.0:180.0 {} 0 deg pd_calib 1}}
+	_pd_calib_2theta_off_min 	{{cif_pd.dic 35239 765} {n -180.0:180.0 {} 0 deg pd_calib 1}}
+	_pd_calib_2theta_off_max 	{{cif_pd.dic 35239 765} {n -180.0:180.0 {} 0 deg pd_calib 1}}
+	_pd_calib_detector_id 	{{cif_pd.dic 36311 276} {c {} {} 0 {} pd_calib 1}}
+	_pd_calib_detector_response 	{{cif_pd.dic 36908 286} {n 0.0: {} 0 {} pd_calib 1}}
+	_pd_calib_std_external_block_id 	{{cif_pd.dic 37539 395} {c {} {} 0 {} pd_calib 1}}
+	_pd_calib_std_external_name 	{{cif_pd.dic 37539 395} {c {} {} 0 {} pd_calib 1}}
+	_pd_calib_std_internal_mass_% 	{{cif_pd.dic 38302 252} {n 0.0:100.0 {} 1 {} pd_calib 1}}
+	_pd_calib_std_internal_name 	{{cif_pd.dic 38939 80} {c {} {} 0 {} pd_calib 1}}
+	_pd_calibration_conversion_eqn 	{{cif_pd.dic 39352 447} {c {} {} 0 {} pd_calibration 0}}
+	_pd_calibration_special_details 	{{cif_pd.dic 40004 429} {c {} {} 0 {} pd_calibration 0}}
+	_pd_spec_[pd] 	{{cif_pd.dic 41060 286} {{} {} {} 0 {} category_overview 0}}
+	_pd_spec_description 	{{cif_pd.dic 41523 143} {c {} {} 0 {} pd_spec 0}}
+	_pd_spec_mount_mode 	{{cif_pd.dic 41930 70} {c {} {{reflection {}} {transmission {}}} 0 {} pd_spec 0}}
+	_pd_spec_mounting 	{{cif_pd.dic 42476 62} {c {} {} 0 {} pd_spec 0}}
+	_pd_spec_orientation 	{{cif_pd.dic 42838 768} {c {} {{horizontal {}} {vertical {}} {both {}}} 0 {} pd_spec 0}}
+	_pd_spec_preparation 	{{cif_pd.dic 43991 325} {c {} {} 0 {} pd_spec 0}}
+	_pd_spec_shape 	{{cif_pd.dic 44609 54} {c {} {{cylinder {}} {flat_sheet {}} {irregular {}}} 0 {} pd_spec 0}}
+	_pd_spec_size_axial 	{{cif_pd.dic 45058 435} {n 0.0: {} 0 mm pd_spec 0}}
+	_pd_spec_size_equat 	{{cif_pd.dic 45058 435} {n 0.0: {} 0 mm pd_spec 0}}
+	_pd_spec_size_thick 	{{cif_pd.dic 45058 435} {n 0.0: {} 0 mm pd_spec 0}}
+	_pd_spec_special_details 	{{cif_pd.dic 45675 119} {c {} {} 0 {} pd_spec 0}}
+	_pd_instr_[pd] 	{{cif_pd.dic 46479 2282} {{} {} {} 0 {} category_overview 0}}
+	_pd_instr_2theta_monochr_pre 	{{cif_pd.dic 49179 174} {n -180.0:180.0 {} 0 deg pd_instr 1}}
+	_pd_instr_2theta_monochr_post 	{{cif_pd.dic 49179 174} {n -180.0:180.0 {} 0 deg pd_instr 1}}
+	_pd_instr_beam_size_ax 	{{cif_pd.dic 49707 263} {n 0.0: {} 0 mm pd_data 0}}
+	_pd_instr_beam_size_eq 	{{cif_pd.dic 49707 263} {n 0.0: {} 0 mm pd_data 0}}
+	_pd_instr_cons_illum_flag 	{{cif_pd.dic 50234 439} {c {} {{yes {}} {no {}}} 0 {} pd_instr 0}}
+	_pd_instr_cons_illum_len 	{{cif_pd.dic 51014 555} {n 0.0: {} 0 mm pd_instr 0}}
+	_pd_instr_dist_src/mono 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_dist_mono/spec 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_dist_src/spec 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_dist_spec/anal 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_dist_anal/detc 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_dist_spec/detc 	{{cif_pd.dic 52191 960} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_divg_ax_src/mono 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_ax_mono/spec 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_ax_src/spec 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_ax_spec/anal 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_ax_anal/detc 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_ax_spec/detc 	{{cif_pd.dic 53791 1276} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_src/mono 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_mono/spec 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_src/spec 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_spec/anal 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_anal/detc 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_divg_eq_spec/detc 	{{cif_pd.dic 55707 1245} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_geometry 	{{cif_pd.dic 57385 70} {c {} {} 0 {} pd_instr 0}}
+	_pd_instr_location 	{{cif_pd.dic 57705 282} {c {} {} 0 {} pd_instr 0}}
+	_pd_instr_monochr_pre_spec 	{{cif_pd.dic 58459 1268} {c {} {} 0 {} pd_instr 1}}
+	_pd_instr_monochr_post_spec 	{{cif_pd.dic 58459 1268} {c {} {} 0 {} pd_instr 1}}
+	_pd_instr_slit_ax_src/mono 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_ax_mono/spec 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_ax_src/spec 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_ax_spec/anal 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_ax_anal/detc 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_ax_spec/detc 	{{cif_pd.dic 60370 1221} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_src/mono 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_mono/spec 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_src/spec 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_spec/anal 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_anal/detc 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_slit_eq_spec/detc 	{{cif_pd.dic 62234 1190} {n 0.0: {} 0 mm pd_instr 1}}
+	_pd_instr_soller_ax_src/mono 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_ax_mono/spec 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_ax_src/spec 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_ax_spec/anal 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_ax_anal/detc 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_ax_spec/detc 	{{cif_pd.dic 64078 1204} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_src/mono 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_mono/spec 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_src/spec 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_spec/anal 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_anal/detc 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_soller_eq_spec/detc 	{{cif_pd.dic 65936 1173} {n 0.0: {} 0 deg pd_instr 1}}
+	_pd_instr_source_size_ax 	{{cif_pd.dic 67470 250} {n 0.0: {} 0 mm pd_instr 0}}
+	_pd_instr_source_size_eq 	{{cif_pd.dic 67470 250} {n 0.0: {} 0 mm pd_instr 0}}
+	_pd_instr_special_details 	{{cif_pd.dic 67907 149} {c {} {} 0 {} pd_instr 0}}
+	_pd_instr_var_illum_len 	{{cif_pd.dic 68395 553} {n 0.0: {} 0 mm pd_data 1}}
+	_pd_proc_[pd] 	{{cif_pd.dic 69179 266} {{} {} {} 0 {} category_overview 0}}
+	_pd_proc_2theta_corrected 	{{cif_pd.dic 69793 518} {n -180.0:180.0 {} 0 deg pd_data 1}}
+	_pd_proc_2theta_range_min 	{{cif_pd.dic 70742 289} {n -180.0:180.0 {} 0 deg pd_proc_info 0}}
+	_pd_proc_2theta_range_max 	{{cif_pd.dic 70742 289} {n -180.0:180.0 {} 0 deg pd_proc_info 0}}
+	_pd_proc_2theta_range_inc 	{{cif_pd.dic 70742 289} {n -180.0:180.0 {} 0 deg pd_proc_info 0}}
+	_pd_proc_d_spacing 	{{cif_pd.dic 71357 135} {n 0.0: {} 0 A pd_data 1}}
+	_pd_proc_energy_incident 	{{cif_pd.dic 71888 475} {n 0.0: {} 0 eV pd_data 1}}
+	_pd_proc_energy_detection 	{{cif_pd.dic 71888 475} {n 0.0: {} 0 eV pd_data 1}}
+	_pd_proc_info_author_address 	{{cif_pd.dic 72657 184} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_author_email 	{{cif_pd.dic 73131 191} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_author_fax 	{{cif_pd.dic 73608 359} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_author_name 	{{cif_pd.dic 74196 371} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_author_phone 	{{cif_pd.dic 74857 365} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_data_reduction 	{{cif_pd.dic 75419 220} {c {} {} 0 {} pd_proc_info 0}}
+	_pd_proc_info_datetime 	{{cif_pd.dic 75912 384} {c {} {} 0 {} pd_proc_info 1}}
+	_pd_proc_info_excluded_regions 	{{cif_pd.dic 76576 179} {c {} {} 0 {} pd_proc_info 0}}
+	_pd_proc_info_special_details 	{{cif_pd.dic 76954 150} {c {} {} 0 {} pd_proc_info 0}}
+	_pd_proc_intensity_net 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_intensity_total 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_intensity_bkg_calc 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_intensity_bkg_fix 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_intensity_incident 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_intensity_norm 	{{cif_pd.dic 77690 2890} {n 0.0: {} 1 {} pd_data 1}}
+	_pd_proc_number_of_points 	{{cif_pd.dic 80807 80} {n 1: {} 0 {} pd_proc_info 0}}
+	_pd_proc_recip_len_q 	{{cif_pd.dic 81232 137} {n 0.0: {} 0 A^-1^ pd_data 1}}
+	_pd_proc_wavelength 	{{cif_pd.dic 81698 458} {n 0.0: {} 0 A pd_data 1}}
+	_pd_proc_ls_[pd] 	{{cif_pd.dic 82414 718} {{} {} {} 0 {} category_overview 0}}
+	_pd_proc_ls_background_function 	{{cif_pd.dic 83333 1528} {c {} {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_peak_cutoff 	{{cif_pd.dic 85082 366} {n {} {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_pref_orient_corr 	{{cif_pd.dic 85643 504} {c {} {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_prof_r_factor 	{{cif_pd.dic 86491 3081} {n 0.0: {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_prof_wr_factor 	{{cif_pd.dic 86491 3081} {n 0.0: {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_prof_wr_expected 	{{cif_pd.dic 86491 3081} {n 0.0: {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_profile_function 	{{cif_pd.dic 89767 396} {c {} {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_special_details 	{{cif_pd.dic 90356 194} {c {} {} 0 {} pd_proc_ls 0}}
+	_pd_proc_ls_weight 	{{cif_pd.dic 90795 361} {n 0: {} 0 {} pd_data 1}}
+	_pd_calc_[pd] 	{{cif_pd.dic 91389 273} {{} {} {} 0 {} category_overview 0}}
+	_pd_calc_intensity_net 	{{cif_pd.dic 91975 1163} {n 0.0: {} 0 {} pd_data 1}}
+	_pd_calc_intensity_total 	{{cif_pd.dic 91975 1163} {n 0.0: {} 0 {} pd_data 1}}
+	_pd_calc_method 	{{cif_pd.dic 93304 360} {c {} {} 0 {} pd_calc 0}}
+	_pd_peak_[pd] 	{{cif_pd.dic 93879 621} {{} {} {} 0 {} category_overview 0}}
+	_pd_peak_2theta_centroid 	{{cif_pd.dic 94978 105} {n 0.0:180.0 {} 1 deg pd_peak 1}}
+	_pd_peak_2theta_maximum 	{{cif_pd.dic 94978 105} {n 0.0:180.0 {} 1 deg pd_peak 1}}
+	_pd_peak_d_spacing 	{{cif_pd.dic 95491 59} {n 0.0: {} 1 A pd_peak 1}}
+	_pd_peak_id 	{{cif_pd.dic 95878 450} {c {} {} 0 {} pd_peak 1}}
+	_pd_peak_intensity 	{{cif_pd.dic 96657 186} {n 0.0: {} 1 {} pd_peak 1}}
+	_pd_peak_pk_height 	{{cif_pd.dic 97172 272} {n 0.0: {} 1 {} pd_peak 1}}
+	_pd_peak_special_details 	{{cif_pd.dic 97635 211} {c {} {} 0 {} pd_peak_method 0}}
+	_pd_peak_wavelength_id 	{{cif_pd.dic 98173 586} {c {} {} 0 {} pd_peak 1}}
+	_pd_peak_width_2theta 	{{cif_pd.dic 99177 107} {n 0.0:180.0 {} 1 deg pd_peak 1}}
+	_pd_peak_width_d_spacing 	{{cif_pd.dic 99704 111} {n 0.0: {} 1 A pd_peak 1}}
+	_pd_phase_[pd] 	{{cif_pd.dic 100054 635} {{} {} {} 0 {} category_overview 0}}
+	_pd_phase_block_id 	{{cif_pd.dic 100945 311} {c {} {} 0 {} pd_phase 1}}
+	_pd_phase_id 	{{cif_pd.dic 101589 99} {c {} {} 0 {} pd_phase 1}}
+	_pd_phase_mass_% 	{{cif_pd.dic 102020 190} {n 0.0:100.0 {} 1 {} pd_phase 1}}
+	_pd_phase_name 	{{cif_pd.dic 102459 150} {c {} {} 0 {} pd_phase 1}}
+	_pd_refln_[pd] 	{{cif_pd.dic 102848 493} {{} {} {} 0 {} category_overview 0}}
+	_pd_refln_peak_id 	{{cif_pd.dic 103735 175} {c {} {} 0 {} refln 1}}
+	_pd_refln_phase_id 	{{cif_pd.dic 104307 146} {c {} {} 0 {} refln 1}}
+	_pd_refln_wavelength_id 	{{cif_pd.dic 104879 221} {c {} {} 0 {} refln 1}}
+	_pd_prep_[pd] 	{{cif_pd.dic 105338 108} {{} {} {} 0 {} category_overview 0}}
+	_pd_prep_conditions 	{{cif_pd.dic 105620 106} {c {} {} 0 {} pd_prep 0}}
+	_pd_prep_cool_rate 	{{cif_pd.dic 106064 267} {n 0.0: {} 1 Kmin^-1^ pd_prep 0}}
+	_pd_prep_pressure 	{{cif_pd.dic 106659 218} {n 0.0: {} 1 kPa pd_prep 0}}
+	_pd_prep_temperature 	{{cif_pd.dic 107204 223} {n 0.0: {} 1 K pd_prep 0}}
+	_pd_char_[pd] 	{{cif_pd.dic 107663 136} {{} {} {} 0 {} category_overview 0}}
+	_pd_char_atten_coef_mu_obs 	{{cif_pd.dic 108181 859} {n 0.0: {} 0 mm^-1^ pd_char 0}}
+	_pd_char_atten_coef_mu_calc 	{{cif_pd.dic 108181 859} {n 0.0: {} 0 mm^-1^ pd_char 0}}
+	_pd_char_colour 	{{cif_pd.dic 109389 1174} {c {} {} 0 {} pd_char 0}}
+	_pd_char_particle_morphology 	{{cif_pd.dic 110755 265} {c {} {} 0 {} pd_char 0}}
+	_pd_char_special_details 	{{cif_pd.dic 111204 185} {c {} {} 0 {} pd_char 0}}
+	_pd_data_[pd] 	{{cif_pd.dic 113713 888} {{} {} {} 0 {} category_overview 0}}
+	_pd_calc_point_id 	{{cif_pd.dic 114865 371} {c {} {} 0 {} pd_data 0}}
+	_pd_data_point_id 	{{cif_pd.dic 115406 116} {c {} {} 0 {} pd_data 0}}
+	_pd_meas_point_id 	{{cif_pd.dic 115786 346} {c {} {} 0 {} pd_data 0}}
+	_pd_proc_point_id 	{{cif_pd.dic 116498 448} {c {} {} 0 {} pd_data 0}}
+}
+set definednames {
+	{_pd_block_[pd]}
+	_pd_block_diffractogram_id
+	_pd_block_id
+	{_pd_calc_[pd]}
+	_pd_calc_intensity_net
+	_pd_calc_intensity_total
+	_pd_calc_method
+	_pd_calc_point_id
+	_pd_calib_2theta_off_max
+	_pd_calib_2theta_off_min
+	_pd_calib_2theta_off_point
+	_pd_calib_2theta_offset
+	{_pd_calib_[pd]}
+	_pd_calib_detector_id
+	_pd_calib_detector_response
+	_pd_calib_std_external_block_id
+	_pd_calib_std_external_name
+	_pd_calib_std_internal_mass_%
+	_pd_calib_std_internal_name
+	_pd_calibration_conversion_eqn
+	_pd_calibration_special_details
+	{_pd_char_[pd]}
+	_pd_char_atten_coef_mu_calc
+	_pd_char_atten_coef_mu_obs
+	_pd_char_colour
+	_pd_char_particle_morphology
+	_pd_char_special_details
+	{_pd_data_[pd]}
+	_pd_data_point_id
+	_pd_instr_2theta_monochr_post
+	_pd_instr_2theta_monochr_pre
+	{_pd_instr_[pd]}
+	_pd_instr_beam_size_ax
+	_pd_instr_beam_size_eq
+	_pd_instr_cons_illum_flag
+	_pd_instr_cons_illum_len
+	_pd_instr_dist_anal/detc
+	_pd_instr_dist_mono/spec
+	_pd_instr_dist_spec/anal
+	_pd_instr_dist_spec/detc
+	_pd_instr_dist_src/mono
+	_pd_instr_dist_src/spec
+	_pd_instr_divg_ax_anal/detc
+	_pd_instr_divg_ax_mono/spec
+	_pd_instr_divg_ax_spec/anal
+	_pd_instr_divg_ax_spec/detc
+	_pd_instr_divg_ax_src/mono
+	_pd_instr_divg_ax_src/spec
+	_pd_instr_divg_eq_anal/detc
+	_pd_instr_divg_eq_mono/spec
+	_pd_instr_divg_eq_spec/anal
+	_pd_instr_divg_eq_spec/detc
+	_pd_instr_divg_eq_src/mono
+	_pd_instr_divg_eq_src/spec
+	_pd_instr_geometry
+	_pd_instr_location
+	_pd_instr_monochr_post_spec
+	_pd_instr_monochr_pre_spec
+	_pd_instr_slit_ax_anal/detc
+	_pd_instr_slit_ax_mono/spec
+	_pd_instr_slit_ax_spec/anal
+	_pd_instr_slit_ax_spec/detc
+	_pd_instr_slit_ax_src/mono
+	_pd_instr_slit_ax_src/spec
+	_pd_instr_slit_eq_anal/detc
+	_pd_instr_slit_eq_mono/spec
+	_pd_instr_slit_eq_spec/anal
+	_pd_instr_slit_eq_spec/detc
+	_pd_instr_slit_eq_src/mono
+	_pd_instr_slit_eq_src/spec
+	_pd_instr_soller_ax_anal/detc
+	_pd_instr_soller_ax_mono/spec
+	_pd_instr_soller_ax_spec/anal
+	_pd_instr_soller_ax_spec/detc
+	_pd_instr_soller_ax_src/mono
+	_pd_instr_soller_ax_src/spec
+	_pd_instr_soller_eq_anal/detc
+	_pd_instr_soller_eq_mono/spec
+	_pd_instr_soller_eq_spec/anal
+	_pd_instr_soller_eq_spec/detc
+	_pd_instr_soller_eq_src/mono
+	_pd_instr_soller_eq_src/spec
+	_pd_instr_source_size_ax
+	_pd_instr_source_size_eq
+	_pd_instr_special_details
+	_pd_instr_var_illum_len
+	_pd_meas_2theta_fixed
+	_pd_meas_2theta_range_inc
+	_pd_meas_2theta_range_max
+	_pd_meas_2theta_range_min
+	_pd_meas_2theta_scan
+	{_pd_meas_[pd]}
+	_pd_meas_angle_2theta
+	_pd_meas_angle_chi
+	_pd_meas_angle_omega
+	_pd_meas_angle_phi
+	_pd_meas_counts_background
+	_pd_meas_counts_container
+	_pd_meas_counts_monitor
+	_pd_meas_counts_total
+	_pd_meas_datetime_initiated
+	_pd_meas_detector_id
+	_pd_meas_info_author_address
+	_pd_meas_info_author_email
+	_pd_meas_info_author_fax
+	_pd_meas_info_author_name
+	_pd_meas_info_author_phone
+	_pd_meas_intensity_background
+	_pd_meas_intensity_container
+	_pd_meas_intensity_monitor
+	_pd_meas_intensity_total
+	_pd_meas_number_of_points
+	_pd_meas_point_id
+	_pd_meas_position
+	_pd_meas_rocking_angle
+	_pd_meas_rocking_axis
+	_pd_meas_scan_method
+	_pd_meas_special_details
+	_pd_meas_step_count_time
+	_pd_meas_time_of_flight
+	_pd_meas_units_of_intensity
+	_pd_peak_2theta_centroid
+	_pd_peak_2theta_maximum
+	{_pd_peak_[pd]}
+	_pd_peak_d_spacing
+	_pd_peak_id
+	_pd_peak_intensity
+	_pd_peak_pk_height
+	_pd_peak_special_details
+	_pd_peak_wavelength_id
+	_pd_peak_width_2theta
+	_pd_peak_width_d_spacing
+	{_pd_phase_[pd]}
+	_pd_phase_block_id
+	_pd_phase_id
+	_pd_phase_mass_%
+	_pd_phase_name
+	{_pd_prep_[pd]}
+	_pd_prep_conditions
+	_pd_prep_cool_rate
+	_pd_prep_pressure
+	_pd_prep_temperature
+	_pd_proc_2theta_corrected
+	_pd_proc_2theta_range_inc
+	_pd_proc_2theta_range_max
+	_pd_proc_2theta_range_min
+	{_pd_proc_[pd]}
+	_pd_proc_d_spacing
+	_pd_proc_energy_detection
+	_pd_proc_energy_incident
+	_pd_proc_info_author_address
+	_pd_proc_info_author_email
+	_pd_proc_info_author_fax
+	_pd_proc_info_author_name
+	_pd_proc_info_author_phone
+	_pd_proc_info_data_reduction
+	_pd_proc_info_datetime
+	_pd_proc_info_excluded_regions
+	_pd_proc_info_special_details
+	_pd_proc_intensity_bkg_calc
+	_pd_proc_intensity_bkg_fix
+	_pd_proc_intensity_incident
+	_pd_proc_intensity_net
+	_pd_proc_intensity_norm
+	_pd_proc_intensity_total
+	{_pd_proc_ls_[pd]}
+	_pd_proc_ls_background_function
+	_pd_proc_ls_peak_cutoff
+	_pd_proc_ls_pref_orient_corr
+	_pd_proc_ls_prof_r_factor
+	_pd_proc_ls_prof_wr_expected
+	_pd_proc_ls_prof_wr_factor
+	_pd_proc_ls_profile_function
+	_pd_proc_ls_special_details
+	_pd_proc_ls_weight
+	_pd_proc_number_of_points
+	_pd_proc_point_id
+	_pd_proc_recip_len_q
+	_pd_proc_wavelength
+	{_pd_refln_[pd]}
+	_pd_refln_peak_id
+	_pd_refln_phase_id
+	_pd_refln_wavelength_id
+	{_pd_spec_[pd]}
+	_pd_spec_description
+	_pd_spec_mount_mode
+	_pd_spec_mounting
+	_pd_spec_orientation
+	_pd_spec_preparation
+	_pd_spec_shape
+	_pd_spec_size_axial
+	_pd_spec_size_equat
+	_pd_spec_size_thick
+	_pd_spec_special_details
+}

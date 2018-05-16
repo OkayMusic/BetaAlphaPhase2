@@ -1,0 +1,200 @@
+#!/bin/tcsh 
+set GSASDIR="$0"
+# translate a link, if needed
+set link=`readlink $GSASDIR`
+if ($link != "") then 
+    set GSASDIR=$link
+endif
+set GSASDIR=$GSASDIR:h
+setenv PGPLOT_XW_WIDTH 0.75
+setenv PGPLOT_DIR $GSASDIR/pgl
+setenv gsas $GSASDIR
+setenv ATOMDATA $GSASDIR/data/atmdata.dat
+setenv ATMXSECT $GSASDIR/data/atmxsect.dat
+setenv LENPAGE 80
+set GSASEXE="$GSASDIR/exe"
+set pgms = `/bin/ls $GSASEXE`
+set history = 100
+alias upcase $GSASDIR/upcase
+alias count $GSASDIR/count
+if ( $#argv > 0 ) then
+	set expnam = `upcase $argv[1]`
+	set gcmmd = ""
+else
+	set expnam = ""
+	set gcmmd = "next"
+endif
+onintr interrupt
+@ ntrrpt = 0
+echo ' '
+echo '                          Welcome to GSAS'
+echo '                The General Structure Analysis System'
+echo ' '
+echo '  Copyright, 1985-2001, The Regents of the University of California'
+echo ' '
+echo 'Enter "help" for a listing of possible commands'
+echo ' '
+while ( "$gcmmd" != "quit" )
+	if ( $#gcmmd == 0 ) then
+		goto ncmmd
+	endif
+	@ np = 1
+	while ( $np <= $#pgms )
+		if ( "$gcmmd" == $pgms[$np] ) then
+			$GSASEXE/$gcmmd $expnam
+			@ ntrrpt = 0
+			goto ncmmd
+		endif
+		@ np ++	
+	end
+	switch ("$gcmmd[1]")
+	case gsas:
+		echo "gsas not to be run inside gsas"
+		breaksw
+	case expnam:
+		if ( $#gcmmd > 1 ) then
+			set inpline = $gcmmd[2]
+		else
+			echo -n "Enter experiment name: "
+			set inpline = $<:q
+		endif
+		set expnam = `upcase $inpline[1]`
+		breaksw
+	case help:
+		echo "The available GSAS commands are:"
+		ls -C $GSASEXE
+		echo "utilities: atom next prev elst slst tlst dlst"
+		echo "           dexp texp lsexp pagelen cnvfile"
+		echo '"expnam" to set an experiment name'
+		echo '"quit" to leave GSAS & "help" for this help'
+		breaksw
+	case tlst:
+		less $expnam.LST
+		breaksw
+	case dlst:
+		rm $expnam.LST
+		breaksw
+	case elst:
+		emacs $expnam.LST
+		breaksw
+	case slst:
+		if ( $#gcmmd < 2 ) then
+			echo -n "Enter search string: "
+			set inpline = $<:q
+		else
+			set inpline = "$gcmmd[2-$#gcmmd]"
+		endif
+		set sstr = ($inpline)
+		while ( $#sstr > 0 )
+			grep -i $sstr[1] $expnam.LST
+			shift sstr
+		end
+		breaksw
+	case texp:
+		less $expnam.EXP
+		breaksw
+        case sexp:
+                if ( $#gcmmd < 2 ) then
+                        echo -n "Enter search string: "
+                        set inpline = $<:q
+                else
+                        set inpline = "$gcmmd[2-$#gcmmd]"
+                endif
+                set sstr = ($inpline)
+                while ( $#sstr > 0 )
+                        grep -i $sstr[1] $expnam.EXP
+                        shift sstr
+                end
+                breaksw
+	case edexp:
+		emacs $expnam.EXP
+		breaksw
+	case atom:
+                if ( $#gcmmd < 2 ) then
+                        echo -n "Enter element symbol: "
+                        set inpline = `upcase $<:q`
+                else
+                        set inpline = `upcase "$gcmmd[2]"`
+                endif
+		if ( `count "$inpline"` == 3 ) then
+                        awk 'substr($0,4,2) == "'$inpline'"' $ATOMDATA 
+		else if ( `count "$inpline"` == 2 ) then
+                        awk 'substr($0,4,2) == " '$inpline'"' $ATOMDATA 
+		else
+			echo "Improper element name $inpline"
+		endif
+                breaksw
+	case dexp:
+		ls $expnam.*
+		echo -n "Are you sure you want to clean out $expnam (y/<n>)? "
+		set iyn = $<:q
+		if ( $iyn == 'y' ) then
+			rm $expnam.[A-D]* $expnam.[F-Q]* $expnam.[T-Z]*
+			rm $expnam.R* $expnam.P*
+			echo "Files for experiment $expnam removed"
+		endif
+		breaksw
+	case lsexp:
+		ls -C $expnam.*
+		breaksw
+	case prev:
+		set sstr = `ls *.EXP | sort -r`
+		goto search
+	case next:
+		set sstr = `ls *.EXP`
+		if ( $#sstr == 0 ) then
+			goto ncmmd
+		endif
+search:
+		set temp = $sstr[1]:t ;set saveexp = $temp:r
+		while ( $#sstr > 0 )
+			set temp = $sstr[1]:t ;set testexp = $temp:r
+			if ( $testexp == $expnam ) then
+				shift sstr
+				goto found
+			endif
+			shift sstr
+		end
+found:
+		if ( $#sstr == 0 ) then
+			set expnam = $saveexp
+		else
+			set temp = $sstr[1]:t ;set expnam = $temp:r
+		endif
+		breaksw
+	case pagelen:
+                if ( $#gcmmd < 2 ) then
+                        echo -n "Enter pagelength: "
+                        set inpline = $<:q
+                else
+                        set inpline = "$gcmmd[2]"
+                endif
+		unsetenv LENPAGE
+		setenv LENPAGE $inpline
+		breaksw
+	default:
+		if ( "$gcmmd" != "quit" ) then
+			$gcmmd
+		endif
+		breaksw
+	endsw
+	goto ncmmd
+interrupt:
+	if ( $ntrrpt > 2 ) then
+		exit
+	else
+		@ ntrrpt ++
+	endif
+ncmmd:
+	if ( $expnam == "" ) then
+		echo "No experiment name given"
+	else
+		ls -l $expnam.EXP
+		echo "The experiment name is $expnam"
+	endif
+	echo -n "`hostname` GSAS Command: "
+	set inpline = $<:q
+	set gcmmd = ($inpline) 
+	endif
+end
+exit

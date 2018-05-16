@@ -1,0 +1,205 @@
+# $Id$
+
+#-------------------------------------------------
+# define info used in addcmds.tcl
+set description "MSI .xtl file"
+set extensions .xtl
+set procname ReadMSIxtlFile
+#-------------------------------------------------
+
+proc ReadMSIxtlFile {filename} {
+    set fp [open $filename r]
+    set spg {}
+    set cell {}
+    set atomlist {}
+    set shift {}
+    set sgnum {}
+    set sglbl {}
+    set sgqual {}
+    set head {}
+    while {[gets $fp line] >= 0} {
+	if {$head == ""} {
+	    set token [string toupper [lindex $line 0] ]
+	} else {
+	    set token ParseAtom
+	}
+	switch $token {
+	    TITLE {continue}
+	    DIMENSION {continue}
+	    CELL {
+		# cell parameters are usually on the next line (always?)
+		if {[lrange $line 1 end] == ""} {
+		    gets $fp cell
+		} else {
+		    set cell [lrange $line 1 end]
+		}
+	    }
+	    SYMMETRY {
+		# scan line for either the flag number or label
+		set i 0
+		while {[lindex $line [incr i]] != ""} {
+		    if {[string toupper [lindex $line $i]] == "NUMBER"} {
+			set sgnum [lindex $line [incr i]]
+		    } elseif {[string toupper [lindex $line $i]] == "LABEL"} {
+			set sglbl [lindex $line [incr i]]
+		    } elseif {[string toupper [lindex $line $i]] == "QUALIFIER"} {
+			set sgqual [lindex $line [incr i]]
+		    }
+		}   
+	    }
+	    ATOMS {
+		gets $fp head
+		set head [string toupper $head]
+		# process the space group now, so that we can establish 
+		# a shift for coordinates
+		set fp1 {}
+		if {$sgnum !=  ""} {
+		    global expgui
+		    set fp1 [open [file join \
+			    $expgui(scriptdir) spacegrp.ref] r]
+		    while {[gets $fp1 line] >= 0} {
+			if {$sgnum == [lindex $line 1]} {
+			    set spg [lindex $line 8]
+			    break
+			}
+		    }
+		} elseif {$sglbl !=  ""} {
+		    global expgui
+		    set sgtmp [string toupper $sglbl]
+		    # remove spaces from space group
+		    regsub -all " " $sgtmp "" sgtmp
+		    # make a copy where we treat bar 3 as the same as 3 
+		    regsub -- "-3" $sgtmp "3" sgtmp3
+		    set fp1 [open [file join \
+			    $expgui(scriptdir) spacegrp.ref] r]
+		    while {[gets $fp1 line] >= 0} {
+			set testsg [string toupper [lindex $line 8]]
+			regsub -all " " $testsg "" testsg
+			if {$testsg == $sgtmp} {
+			    set spg [lindex $line 8]
+			    set sgnum [lindex $line 1]
+			    break
+			} elseif {[lindex $line 1] >= 200} {
+			    regsub -- "-3" $testsg "3" testsg3
+			    if {$testsg3 == $sgtmp3} {
+				set spg [lindex $line 8]
+				set sgnum [lindex $line 1]
+				break
+			    }
+			} elseif {[lindex $line 1] <= 18} {
+			    # monoclinic: change operators of form "1 xxx 1" to "xxx"
+			    regsub -- " 1 (.*) 1" [string toupper [lindex $line 8]] "\\1" testsg
+			    # remove spaces from space group
+			    regsub -all " " $testsg "" testsg
+			    if {$testsg == $sgtmp} {
+				set spg [lindex $line 8]
+				set sgnum [lindex $line 1]
+				break
+			    }
+			}
+		    }
+		}
+		# is this an origin 1 setting where a choice exists?
+		if {$spg != "" && [string tolower $sgqual] == "origin_1"} {
+		    # advance to the 2nd part of the file
+		    while {[lindex $line 1] != 230} {
+			if {[gets $fp1 line] < 0} break
+		    }
+		    while {[gets $fp1 line] >= 0} {
+			if {$sgnum == [lindex $line 1]} {
+			    set spg [lindex $line 8]
+			    set shift [lindex $line 9]
+			    break
+			}
+		    }
+		}
+		if {$fp1 != ""} {close $fp1}
+	    }
+	    ParseAtom {
+		# ignore blank lines
+
+		if {[string trim $line] == ""} continue
+		set label {}
+		set type {}
+		# get label & element type from name or better -- Scat field
+		set n [lsearch $head NAME]
+		if {$n != -1} {
+		    set label [lindex $line $n]
+		    regsub -all {[0-9 ]} $label "" type
+		}
+		set l2 $label
+		set n [lsearch $head SCAT]
+		if {$n != -1} {
+		    if {[lindex $line $n] != ""} {
+			set type [lindex $line $n]
+			regsub -all {[0-9 +-]} $type "" type
+		    }
+		}
+		foreach p {X Y Z} s $shift {
+		    set n [lsearch $head $p]
+		    if {$n == -1} {
+			lappend l2 {}
+		    } else {
+			set v [lindex $line $n]
+			if {$s != ""} {set v [expr $v + $s]}
+			lappend l2 $v
+		    }
+		}
+		lappend l2 $type
+		set n [lsearch $head OCCUP]
+		if {$n == -1} {
+		    lappend l2 {}
+		} else {
+		    lappend l2 [lindex $line $n]
+		}
+		set uiso {}
+		# get temperature factor, if present
+		set n [lsearch $head TEMP]
+		if {$n != -1} {
+		    if {[catch {
+			set uiso [expr [lindex $line $n] / 78.9567]
+			set uiso [format %.5f $uiso]
+		    }]} {set uiso ""}
+		}
+		set n [lsearch $head UISO]
+		if {$n != -1} {
+		    if {[catch {
+			set uiso [expr [lindex $line $n]]
+			set uiso [format %.5f $uiso]
+		    }]} {set uiso ""}
+		}
+		if {$uiso != ""} {
+		    lappend l2 $uiso
+		}
+		lappend atomlist $l2
+	    }
+	    default {}
+	}
+    }
+    close $fp
+
+    set msg {}
+    # spacegroup was not found
+    if {$spg == ""} {
+	# did not find the spacegroup
+	if {$sglbl != ""} {
+	    MyMessageBox -parent . -type ok -icon warning \
+		-message "Error: The space group ($sglbl) in file $filename could not be converted to match GSAS input; please edit it"
+	    set spg $sglbl
+	    set msg "Note: You must check the space group & edit to conform to GSAS input"
+	} else {
+	    MyMessageBox -parent . -type ok -icon warning \
+		-message "Error: The space group number information in file $filename is missing or invalid!"
+	    set msg "Note: You must set the space group"
+	}
+    } elseif {$shift != ""} {
+	# don't have the correct setting
+	MyMessageBox -parent . -type ok -icon warning \
+		-message "Note: an origin shift ($shift) has been added to the coordinates to convert them to the Origin Choice 2 setting (-1 at 000)"
+    }
+    # adjust space group for rhombohedral settings
+    if {$spg != "" && [string tolower $sgqual] == "rhombohedral"} {
+	append spg " R"
+    }
+    return "[list $spg] [list $cell] [list $atomlist] [list $msg]"
+}

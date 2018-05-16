@@ -1,0 +1,16 @@
+# this is an example for Branton Campbell
+# it adds a binding so that control-shift-left-mouse writes the 
+# current mouse coordinates to a file
+#
+# To be inserted in localconfig or ~/.gsas_config (C:\gsas.config)
+#
+#catch {console show}
+if {[string tolower [file tail $argv0]] == "liveplot"} {
+    bind .g <Control-Shift-Button-1> {
+	set fp [open $expnam.poslist a]
+	puts $fp "i\n [%W xaxis invtransform %x] \
+		[%W yaxis invtransform %y]"
+	close $fp
+	bell
+    }
+}

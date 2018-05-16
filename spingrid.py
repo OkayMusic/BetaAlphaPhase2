@@ -9,7 +9,7 @@ class SpinGrid(object):
         self.dimensions = dimensions
         self.temperature = temperature
         self.hist_steps = hist_steps
-        self.radii = np.linspace(0, 10, num=self.hist_steps)
+        self.radii = np.linspace(0, 20, num=self.hist_steps)
         self.spins = np.random.choice(a=[1, -1],
                                       size=[self.dimensions[0],
                                             self.dimensions[1],
@@ -91,6 +91,9 @@ class SpinGrid(object):
 
         for i in range(len(self.radii) - 1):
             # these -1's come from the definition of the total pair dist fn
+            self.norm_up_up = np.array(self.norm_up_up)
+            self.norm_up_down = np.array(self.norm_up_down)
+            self.norm_down_down = np.array(self.norm_down_down)
             self.norm_up_up -= 1
             self.norm_up_down -= 1
             self.norm_up_down -= 1
@@ -104,6 +107,28 @@ class SpinGrid(object):
                     self.norm_up_up[i] += prefactor * self.up_up[keys]
                     self.norm_down_down[i] += prefactor * self.down_down[keys]
                     self.norm_up_down[i] += prefactor * self.up_down[keys]
+
+        # now we need to make the total pair distribution function from these
+        # normalized partial pair distributions
+        cross_term = -2. * np.array(self.norm_up_down)
+        up_up_term = np.array(self.norm_up_up)
+        down_down_term = np.array(self.norm_down_down)
+
+        # perform the summation
+        self.total = cross_term + up_up_term + down_down_term
+
+    def ft_total(self, Q):
+        """
+        Fourier transform the normalized total distribution function to get the
+        reciprocal space total scattering function F(Q). Here we set the
+        density rho_0 = 4*pi in order to kill all the linear scaling factors.
+        """
+        print Q
+        dr = self.radii[1] - self.radii[0]
+        my_sin = np.sin(self.radii * Q)
+        integrand = np.array(self.radii * self.total * my_sin / Q * dr)
+        integral = np.sum(integrand)
+        return integral
 
     def total_pair_distribution(self):
         # first, calculate all the sulphur-iodine pdfs

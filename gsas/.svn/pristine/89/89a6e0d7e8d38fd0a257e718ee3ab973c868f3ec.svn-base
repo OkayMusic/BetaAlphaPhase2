@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>Tcl/Tk/DMH Documentation</title>
+</head>
+<!-- frame names are deliberately compatible with Tcl Consortium - 
+    can add their indexes and man pages
+    just add their subdirectories 
+    and add their "product" links to ./indexes/products.html
+-->
+<frameset cols="120,140,*" frameborder="yes" border=2 framespacing=2>
+<frame name="products" src="products.html" marginwidth="6" ></frame>
+<frame name="cmds" marginwidth="6" src="la_cmds.html"></frame>
+<frame name="man" src="la.html"></frame>
+</frameset>
+</html>

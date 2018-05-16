@@ -1,0 +1,1645 @@
+
+    <html>
+    <head>
+    <title>EXPGUI Revision Log</title>
+    <meta name="keywords" content="crystallography, Rietveld, diffraction,
+    GSAS, EXPGUI">
+    </HEAD>
+    <style>
+    A:link {text-decoration:none}
+    A:vlink {text-decoration:none}
+    </style>
+    
+    <BODY BGCOLOR="#FFFFFF"
+      topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" 
+      text="#000000" link="#0033ff" vlink="#0033ff" alink="#0033ff">
+
+    <? 
+    include("/var/www/include/navigation.inc");
+    include("/var/www/include/utility.inc"); 
+    ?>
+    <blockquote><font face="arial, helvetica, sans-serif">
+
+    <TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+    <TR><TH><A Href="expgui.html">EXPGUI top</A>
+    </TH><TH><A Href="wishlist.html">Past and Planned<BR>Updates</A>  
+    </TH></TR></TABLE><BR CLEAR=ALL>
+
+    <center><h1>
+    <HR noshade width="75%" size="2" align="center">
+    EXPGUI Revisions List
+    <HR noshade width="75%" size="2" align="center">
+    </h1></center>
+    <P>
+    This page has been superceeded by the Trac registry, see
+    <A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/timeline">
+    https://subversion.xray.aps.anl.gov/trac/EXPGUI/timeline</A>.
+    <HR><HR>
+    Below is information on older revisions logged for changes to the EXPGUI source
+    files, sorted by date. 
+    See the
+    <A HREF="https://subversion.xray.aps.anl.gov/trac/EXPGUI/report">
+    View Tickets</A> section of the Trac site for active and closed
+    projects. There is some older information on the 
+    <A HREF="wishlist.html">EXPGUI Wish List</A>.
+    
+<h2>since 1-Jun-2009</h2><DL><DL>
+</DL></DL>
+<h2>since 1-Mar-2009</h2><DL><DL>
+</DL></DL>
+<h2>since 1-Nov-2008</h2><DL><DL>
+</DL></DL>
+<h2>since 1-Jul-2008</h2><DL><DL>
+<DT><B>expgui 1.83</B>  2008/07/14<DD>
+	change button labels to suit convention<BR>
+<DT>addcmds.tcl 1.44  2008/07/14<DD>
+	Add CIF import to Add Hist window<BR>
+<DT>cif2fxye.tcl 1.1  2008/07/14<DD>
+	Initial revision<BR>
+<DT>excledt.tcl 1.18  2008/07/14<DD>
+	minor cleanups -- change some button labels to be more conventional<BR>
+	remove ^C binding for windows<BR>
+<DT>excledt.tcl 1.17  2008/07/14<DD>
+	put deiconify back (probably not needed)<BR>
+<DT>excledt.tcl 1.16  2008/07/14<DD>
+	fix "crazy line" bug due to tick mark numbers<BR>
+	make msg boxes a child of excl plot window<BR>
+	eliminate bind of <Configure> for windows, since it prevents the window<BR>
+	from changing size<BR>
+<DT>gsascmds.tcl 1.66  2008/07/14<DD>
+	change some button labels to be more conventional<BR>
+<DT>gsascmds.tcl 1.65  2008/07/14<DD>
+	change Set to Continue for getstring (so that initial window has Continue)<BR>
+	use variable to hold disagl window name<BR>
+	add code to export a phase to clipboard for Andrew Will's VaList program<BR>
+<P>
+<DT>addcmds.tcl 1.43  2008/07/02<DD>
+	Fix bug on ImportAtoms (see 1.42)<BR>
+	fix blunder on replacephase3 (no args)<BR>
+<P>
+</DL></DL>
+<h2>since 1-Jul-2007</h2><DL><DL>
+<DT>addcmds.tcl 1.42  2008/06/30<DD>
+	fix bug on ImportPhase with 1 format (e.g. .cif on Windows)<BR>
+<P>
+<DT><B>expgui 1.82</B>  2008/04/15<DD>
+	macro recording<BR>
+	implement "Prompt after GSAS run option", replay macro<BR>
+<DT>addcmds.tcl 1.41  2008/04/15<DD>
+	major revision for macro recording<BR>
+	introduce cell symmetry constraints<BR>
+	check for trailing R on s.g. in Rhomb. settings<BR>
+	add .fxye to list of raw types<BR>
+	stop conversion of raw files to fixed record length<BR>
+	fix bug stopping review of inst prm files with a blank line<BR>
+<DT>atomcons.tcl 1.14  2008/04/15<DD>
+	macro commands<BR>
+<DT>excledt.tcl 1.15  2008/04/15<DD>
+	fix child window parentage<BR>
+	record macros<BR>
+<DT>export_shelx.tcl 1.2  2008/04/15<DD>
+	fix occupancy for macromolec input<BR>
+<DT>gsascmds.tcl 1.64  2008/04/15<DD>
+	macro recording<BR>
+	implement prompt/no prompt in GSAS window<BR>
+	implement run macros<BR>
+	new proc to run GSAS programs w/o a terminal window<BR>
+<DT>gsasmenu.tcl 1.28  2008/04/15<DD>
+	macro menu<BR>
+<DT>instedit.tcl 1.8  2008/04/15<DD>
+	new button to import diffractometer constants in instedit<BR>
+<DT>liveplot 1.45  2008/04/15<DD>
+	add comment (bkgedit not macro enabled)<BR>
+<DT>lstview 1.19  2008/04/15<DD>
+	implement new capability as macromon (macro monitor routine)<BR>
+	allow routine to be called directly (opens .LST file)<BR>
+<DT>odf.tcl 1.8  2008/04/15<DD>
+	macro recording<BR>
+<DT>orient.tcl 1.10  2008/04/15<DD>
+	macro recording<BR>
+<DT>profcons.tcl 1.8  2008/04/15<DD>
+	macro recording<BR>
+<DT>widplt 1.20  2008/04/15<DD>
+	do not load widply_ files for absplt<BR>
+<P>
+</DL></DL>
+<h2>before 2008/04/15</H2><DL><DL>
+<DT><B>expgui 1.81</B>  2007/01/17<DD>
+	warn on windows comspec problem<BR>
+	fix convergence spelling<BR>
+<P>
+<DT>graceexport.tcl 1.2  2006/07/31<DD>
+	missing tickmarks (new BLT version?) add fix from Bogdan Jurca<BR>
+<P>
+<DT><B>expgui 1.80</B>  2006/04/30<DD>
+	Indicate a new release<BR>
+<DT>gsasmenu.tcl 1.27  2006/04/30<DD>
+	Add gsas2map into menus<BR>
+<DT>liveplot 1.44  2006/04/30<DD>
+	remove last of background function #3<BR>
+	compute Q in same manner as in calcbak (results still differ)<BR>
+<P>
+<DT><B>expgui 1.79</B>  2006/03/29<DD>
+	Mark release<BR>
+<DT>addcmds.tcl 1.40  2006/03/29<DD>
+	Allow use of d-min or Q-max when adding multiple histograms (IPNS request)<BR>
+<DT>dumpprof.tcl 1.3  2006/03/29<DD>
+	return diffractometer constants<BR>
+	support starkit<BR>
+<DT>gsascmds.tcl 1.63  2006/03/29<DD>
+	Associate profile names with term labels<BR>
+<DT>gsasmenu.tcl 1.26  2006/03/29<DD>
+	Add mustrplot to 2nd menu<BR>
+<DT>gsasmenu.tcl 1.25  2006/03/29<DD>
+	remove now obsolete tofnorm; add new mustrplot<BR>
+<DT>instedit.tcl 1.7  2006/03/29<DD>
+	support profile editing (& grab from .EXP) in instedit (IPNS request)<BR>
+	don't hard-code profile names here (grab from gsascmds.tcl)<BR>
+<P>
+<DT><B>expgui 1.78</B>  2006/02/22<DD>
+	Plug GSAS on window head<BR>
+	Make histogram selection look like a button<BR>
+	fix bug in global setting of phase fractions/damping<BR>
+	make history not like a button<BR>
+	remove control-C exit from Windows version<BR>
+<DT>addcmds.tcl 1.39  2006/02/22<DD>
+	fix bug in 2theta max for multiple hist addition<BR>
+	implement re-evaluation of multiplicities (ResetMultiplicities)<BR>
+	add button to Reset Multiplicities to edit menu<BR>
+	update Multiplicities after an origin change<BR>
+	better explain origin shifts<BR>
+<DT>gsascmds.tcl 1.62  2006/02/22<DD>
+	Recompute Multiplicities prior to Composition computation<BR>
+<DT>gsascmds.tcl 1.61  2006/02/22<DD>
+	Allow composition to work on Magnetic phases<BR>
+<DT>gsasmenu.tcl 1.24  2006/02/22<DD>
+	add seqgsas & seqplot to menus & minor menu fixes/duplication<BR>
+<DT>instedit.tcl 1.6  2006/02/22<DD>
+	no significant changes -- allow KRATIO to be edited, but restore as the variable is not read from an instrument parameter file<BR>
+<DT>liveplot 1.43  2006/02/22<DD>
+	bkgfit: prevent use of more than 36 bkg terms, since that is all GSAS allows<BR>
+<P>
+<DT>addcmds.tcl 1.38  2005/12/16<DD>
+	make spacegroup search case insensitive on Origin 1/2<BR>
+	comment out debug puts statements<BR>
+<P>
+<DT>readexp.tcl 1.46  2005/09/13<DD>
+	fix buggy EXP create routine<BR>
+<P>
+<DT>addcmds.tcl 1.37  2005/09/12<DD>
+	add missing proc<BR>
+<DT>dumpexp.tcl 1.5  2005/09/12<DD>
+	add package require code & new heading to remind me this is an executable script<BR>
+<DT>readexp.tcl 1.45  2005/09/12<DD>
+	change formatting of ODF records to match most recent GSAS release<BR>
+<P>
+<DT><B>expgui 1.77</B>  2005/09/07<DD>
+	tag for new EXPGUI release<BR>
+<DT>addcmds.tcl 1.36  2005/09/07<DD>
+	Add origin 1 --> origin 2 xform option<BR>
+<DT>export_drawxtl.tcl 1.3  2005/09/07<DD>
+	fix use of delete window decoration (== quit)<BR>
+	fix display arrows options; warn on old GEOMETRY program<BR>
+	use .drawxtlrc to find DRAWXTL5.x program<BR>
+<P>
+<DT><B>expgui 1.76</B>  2005/03/24<DD>
+	fix up resize for OS X<BR>
+	add LS band width as option (thanx RBVD)<BR>
+	note Pawley phase (thanks RBVD)<BR>
+	attempt to fix missing expmap(atomlistboxcontents) bug<BR>
+	(not sure why this happens, so at least trap errors)<BR>
+	Reset phase selection in GetPhaseFlags in case this causes the missing expmap(atomlistboxcontents)<BR>
+	prevent use of TRNS & SHFT when ZERO is refined<BR>
+	add new print option (#10)  (thanx RBVD)<BR>
+<DT>export_drawxtl.tcl 1.2  2005/03/24<DD>
+	major revision<BR>
+	Allow arrow colors, number comments on arrows<BR>
+	Look for DRAWxtl (not in enough places) and offer to launch it<BR>
+	oops -- the entire arrow routine is new.<BR>
+<DT>gsascmds.tcl 1.60  2005/03/24<DD>
+	add defs for function #5 (thanks RBVD)<BR>
+	fix # & labels for terms in Profile #4 (4/m -3R -3 -3m1)<BR>
+	fix bug in Set on change profile for multiple histograms/phases<BR>
+<DT>lstview 1.18  2005/03/24<DD>
+	fix bug in save options<BR>
+	Add unix capability to print selected text<BR>
+	(should work on OS X if lpr points to desired printer -- I think)<BR>
+<DT>orient.tcl 1.9  2005/03/24<DD>
+	change designation of preferred direction<BR>
+<DT>profcons.tcl 1.7  2005/03/24<DD>
+	profile type 5 (RBVD)<BR>
+<DT>readexp.tcl 1.44  2005/03/24<DD>
+	new validreal<BR>
+	support LS Band parameter (in part RBVD)<BR>
+	add xtra digit to PRNT (RBVD)<BR>
+<DT>widplt 1.19  2005/03/24<DD>
+	support function #5 (thanks RBVD)<BR>
+<P>
+<DT>readexp.tcl 1.43  2004/11/17<DD>
+	fix unformatted date -- belt & suspenders<BR>
+<P>
+<DT><B>expgui 1.75</B>  2004/10/04<DD>
+	Require BWidget (remove non-BWidget code)<BR>
+<DT>excledt.tcl 1.14  2004/10/04<DD>
+	remove unused diffvec<BR>
+	redo vector variable access -- fix bug<BR>
+<DT>exclinit.tcl 1.2  2004/10/04<DD>
+	remove diffvec (not used)<BR>
+<DT>liveplot 1.42  2004/10/04<DD>
+	redo vector access<BR>
+<DT>odf.tcl 1.7  2004/10/04<DD>
+	BWidget is now required<BR>
+<DT>orient.tcl 1.8  2004/10/04<DD>
+	remove non-BWidget code<BR>
+<P>
+<DT><B>expgui 1.74</B>  2004/09/28<DD>
+	use winutils or winexec<BR>
+	catch expgui when called with .Oxx (archived .EXP) files<BR>
+	  to eventually offer rename choices<BR>
+	catch Mac Reload EXP? bug<BR>
+<DT>gsascmds.tcl 1.59  2004/09/28<DD>
+	use WINUTILS if present in place of WINEXEC<BR>
+	on Mac use Rez & SetFile from dist, when not installed<BR>
+<P>
+<DT>export_drawxtl.tcl 1.1  2004/09/21<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.73</B>  2004/09/20<DD>
+	add "package require Tk" for starkit use<BR>
+<DT>gsascmds.tcl 1.58  2004/09/20<DD>
+	force all output to instfile to be in ASCII<BR>
+	  this might solve bugs where non-ascii chars invalidate .EXP file<BR>
+<DT>liveplot 1.41  2004/09/20<DD>
+	>> add "package require Tk" for starkit use<BR>
+<DT>lstview 1.17  2004/09/20<DD>
+	add "package require Tk" for starkit use<BR>
+<DT>mkdictindex.tcl 1.2  2004/09/20<DD>
+	add "package require Tk" for starkit use<BR>
+<DT>readexp.tcl 1.42  2004/09/20<DD>
+	force all output to instfile to be in ASCII<BR>
+	  this might solve bugs where non-ascii chars invalidate .EXP file<BR>
+<DT>readinst.tcl 1.4  2004/09/20<DD>
+	force all output to instfile to be in ASCII<BR>
+	   this might solve bugs where non-ascii chars invalidate .EXP file<BR>
+<DT>widplt 1.18  2004/09/20<DD>
+	add "package require Tk" for starkit use<BR>
+<P>
+<DT>export_cif.tcl 1.1  2004/09/08<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.72</B>  2004/05/13<DD>
+	add open console<BR>
+<DT>excledt.tcl 1.13  2004/05/13<DD>
+	add new zoom binding<BR>
+<DT>liveplot 1.40  2004/05/13<DD>
+	add open console<BR>
+	deal with starkit problems<BR>
+	ignore bad element attributes (colors, marker types, sizes...)<BR>
+	update binding stuff (yet again!)<BR>
+	avoid bug on fit with no points (bkgfit)<BR>
+<DT>lstview 1.16  2004/05/13<DD>
+	open console<BR>
+<DT>widplt 1.17  2004/05/13<DD>
+	add open console<BR>
+	deal with starkit problems<BR>
+<P>
+<DT>gsascmds.tcl 1.57  2004/05/04<DD>
+	save .EXP before call to bkgedit (bug fix)<BR>
+<DT>instedit.tcl 1.5  2004/05/04<DD>
+	fix ipola buttons ("None" was broken)<BR>
+	disable KRATIO as it is currently unused<BR>
+<DT>readexp.tcl 1.41  2004/05/04<DD>
+	fix diffrence from EXPEDT; change kratio=0 to 0.5<BR>
+<P>
+<DT><B>expgui 1.71</B>  2004/04/27<DD>
+	new number only to track other changes<BR>
+<DT>addcmds.tcl 1.35  2004/04/27<DD>
+	add O-1<BR>
+<DT>export_xml.tcl 1.3  2004/04/27<DD>
+	remove unused proc<BR>
+	flag origin 2 space groups when in space group table<BR>
+<DT>gsascmds.tcl 1.56  2004/04/27<DD>
+	update non-modal dialogs to match newer versions of Tk<BR>
+	add window resize for OS X<BR>
+<DT>instedit.tcl 1.4  2004/04/27<DD>
+	add ITYP entry in init<BR>
+<DT>liveplot 1.39  2004/04/27<DD>
+	plot (obs-calc)/sigma<BR>
+	Add ability to scan zoom region with arrow keys<BR>
+<P>
+<DT>excledt.tcl 1.12  2004/04/26<DD>
+	Fix bug with OSX BLT (all new versions of BLT)?<BR>
+	Add ability to scan zoom region with arrow keys<BR>
+<P>
+<DT><B>expgui 1.70</B>  2004/04/03<DD>
+	fix clock format command<BR>
+<DT>atomcons.tcl 1.13  2004/04/03<DD>
+	fix sort undefined bug<BR>
+	report warning when nothing selected to constrain<BR>
+<P>
+<DT><B>expgui 1.69</B>  2004/01/30<DD>
+	Add code to set app/icon in OS X, remove applescript generation<BR>
+<DT>browsecif.tcl 1.9  2004/01/30<DD>
+	update to match new version of CIFEDIT etc.<BR>
+<DT>fillcif.tcl 1.6  2004/01/30<DD>
+	update to match new version of CIFEDIT etc.<BR>
+<DT>gsascmds.tcl 1.55  2004/01/30<DD>
+	Add code to set app/icon in OS X<BR>
+<DT>gsascmds.tcl 1.54  2004/01/30<DD>
+	update putontop to match new version of CIF routines<BR>
+<DT>import_cif.tcl 1.12  2004/01/30<DD>
+	update to match new version of CIFEDIT etc.<BR>
+<P>
+<DT>mkdictindex.tcl 1.1  2004/01/12<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.68</B>  2003/12/16<DD>
+	add droplet capability to AppleScript<BR>
+<P>
+<DT><B>expgui 1.67</B>  2003/12/05<DD>
+	more AppleScript fixups (find xterm location & offer a startup directory choice)<BR>
+<DT><B>expgui 1.66</B>  2003/12/05<DD>
+	add file menu command to create applescript shortcut (OSX only)<BR>
+<DT>excledt.tcl 1.11  2003/12/05<DD>
+	only display peak options for phases that are present<BR>
+	implement keyboard shortcuts (1,2,...) for showing reflection tickmarks<BR>
+	fix peak options menu bug<BR>
+<DT>liveplot 1.38  2003/12/05<DD>
+	force bkgedit to always use unnormalized plots<BR>
+<P>
+<DT><B>expgui 1.65</B>  2003/11/22<DD>
+	advance EXPGUI version number to reflect bug fixes in other files<BR>
+<P>
+<DT>addcmds.tcl 1.34  2003/11/21<DD>
+	fix "replace phase" bug<BR>
+<DT>liveplot 1.37  2003/11/21<DD>
+	fix "save options" bug<BR>
+<DT>widplt 1.16  2003/11/21<DD>
+	add export to grace & .csv options<BR>
+<P>
+<DT><B>expgui 1.64</B>  2003/11/13<DD>
+	add powpref nagging after "SaveAs" & rename of archived .EXP<BR>
+<DT><B>expgui 1.63</B>  2003/11/13<DD>
+	Updates for OSX: window resize & catch puts<BR>
+	clean up the way "use new name" works for archived .EXP files<BR>
+	remove obsolete references to tkButtonInvoke<BR>
+<DT>browsecif.tcl 1.8  2003/11/13<DD>
+	remove obsolete references to tkButtonInvoke<BR>
+<DT>gsascmds.tcl 1.53  2003/11/13<DD>
+	remove obsolete references to tkButtonInvoke<BR>
+	add code to support URL lookup in OSX & clean up for UNIX<BR>
+	don't allow archived files on initial open<BR>
+	fix parse of .EXP file for >999 LS cycles<BR>
+<DT>liveplot 1.36  2003/11/13<DD>
+	catch puts output for OSX<BR>
+	Resize window for OSX<BR>
+	revise interface to LOGIC and CMPR<BR>
+<DT>lstview 1.15  2003/11/13<DD>
+	Resize window for OSX<BR>
+<DT>widplt 1.15  2003/11/13<DD>
+	Resize window for OSX<BR>
+<P>
+<DT>addcmds.tcl 1.33  2003/11/05<DD>
+	add missing cleanup routine (afterputontop)<BR>
+<DT>browsecif.tcl 1.7  2003/11/05<DD>
+	prepare for OSX -- catch puts<BR>
+<DT>gsascmds.tcl 1.52  2003/11/05<DD>
+	add mozilla to browser list<BR>
+	fix missing browser error msg<BR>
+	fix bug in Chinese Windows where history record gets corrupted<BR>
+<DT>instedit.tcl 1.3  2003/11/05<DD>
+	prepare for OSX - remove puts<BR>
+<DT>notebook.tcl 1.3  2003/11/05<DD>
+	prepare for OSX -- catch puts<BR>
+<DT>readinst.tcl 1.3  2003/11/05<DD>
+	prepare for OSX<BR>
+<P>
+<DT><B>expgui 1.62</B>  2003/08/11<DD>
+	remove Bkg functions #3 & #9 since they are gone from GSAS<BR>
+<DT>addcmds.tcl 1.32  2003/08/11<DD>
+	add support for adding multiple histograms<BR>
+	code cleanup -col -> -column<BR>
+<DT>browsecif.tcl 1.6  2003/08/11<DD>
+	significant revision for CIFTOOLS<BR>
+	  cleanup for Mac OS X<BR>
+	  improve error reporting<BR>
+	  make variable for max line length (defaults to 80)<BR>
+<DT>cifselect.tcl 1.3  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>excledt.tcl 1.10  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>fillcif.tcl 1.5  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>gsascmds.tcl 1.51  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>import_cif.tcl 1.11  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>instedit.tcl 1.2  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>liveplot 1.35  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>liveplot 1.34  2003/08/11<DD>
+	remove BKG function #3 since it is gone from GSAS<BR>
+<DT>liveplot_FoxExport.tcl 1.2  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<DT>lstview 1.14  2003/08/11<DD>
+	code cleanup -col -> -column<BR>
+<P>
+<DT>odf.tcl 1.6  2003/05/27<DD>
+	autoselect 1st phase if none are previously selected<BR>
+	add comments<BR>
+<P>
+<DT>readexp.tcl 1.40  2003/05/24<DD>
+	fix absorption correction bug<BR>
+<P>
+<DT><B>expgui 1.61</B>  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+<DT>addcmds.tcl 1.31  2003/05/22<DD>
+	Add instrument parameter file editor<BR>
+<DT>dumpexp.tcl 1.4  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+<DT>dumpprof.tcl 1.2  2003/05/22<DD>
+	initial tweaking<BR>
+<DT>gsascmds.tcl 1.50  2003/05/22<DD>
+	Workaround for win-XP bug where archive fails because rename does not work<BR>
+<DT>gsasmenu.tcl 1.23  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+	Add instedit<BR>
+<DT>instedit.tcl 1.1  2003/05/22<DD>
+	Initial revision<BR>
+<DT>liveplot 1.33  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+<DT>liveplot_FoxExport.tcl 1.1  2003/05/22<DD>
+	Initial revision<BR>
+<DT>lstview 1.13  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+<DT>readexp.tcl 1.39  2003/05/22<DD>
+	cleanup ABSCOR usage (blank = type 0) -- fix reported bug?<BR>
+<DT>readinst.tcl 1.2  2003/05/22<DD>
+	remove error message display used for debug<BR>
+<DT>widplt 1.14  2003/05/22<DD>
+	Implement windows init file as c:\GSAS\GSAS.CONFIG in place of .GSAS_CONFIG<BR>
+<P>
+<DT>dumpprof.tcl 1.1  2003/05/13<DD>
+	Initial revision<BR>
+<DT>liveplot 1.32  2003/05/13<DD>
+	save more stuff, use gsas.config on windows<BR>
+<DT>readinst.tcl 1.1  2003/05/13<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.60</B>  2003/04/10<DD>
+	change header<BR>
+	autostart GRWND option for Win-95/98/ME<BR>
+	warnings to run POWPREF<BR>
+	read customization from gsas.config as well as .gsas_config (no doc yet)<BR>
+	warn on directories with spaces<BR>
+	insert date in  gsas.config & .gsas_config  (use  gsas.config on Win)<BR>
+	move a,b,c... to separate menu<BR>
+<DT>addcmds.tcl 1.30  2003/04/10<DD>
+	leave filenames up for rawplot<BR>
+	set tmin properly for TOF<BR>
+	show text for bank selected<BR>
+	add Qmax option<BR>
+	add "run powpref" warning<BR>
+<DT>dumpexp.tcl 1.3  2003/04/10<DD>
+	use filename rather than arg (why?)<BR>
+<DT>excledt.tcl 1.9  2003/04/10<DD>
+	Major revisions to fix TOF bugs<BR>
+	    (use EXPEDT to set TMIN)<BR>
+	move conversion routines to readexp.tcl<BR>
+	many new comments<BR>
+<DT>export_xml.tcl 1.2  2003/04/10<DD>
+	fix missing tag<BR>
+<DT>gsascmds.tcl 1.49  2003/04/10<DD>
+	implement GRWND startup (Win-9x)<BR>
+	warn on names with spaces<BR>
+<DT>liveplot 1.31  2003/04/10<DD>
+	change header<BR>
+	keep weights (for export)<BR>
+	use normalized data for BKGEDIT (fit is incorrect for TOF w/o)<BR>
+	allow export routines (for FOX)<BR>
+	allow 1,2,... keys to turn on phase tickmarks<BR>
+<DT>lstview 1.12  2003/04/10<DD>
+	change startup section<BR>
+<DT>readexp.tcl 1.38  2003/04/10<DD>
+	more sig figs on small numbers (switch to scientific notation earlier)<BR>
+	implement powpref warning<BR>
+	update absorption correction to blank spaces<BR>
+	add data conversion routines (from excledt)<BR>
+<DT>widplt 1.13  2003/04/10<DD>
+	change header<BR>
+<P>
+<DT>browsecif.tcl 1.5  2002/12/30<DD>
+	updated pleasewait<BR>
+	implement CIF(maxvalues) to control max CIF size<BR>
+	define contents of CIF(status) , to be displayed on "pleasewait" & check<BR>
+	    CIF size against maximum<BR>
+	check to see if skip forward is in fact going backwards (prevent infinite loop)<BR>
+	scroll text box while parsing -- looks neat!<BR>
+	implement (&comment out) multiple selection of looped items<BR>
+<DT>fillcif.tcl 1.4  2002/12/30<DD>
+	new comment; change name of CIFBrowserWindow to CIFOpenBrowser (for latest browsecif.tcl)<BR>
+<DT>gsascmds.tcl 1.48  2002/12/30<DD>
+	update pleasewait to include latest options<BR>
+<P>
+<DT>readexp.tcl 1.37  2002/12/27<DD>
+	fix MM read bug<BR>
+<P>
+<DT><B>expgui 1.59</B>  2002/10/31<DD>
+	do better job reporting gsas_config errors & write to file better<BR>
+<DT>liveplot 1.30  2002/10/31<DD>
+	trap gsas_config errors & write to file better<BR>
+<DT>lstview 1.11  2002/10/31<DD>
+	trap gsas_config errors<BR>
+	prevent infinite loop in readsum<BR>
+<DT>widplt 1.12  2002/10/31<DD>
+	trap gsas_config errors & write to file better<BR>
+<P>
+<DT>liveplot 1.29  2002/10/24<DD>
+	Add export capability to comma separated value (.csv) files for spreadsheets<BR>
+	and graphics programs<BR>
+<P>
+<DT>browsecif.tcl 1.4  2002/09/24<DD>
+	quote reserved "words" (DATA_ LOOP_ SAVE_ STOP_ GLOBAL_)<BR>
+<P>
+<DT><B>expgui 1.58</B>  2002/09/05<DD>
+	trap error in localconfig and .gsas_config<BR>
+	add CIFselect<BR>
+<DT>addcmds.tcl 1.29  2002/09/05<DD>
+	why did I do this? Deal with missing description?<BR>
+<DT>browsecif.tcl 1.3  2002/09/05<DD>
+	Major revision.<BR>
+	   Implement undo<BR>
+	   get rid of "Save Changes"<BR>
+	   change use of icons<BR>
+	   don't show tables with more than 100 loop values (by "column")<BR>
+<DT>browsecif.tcl 1.2  2002/09/05<DD>
+	add categories to loops<BR>
+	improve number parsing<BR>
+	lock edits in text window<BR>
+	(above grew from suggestions by B. McMahon)<BR>
+<DT>cifselect.tcl 1.2  2002/09/05<DD>
+	comments<BR>
+<DT>fillcif.tcl 1.3  2002/09/05<DD>
+	Revise to use updated browsecif:<BR>
+	   implement undo<BR>
+	   changes made in-memory automatically<BR>
+	   manual editing of cif must be enabled<BR>
+<DT>fillcif.tcl 1.2  2002/09/05<DD>
+	minor update: eliminate reference to window by name (.file)<BR>
+<DT>import_cif.tcl 1.10  2002/09/05<DD>
+	Major rework to use text-based browsecif.tcl<BR>
+<DT>liveplot 1.28  2002/09/05<DD>
+	remove octave stuff<BR>
+<DT>profcons.tcl 1.6  2002/09/05<DD>
+	make sure a phase & histogram is selected to prevent error<BR>
+	handholding: if there is only 1 histogram/phase select it.<BR>
+<P>
+<DT>browsecif.tcl 1.1  2002/08/09<DD>
+	Initial revision<BR>
+<DT>cifselect.tcl 1.1  2002/08/09<DD>
+	Initial revision<BR>
+<DT>fillcif.tcl 1.1  2002/08/09<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.47  2002/08/09<DD>
+	fix table size sync.<BR>
+	add  ExpandScrollTable (used in cifselect)<BR>
+<DT>orient.tcl 1.7  2002/08/09<DD>
+	correct labels on pref. orient. axis to uvw<BR>
+<P>
+<DT><B>expgui 1.57</B>  2002/07/18<DD>
+	GSAS2CIF & fillCIF changes<BR>
+<DT>excledt.tcl 1.8  2002/07/18<DD>
+	fix binding with yet newer versions of BLT<BR>
+<DT>export_xml.tcl 1.1  2002/07/18<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.46  2002/07/18<DD>
+	remove iconify from excledt -- seems to work better on Windows<BR>
+<DT>gsasmenu.tcl 1.22  2002/07/18<DD>
+	GSAS2CIF & FillCIF changes<BR>
+<DT>readexp.tcl 1.36  2002/07/18<DD>
+	fix excluded region read error (in EXCLEDT)<BR>
+<P>
+<DT><B>expgui 1.56</B>  2002/07/03<DD>
+	minor stuff:<BR>
+	  1) networked path may be OK, warn, but no error<BR>
+	  2) catch invalid .EXP file names<BR>
+	  3) avoid error messages on grab's<BR>
+<DT>export_spf.tcl 1.2  2002/07/03<DD>
+	place only 1 TITL line in file (as requested by Lachlan)<BR>
+<DT>gsascmds.tcl 1.45  2002/07/03<DD>
+	catch invalid .EXP file names<BR>
+<DT>import_cif.tcl 1.9  2002/07/03<DD>
+	minor bug fix<BR>
+<DT>profcons.tcl 1.5  2002/07/03<DD>
+	Bug fix: cancel button was broken on Add/Edit profile constraint<BR>
+	Enable continue button on "Editing New Profile Constraint" menu only if<BR>
+	   terms are selected.<BR>
+<P>
+<DT>import_cell.tcl 1.3  2002/02/11<DD>
+	make sure file gets closed<BR>
+<DT>import_cif.tcl 1.8  2002/02/11<DD>
+	Change quote processing of CIF's -- strip quotes as items are read (keep semicolons)<BR>
+	fix bug in spacegroup validation<BR>
+<DT>liveplot 1.27  2002/02/11<DD>
+	add cursor display (livecursor) -- requested by Lachlan<BR>
+<DT>lstview 1.10  2002/02/11<DD>
+	Bug fix -- repeat is was not set (error if .LST file is large)<BR>
+<P>
+<DT><B>expgui 1.55</B>  2002/01/25<DD>
+	Add absorption correction to histogram pane<BR>
+	move damping on histogram pane, to save space<BR>
+	bug fix: global ref. w/alpha1,2 the ratio param were in wrong spot<BR>
+<DT>readexp.tcl 1.35  2002/01/25<DD>
+	more absorption correction terms<BR>
+<DT>widplt 1.11  2002/01/25<DD>
+	neaten<BR>
+<P>
+<DT>widplt 1.10  2002/01/24<DD>
+	bug fix: update plot after "Apply" with change in absorption coeff.<BR>
+<P>
+<DT>addcmds.tcl 1.28  2002/01/23<DD>
+	fix bugs related to adding ValidateAtomsBox<BR>
+	launch import (ImportPhase/ImportAtom) when a import format is selected<BR>
+<P>
+<DT><B>expgui 1.54</B>  2002/01/22<DD>
+	Significant change in display of atoms on phase panel:<BR>
+	  changing an atom queues an update for that atom only<BR>
+	  using new routine UpdateAtomLine<BR>
+	  avoid duplicate refresh (killer for big lists)<BR>
+	Display atoms in MM phases<BR>
+	Add a Export coordinates menu cascade that gets built<BR>
+	   when used rather than every time the software is loaded (better speed)<BR>
+	new routines: FormatAtomLine & UpdateAtomLine so that only 1<BR>
+	  atom can be updated at a time<BR>
+	 CompressList now divides up the list with <CR> if a maximum<BR>
+	   length is supplied<BR>
+	Remove AddAtoms & ReplacePhase buttons for MM phases (not supported)<BR>
+<DT>addcmds.tcl 1.27  2002/01/22<DD>
+	support changes MM phases (where appropriate)<BR>
+	create a atom type validation routine ValidateAtomsBox & remove from<BR>
+	   addatoms and replacephase2<BR>
+	call  UpdateAtomLine to refresh display of selected atoms<BR>
+	fix minor bug, if a phase is replaced & the number of<BR>
+	  atoms remains unchanged<BR>
+<DT>atomcons.tcl 1.12  2002/01/22<DD>
+	Major changes to add MM constraints<BR>
+	  source profcons.tcl when the main pane is created<BR>
+	  create the subpanes each time the main pane<BR>
+	    is created (in case phases get added)<BR>
+	Most routines now take the phase type as an arg<BR>
+<DT>dumpexp.tcl 1.2  2002/01/22<DD>
+	don't dump mm phases<BR>
+<DT>export_shelx.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>export_spf.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>export_xtl.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>graceexport.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.44  2002/01/22<DD>
+	support absplt in widplt routine<BR>
+	move export to .xtl to separate file<BR>
+	change order of date-sorted .EXP files, put newest on top<BR>
+<DT>gsasmenu.tcl 1.21  2002/01/22<DD>
+	add absplt, remove export routines now in own menu cascade<BR>
+	add gsas2pdf * ref2... & ramafit<BR>
+<DT>import_cif.tcl 1.7  2002/01/22<DD>
+	more complete space group checking<BR>
+<DT>import_spf.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>import_xtl.tcl 1.1  2002/01/22<DD>
+	Initial revision<BR>
+<DT>liveplot 1.26  2002/01/22<DD>
+	Major revision:<BR>
+	  export to GRACE<BR>
+	  BKGEDIT use linear least-squares & fits bkg functions 1-6<BR>
+	add label by phase name<BR>
+	edit phase name in "edit tickmarks"<BR>
+	make obs & calc pattern less obscuring in bkgedit<BR>
+<DT>lstview 1.9  2002/01/22<DD>
+	Major revisions<BR>
+	add plot of R's & shifts<BR>
+	update parse routines to changes in .LST file<BR>
+	Add capability to delete sections of file<BR>
+<DT>opts.tcl 1.8  2002/01/22<DD>
+	Add small checkbutton font for LSTVIEW plot<BR>
+<DT>readexp.tcl 1.34  2002/01/22<DD>
+	writing of real values: if a field has more than 6 characters &<BR>
+	too few significant digits will show, switch to scientific notation<BR>
+	-- example: set val .001234; validreal val 8 4 -- val is 0.0012<BR>
+	            set val .0001234; validreal val 8 4 -- val is 1.23E-04<BR>
+	<BR>
+	new routine for MM phases: mmatominfo<BR>
+	add abs correction parameters to histinfo<BR>
+	handle mm constraints in  constrinfo<BR>
+<DT>widplt 1.9  2002/01/22<DD>
+	Major revision<BR>
+	  Add ABSPLT capability for absorption/reflectivity plots<BR>
+	  change edit menu to cascade menu rather than select<BR>
+	    curve on plot<BR>
+	correct LY on type 4 to 0<BR>
+	change lots of proc names<BR>
+	make a edit page creator: NewProfileValues used to create &<BR>
+	   edit profile curves<BR>
+	   clean code to make ancestry a little less obvious<BR>
+	... hope it works<BR>
+<P>
+<DT><B>expgui 1.53</B>  2001/12/16<DD>
+	make top of window a bit smaller<BR>
+<DT><B>expgui 1.52</B>  2001/12/16<DD>
+	don't check for excledt file -- Excluded region button is always present<BR>
+<DT>addcmds.tcl 1.26  2001/12/16<DD>
+	Add "D" as a valid element type<BR>
+<DT>excledt.tcl 1.7  2001/12/16<DD>
+	make -outline BLT version dependent (bug fix)<BR>
+	fix manual zoom reset<BR>
+<DT>gsascmds.tcl 1.43  2001/12/16<DD>
+	fix fileinfobox error in open .EXP routine<BR>
+<DT>liveplot 1.25  2001/12/16<DD>
+	bug fix: ignore update if .EXP file does not exists<BR>
+<DT>liveplot 1.24  2001/12/16<DD>
+	Major revisions:<BR>
+		add braces for expressions<BR>
+		move BLT load after sourcing<BR>
+		Add Linear Algebra use (La1.0)<BR>
+		rework Chebyshev fit to use direct (La) solution<BR>
+		fix manual zoom<BR>
+		improve error messages<BR>
+<DT>opts.tcl 1.7  2001/12/16<DD>
+	make top of window a bit smaller<BR>
+<P>
+<DT>gsascmds.tcl 1.42  2001/11/19<DD>
+	include Rfactors on file lookup<BR>
+<DT>liveplot 1.23  2001/11/19<DD>
+	improve error message<BR>
+	deal with duplicate points in BKGEDIT<BR>
+<DT>opts.tcl 1.6  2001/11/19<DD>
+	new smallfont default<BR>
+<P>
+<DT>addcmds.tcl 1.25  2001/11/08<DD>
+	fix update flag after Uiso/Uaniso conversion<BR>
+<P>
+<DT><B>expgui 1.51</B>  2001/11/07<DD>
+	get rid of echo command<BR>
+<DT>excledt.tcl 1.6  2001/11/07<DD>
+	change filename to avoid liveplot conflict<BR>
+	catch error if nothing is read<BR>
+<DT>gsascmds.tcl 1.41  2001/11/07<DD>
+	remove echo in archive<BR>
+	add get file name for DISAGL/save<BR>
+	support histogram flags for all types of histograms<BR>
+<P>
+<DT><B>expgui 1.50</B>  2001/10/31<DD>
+	fix .Oxx bug when no files are found<BR>
+	add excledt support<BR>
+<DT>excledt.tcl 1.5  2001/10/31<DD>
+	Very major rewrite<BR>
+	  make excledt run inside expgui<BR>
+	  add dummy histogram support<BR>
+	  add manual zoom and next histogram keys<BR>
+<DT>excledt.tcl 1.4  2001/10/31<DD>
+	unsuccessful Win95 fixes<BR>
+<DT>exclinit.tcl 1.1  2001/10/31<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.40  2001/10/31<DD>
+	change excledt to run "in-line"<BR>
+<DT>liveplot 1.22  2001/10/31<DD>
+	add next histogram feature<BR>
+<DT>liveplot 1.21  2001/10/31<DD>
+	manual zoom option<BR>
+<DT>readexp.tcl 1.33  2001/10/31<DD>
+	support excledt<BR>
+<P>
+<DT>addcmds.tcl 1.24  2001/10/19<DD>
+	Change use of $newhist(setnum) for 8.0 compatibility<BR>
+<DT>readexp.tcl 1.32  2001/10/19<DD>
+	remove string replace for 8.0 compatibility<BR>
+<P>
+<DT><B>expgui 1.49</B>  2001/10/18<DD>
+	update archiving<BR>
+<DT>gsascmds.tcl 1.39  2001/10/18<DD>
+	fix web page display problem in windows-NT<BR>
+	move EXP archiving here & now use the .O?? files<BR>
+<DT>gsasmenu.tcl 1.20  2001/10/18<DD>
+	describe new archiving<BR>
+<DT>liveplot 1.20  2001/10/18<DD>
+	add new peak labeling options<BR>
+<DT>readexp.tcl 1.31  2001/10/18<DD>
+	remove unix support for compressed files<BR>
+<P>
+<DT><B>expgui 1.48</B>  2001/10/14<DD>
+	bug fix: fix so that new histogram buttons are disabled when<BR>
+	no phases are present<BR>
+<DT>addcmds.tcl 1.23  2001/10/14<DD>
+	blank out dummy histogram ranges until a set is selected<BR>
+<DT>dumpexp.tcl 1.1  2001/10/14<DD>
+	Initial revision<BR>
+<DT>import_gsas.tcl 1.1  2001/10/14<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.47</B>  2001/09/25<DD>
+	Add citations, as suggested by Lachlan<BR>
+	Add Set Histogram flag button<BR>
+<DT>addcmds.tcl 1.22  2001/09/25<DD>
+	add comments<BR>
+	improve error message display & try to show all exptool errors<BR>
+	dummy histogram support<BR>
+<DT>excledt.tcl 1.3  2001/09/25<DD>
+	add web error links<BR>
+	list only allowed histograms on submenu<BR>
+<DT>gsascmds.tcl 1.38  2001/09/25<DD>
+	Add error highlight into ShowBigMessage<BR>
+	look more closely at histogram types for liveplot, etc (this still may need<BR>
+	more attention)<BR>
+	Set Histogram Flag dialog and some nice scrollable table code<BR>
+<DT>liveplot 1.19  2001/09/25<DD>
+	list only allowed histograms on submenu<BR>
+<DT>opts.tcl 1.5  2001/09/25<DD>
+	resize all plot axes<BR>
+<DT>readexp.tcl 1.30  2001/09/25<DD>
+	Add "D" to all dummy histogram type, save number of histograms<BR>
+	document histinfo x file<BR>
+	support changing dummy ranges, eventually<BR>
+	support histogram flag<BR>
+<P>
+<DT><B>expgui 1.46</B>  2001/09/04<DD>
+	Add Data Limits/Exclude button<BR>
+<DT><B>expgui 1.45</B>  2001/09/04<DD>
+	adjustable font support<BR>
+<DT>addcmds.tcl 1.21  2001/09/04<DD>
+	adjust font<BR>
+<DT>atomcons.tcl 1.11  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>excledt.tcl 1.2  2001/09/04<DD>
+	larger optional font<BR>
+<DT>excledt.tcl 1.1  2001/09/04<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.37  2001/09/04<DD>
+	add excledt<BR>
+<DT>gsascmds.tcl 1.36  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>gsasmenu.tcl 1.19  2001/09/04<DD>
+	add excledt<BR>
+<DT>liveplot 1.18  2001/09/04<DD>
+	set colors/symbols<BR>
+	adjust fonts<BR>
+	cleanup save opts<BR>
+<DT>liveplot 1.17  2001/09/04<DD>
+	reset bkgedit zoom<BR>
+<DT>odf.tcl 1.5  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>opts.tcl 1.4  2001/09/04<DD>
+	Do a better job with BLT graphs<BR>
+<DT>opts.tcl 1.3  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>orient.tcl 1.6  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>profcons.tcl 1.4  2001/09/04<DD>
+	adjustable fonts<BR>
+<DT>readexp.tcl 1.29  2001/09/04<DD>
+	set dmin<BR>
+	set histogram file name (for use in scripts)<BR>
+<DT>readexp.tcl 1.28  2001/09/04<DD>
+	excluded region support<BR>
+	bank & file names<BR>
+<P>
+<DT><B>expgui 1.44</B>  2001/06/29<DD>
+	Add Marquardt, convergence, LeBail damping to LS page<BR>
+	bkgedit button to background edit dialog<BR>
+<DT>gsascmds.tcl 1.35  2001/06/29<DD>
+	Add bkgedit command<BR>
+<DT>gsasmenu.tcl 1.18  2001/06/29<DD>
+	add bkgedit program<BR>
+<DT>liveplot 1.16  2001/06/29<DD>
+	Major revision: add bkgedit functionality<BR>
+<DT>readexp.tcl 1.27  2001/06/29<DD>
+	brace expr's for better speed<BR>
+	support refinement options: Marquardt, convergence, LeBail damping<BR>
+	get tmin,tmax (for Cheb. computation)<BR>
+<P>
+<DT><B>expgui 1.43</B>  2001/05/23<DD>
+	use www.ncnr.nist.gov/xtal/software/expgui as default location for web pages<BR>
+	fix intermediate or old GSAS versions with fonts file in /fonts/ or named pgfont.dat<BR>
+	clean up file archiving in UNIX<BR>
+<DT>addcmds.tcl 1.20  2001/05/23<DD>
+	Use TOF-min for default when reading TOF banks<BR>
+	for TOF banks default inst parameter set to match the TOF bank<BR>
+	add definition for gsas environment variable (lc) before running exptool<BR>
+<DT>gsascmds.tcl 1.34  2001/05/23<DD>
+	allow help pages to be found on $expgui(website), if not found locally<BR>
+<P>
+<DT><B>expgui 1.42</B>  2001/05/11<DD>
+	change in location of PGPLOT font file in Windows (now same for all)<BR>
+	support gzip compressed archive files as input in Unix<BR>
+	fix bug on disable "add histogram" button (button is missing if no EXPTOOL)<BR>
+<DT>atomcons.tcl 1.10  2001/05/11<DD>
+	Change max constrained atoms to 500<BR>
+<DT>gsascmds.tcl 1.33  2001/05/11<DD>
+	test histograms before sending them to liveplot -- avoid errors on read<BR>
+<DT>gsascmds.tcl 1.32  2001/05/11<DD>
+	button to display gzip'ed input files on Unix (on expnam)<BR>
+	change in location of PGPLOT font file in Windows<BR>
+	GSAS env var for UNIX<BR>
+<DT>liveplot 1.15  2001/05/11<DD>
+	Add support for WIF David's Cumulative Chi**2 function<BR>
+	Link to web page<BR>
+	put Cumulative Chi**2 & background on top<BR>
+<DT>readexp.tcl 1.26  2001/05/11<DD>
+	accomodate gzip'ed input files on Unix<BR>
+<P>
+<DT><B>expgui 1.41</B>  2001/04/17<DD>
+	Use CR/LF format files on all platforms<BR>
+<DT>addcmds.tcl 1.19  2001/04/17<DD>
+	revise tk_dialog to MyMessage box<BR>
+	Use CR/LF format files on all platforms<BR>
+<DT>gsascmds.tcl 1.31  2001/04/17<DD>
+	revise tk_dialog to MyMessage box<BR>
+	Use CR/LF format files on all platforms<BR>
+	remove unix file conversion<BR>
+<DT>gsasmenu.tcl 1.17  2001/04/17<DD>
+	use same spelling for geometry program on all platforms<BR>
+<DT>readexp.tcl 1.25  2001/04/17<DD>
+	revise to use CR/LF for all platforms<BR>
+<P>
+<DT>addcmds.tcl 1.18  2001/04/16<DD>
+	Add atom sort feature<BR>
+<DT>gsascmds.tcl 1.30  2001/04/16<DD>
+	fix overwrite problem<BR>
+	widen message box<BR>
+<P>
+<DT>addcmds.tcl 1.17  2001/04/03<DD>
+	fix bug: if error occurs in adding a phase, don't go on to the add atoms page<BR>
+	check for valid atom types<BR>
+<DT>import_cif.tcl 1.6  2001/04/03<DD>
+	support cifs w/o _atom_site_u_iso_or_equiv or _atom_site_b_iso_or_equiv<BR>
+	fix bug: always set data item names to lc<BR>
+<DT>readexp.tcl 1.24  2001/04/03<DD>
+	TEMPORARY FIX: for SGI use old T/F format for intensity extraction<BR>
+	               other use new Y/N flag<BR>
+<P>
+<DT>readexp.tcl 1.23  2001/02/26<DD>
+	Change EPHAS (Fobs extraction) to Y/N except on IRIX<BR>
+<P>
+<DT>profcons.tcl 1.3  2001/02/22<DD>
+	fix weird bug?<BR>
+<P>
+<DT><B>expgui 1.40</B>  2000/12/22<DD>
+	add autoiconify option<BR>
+	require winexec for Win-9x only (not -NT)<BR>
+	Check for use of network directories<BR>
+	Defer whenidle loop (.EXP modification checking) if expgui.lck exists<BR>
+	Remove various unneeded window restacking commands<BR>
+	Allow Autoload in Windows<BR>
+	Allow "Show EXPTOOL output" for all platforms<BR>
+<DT>addcmds.tcl 1.16  2000/12/22<DD>
+	fix call to RAWPLOT in data load. Put RAWPLOT run into bkg<BR>
+<DT>gsascmds.tcl 1.29  2000/12/22<DD>
+	produce error message in DISAGL if .LST file is not renamed<BR>
+<DT>gsascmds.tcl 1.28  2000/12/22<DD>
+	Major reworking of routines to run GSAS routines:<BR>
+	  non-EXP using programs run independently by default<BR>
+	  Pause is now hard-coded<BR>
+	  EXP using programs run in foreground by default (exception is POWPLOT)<BR>
+	Win-95 implementation of forknewterm rewritten to loop over commands<BR>
+	  & use lock file (resume when lock file is deleted) & have "lock" window<BR>
+	Win-NT revised to not use WINEXEC & run in foreground<BR>
+	UNIX implementation of forknewterm revised to match previous<BR>
+<DT>gsasmenu.tcl 1.16  2000/12/22<DD>
+	make POWPLOT a background program<BR>
+<DT>liveplot 1.14  2000/12/22<DD>
+	Implement autoraise<BR>
+	detect expgui.lck in windows and delay while it runs<BR>
+<DT>lstview 1.8  2000/12/22<DD>
+	show sample font sizes<BR>
+<DT>widplt 1.8  2000/12/22<DD>
+	fix expload error for DOS format .EXP files<BR>
+<P>
+<DT>addcmds.tcl 1.15  2000/11/27<DD>
+	line up >10 banks in Hist add<BR>
+	set 2theta max from Bank header<BR>
+<DT>atomcons.tcl 1.9  2000/11/27<DD>
+	define type of XYZU+-F<BR>
+	set phase if only 1 is present<BR>
+<P>
+<DT>import_cif.tcl 1.5  2000/11/26<DD>
+	fix grab for choose block window<BR>
+<P>
+<DT><B>expgui 1.39</B>  2000/11/21<DD>
+	add "open" (same as "expnam")<BR>
+<DT>atomcons.tcl 1.8  2000/11/21<DD>
+	change appearance of negative contraint values from red to beige bkg<BR>
+<DT>gsasmenu.tcl 1.15  2000/11/21<DD>
+	fix that geometry is spelled different on Windows<BR>
+<DT>opts.tcl 1.2  2000/11/21<DD>
+	fix font use for customization<BR>
+<P>
+<DT><B>expgui 1.38</B>  2000/10/18<DD>
+	move platform-specific runtime code from gsascmds.tcl to here so<BR>
+	that it gets run after the local config files are read<BR>
+	Switch tk_dialog to MyMessageBox and add WWW references for soem error mgs<BR>
+	disable add histogram until after a phase has been added<BR>
+	add update idletasks to profile, so that something happens right away<BR>
+<DT>gsascmds.tcl 1.27  2000/10/18<DD>
+	Major change in order of routines!<BR>
+	Switch tk_dialog to MyMessageBox and add WWW references for some error mgs<BR>
+	fix bug in GetProfileTerms that prevented use of cached labels<BR>
+	remove platform-specific runtime code to expgui so that it gets run later<BR>
+<P>
+<DT>addcmds.tcl 1.14  2000/10/17<DD>
+	correct comments w/r focus<BR>
+<DT>gsascmds.tcl 1.26  2000/10/17<DD>
+	snapshot with revisions for WWW help<BR>
+<P>
+<DT><B>expgui 1.37</B>  2000/10/12<DD>
+	implement optional EXPTOOL output<BR>
+	Change action for unsaved changes in  whenidle to Save As<BR>
+	Add help pointers<BR>
+	Exchange locations of Replace Phase & Add Phase buttons so that "Add Phass"<BR>
+	is always displayed<BR>
+	new WWW help commands<BR>
+<DT>addcmds.tcl 1.13  2000/10/12<DD>
+	Add www help support<BR>
+	implement optional EXPTOOL output<BR>
+<DT>atomcons.tcl 1.7  2000/10/12<DD>
+	Add www help support<BR>
+<DT>gsascmds.tcl 1.25  2000/10/12<DD>
+	fix html bugs for Windows<BR>
+<DT>gsascmds.tcl 1.24  2000/10/12<DD>
+	Add www help support<BR>
+	improve formatting of help box<BR>
+	at catch statements to focus and grab calls<BR>
+	save grab in pleasewait and restore in donewait<BR>
+	Add link arg in  ShowBigMessage & -helplink to  MyMessageBox<BR>
+<DT>import_cif.tcl 1.4  2000/10/12<DD>
+	Add www help support<BR>
+<DT>profcons.tcl 1.2  2000/10/12<DD>
+	Add www help support<BR>
+<P>
+<DT><B>expgui 1.36</B>  2000/10/04<DD>
+	variable expgui(bkgcolor1) provides the background color for editing<BR>
+	coordinates on the phase panel<BR>
+	<BR>
+	A no-shell mode is now defined using env(EXPGUI_NOSHELL) or /noshell<BR>
+<P>
+<DT><B>expgui 1.35</B>  2000/10/03<DD>
+	Add definitions and implementation for entrybox array so that invalid<BR>
+	numbers are set to red. Valid ones, or when numbers are reread from<BR>
+	the .EXP are turned back to black<BR>
+<DT>odf.tcl 1.4  2000/10/03<DD>
+	Add definitions and implementation for entrybox array so that invalid<BR>
+	numbers are set to red. Valid ones, or when numbers are reread from<BR>
+	the .EXP are turned back to black<BR>
+<DT>orient.tcl 1.5  2000/10/03<DD>
+	Add definitions and implementation for entrybox array so that invalid<BR>
+	numbers are set to red. Valid ones, or when numbers are reread from<BR>
+	the .EXP are turned back to black<BR>
+<P>
+<DT><B>expgui 1.34</B>  2000/10/02<DD>
+	remove unneeded raise command in ReloadExpMsg -- seems to cause a major delay<BR>
+<DT>odf.tcl 1.3  2000/10/02<DD>
+	make phase buttons/title like on phase page<BR>
+<DT>readexp.tcl 1.22  2000/10/02<DD>
+	*** empty log message ***<BR>
+<P>
+<DT>import_cif.tcl 1.3  2000/09/26<DD>
+	change processing of ' & " for element symbol & element type<BR>
+	report error when a data name is used more than once in a block<BR>
+<DT>import_cif.tcl 1.2  2000/09/26<DD>
+	Various fixes: change data names to all lower case<BR>
+	better error detection<BR>
+	use " or ' quoted strings<BR>
+	fix semicolon recognition -- now characters after ending ; are parsed<BR>
+	improve comments<BR>
+	Add Read_BrowseCIF proc for debug and possibly other use<BR>
+<P>
+<DT>addcmds.tcl 1.12  2000/09/25<DD>
+	Display a message returned by the import_*.tcl on the add/replace phase box<BR>
+	Note: not displayed if coordinates (only) are imported<BR>
+<DT>odf.tcl 1.2  2000/09/25<DD>
+	Add texture index<BR>
+<P>
+<DT>import_cif.tcl 1.1  2000/09/24<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.33</B>  2000/08/17<DD>
+	implement Replace Phase<BR>
+	error trace on error in a *info command<BR>
+<DT>addcmds.tcl 1.11  2000/08/17<DD>
+	reformat dialogs for Import buttons<BR>
+	implement coordinate/phase import capability<BR>
+<DT>import_cell.tcl 1.2  2000/08/17<DD>
+	perform origin shifts for Origin 1 settings<BR>
+<DT>readexp.tcl 1.21  2000/08/17<DD>
+	Fix bug setting gamma<BR>
+<DT>spacegrp.ref 1.1  2000/08/17<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.32</B>  2000/08/14<DD>
+	eliminate phase flag box if only 1 phase is present<BR>
+<DT>import_cell.tcl 1.1  2000/08/14<DD>
+	Initial revision<BR>
+<P>
+<DT>readexp.tcl 1.20  2000/08/08<DD>
+	Correct creation of off-diagonal Uij terms for non-orthogonal cells<BR>
+<P>
+<DT><B>expgui 1.31</B>  2000/08/04<DD>
+	Change phase buttons, add "Add Phase" after last phase<BR>
+	change old "Add Phase" to "Replace Phase" (not yet implemented)<BR>
+	Add xform atoms button w/dialog<BR>
+	implement sort on occupancy<BR>
+	change error message when a non-existing atom is selected (happens with empty phase)<BR>
+	implement phase flags -- when more than one phase is present<BR>
+	move SetPhaseFlag to readexp.tcl<BR>
+	/<BR>
+<DT>addcmds.tcl 1.10  2000/08/04<DD>
+	new procs: MakeXformAtomsBox, XformAtomsCoord, XformAtomsOcc, XformAtomsU<BR>
+	           EraseAtoms<BR>
+	above used for global atom changes on phase pane<BR>
+<DT>gsasmenu.tcl 1.14  2000/08/04<DD>
+	add commands to single xtal menu, as requested by Lachlan<BR>
+<DT>readexp.tcl 1.19  2000/08/04<DD>
+	document that  temptype can be changed in atominfo<BR>
+<DT>readexp.tcl 1.18  2000/08/04<DD>
+	redo error msgs<BR>
+	phaseinfo: change atoms and spacegroup<BR>
+	atominfo: change iso/aniso flag<BR>
+	new routine: SetPhaseFlag (control which phases are used in a histogram)<BR>
+	new routine: EraseAtom<BR>
+<P>
+<DT><B>expgui 1.30</B>  2000/07/28<DD>
+	add phase flag box to histogram page when more than one phase is present<BR>
+	define GetPhaseFlags & SetPhaseFlag to implement above<BR>
+	fix title on edit background<BR>
+	label background type (as suggested by Barb & Lachlan)<BR>
+	start paring out "shell" capabilities for Mac<BR>
+<DT>gsascmds.tcl 1.23  2000/07/28<DD>
+	remove unneeded ref to Win98 for tcl_platform(os) (98 is reported as 95)<BR>
+<P>
+<DT><B>expgui 1.29</B>  2000/07/20<DD>
+	use file join on notebook.tcl<BR>
+	move source atomcons.tcl to be done when pane is initialized<BR>
+	create UpdateCurrentPage to update all displayed panes<BR>
+	put UpdateCurrentPage into sethistlist; atoms are now updated after a reload<BR>
+	use array element for notebook panes [expgui(notebookpagelist)]<BR>
+<DT>addcmds.tcl 1.9  2000/07/20<DD>
+	select new phase after a phase is added<BR>
+<DT>gsascmds.tcl 1.22  2000/07/20<DD>
+	correct use R settings in  Profile4Terms & GetLaue<BR>
+<DT>odf.tcl 1.1  2000/07/20<DD>
+	Initial revision<BR>
+<DT>orient.tcl 1.4  2000/07/20<DD>
+	move MDprefinfo into readexp.tcl<BR>
+<DT>readexp.tcl 1.17  2000/07/20<DD>
+	Add odf (spherical harmonic) support<BR>
+	move March-Dollase support here from orient<BR>
+<P>
+<DT><B>expgui 1.28</B>  2000/07/06<DD>
+	Change profile term labeling to use GetProfileTerms<BR>
+	use file copy for archive (unix)<BR>
+	put site multiplity on atoms page<BR>
+	implement MakeHistBox for histogram selection boxes<BR>
+	Add a heading for global mode to the histogram selection box<BR>
+	Implement changing profile type<BR>
+	add binding to select all atoms<BR>
+	click on atom box title rotates through atom sorting modes<BR>
+	new atom sort mode: mult<BR>
+<DT>addcmds.tcl 1.8  2000/07/06<DD>
+	use short DOS names for adding histograms in Windows<BR>
+	Tell RAWPLOT users todo same (in RunRawplot)<BR>
+<DT>atomcons.tcl 1.6  2000/07/06<DD>
+	add profile constraint subpage<BR>
+	rename DeleteEditAtomConstraint to CancelEditConstraint<BR>
+<DT>gsascmds.tcl 1.21  2000/07/06<DD>
+	Add GetProfileTerms, GetLaue, ChangeProfileType etc.<BR>
+<DT>orient.tcl 1.3  2000/07/06<DD>
+	use MakeHistBox for histogram selection box<BR>
+<DT>profcons.tcl 1.1  2000/07/06<DD>
+	Initial revision<BR>
+<DT>readexp.tcl 1.16  2000/07/06<DD>
+	delete the old expmap (except for expmap(Revision)) before doing mapexp<BR>
+	set proftype, profterms &  pterm$n in hapinfo<BR>
+	profile constraints now in constrinfo<BR>
+	add profdefinfo to get default profile values<BR>
+<P>
+<DT>gsascmds.tcl 1.20  2000/07/03<DD>
+	fix aniso atoms in exp2xtl<BR>
+<P>
+<DT><B>expgui 1.27</B>  2000/06/09<DD>
+	Change Reload msg as per suggestions<BR>
+	add MD pref orientation pane<BR>
+	fix bug in non-BWidget implementation<BR>
+	make CompressList survive use of strings<BR>
+	use -exportselection 0 for listboxes to avoid cut/paste conflicts<BR>
+<DT>addcmds.tcl 1.7  2000/06/09<DD>
+	remove puts debugging commands<BR>
+<DT>atomcons.tcl 1.5  2000/06/09<DD>
+	avoid error when sorting atoms with ALL as atom #<BR>
+<DT>gsascmds.tcl 1.19  2000/06/09<DD>
+	Add warning when PGPLOT font file is not found<BR>
+<DT>orient.tcl 1.2  2000/06/09<DD>
+	Minor cleanups<BR>
+	loop on $expmap(phaselist_$hist) so only used phases are shown<BR>
+<DT>readexp.tcl 1.15  2000/06/09<DD>
+	Fix dropped character in titles<BR>
+	Find # of MD Pref Orient terms in hapinfo<BR>
+<P>
+<DT>orient.tcl 1.1  2000/06/06<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.26</B>  2000/06/01<DD>
+	define default txtview(font)<BR>
+<DT>addcmds.tcl 1.6  2000/06/01<DD>
+	add more than one atom at a time<BR>
+<DT>atomcons.tcl 1.4  2000/06/01<DD>
+	fix XYZU bug<BR>
+<DT>gsascmds.tcl 1.18  2000/06/01<DD>
+	add concurrent arg to runGSASwEXP (for RUNPLOT in histogram addition)<BR>
+	(NB this is incorrect, change should be to runGSASprog)<BR>
+	add coments, fix creation with lowercase .EXP filenames<BR>
+	fix expansion of disagl box<BR>
+<P>
+<DT>addcmds.tcl 1.5  2000/05/26<DD>
+	RUNPLOT & TOF on Add Histogram dialog<BR>
+<DT>liveplot 1.13  2000/05/26<DD>
+	revise liveplot bindings so that "H" and "h" label reflections<BR>
+<P>
+<DT><B>expgui 1.25</B>  2000/05/18<DD>
+	Add constraints support<BR>
+	move to 1st page before loading a new .EXP file in readnewexp<BR>
+	hange from grid/pack slaves to winfo children<BR>
+<DT>atomcons.tcl 1.3  2000/05/18<DD>
+	add revision string<BR>
+<DT>atomcons.tcl 1.2  2000/05/18<DD>
+	fix bugs (already!)<BR>
+	test for more that 100 parmaters in a constraint<BR>
+<DT>gsasmenu.tcl 1.13  2000/05/18<DD>
+	shortcut for powpref<BR>
+<P>
+<DT><B>expgui 1.24</B>  2000/05/17<DD>
+	new option: allow a separate window for DISAGL<BR>
+	remove most underlines from menu options<BR>
+	provide keyboard accelerators for selected menu options<BR>
+	N.B. note new mechanism in gsasmenu.tcl for keyboard accelerators<BR>
+	use yellow highlight for active button on button bar<BR>
+<DT><B>expgui 1.23</B>  2000/05/17<DD>
+	cleanup reading lowercase .exp files<BR>
+	remove Tix!!! replace with BWidget<BR>
+	use options (opt.tcl) to get Tix-like appearance<BR>
+	treat "fixed" .EXP files as changed (to force a write before use)<BR>
+	Add support for 2 "leBail" options in the '00 version of GSAS<BR>
+	Change display of update message when .EXP is changed (with attention<BR>
+	to Windows screen placement)<BR>
+	Ignore macromolecular phases; recognize & flag magnetic phases<BR>
+	Use BWidget frame labels where possible<BR>
+	Move pane drawing from global code to MakePhasePane, MakeHistPane, MakeScalingPane {} {<BR>
+	Move pane drawing from global code to MakePhasePane, MakeHistPane, MakeScalingPane, MakeProfilePane<BR>
+<DT>addcmds.tcl 1.4  2000/05/17<DD>
+	cleanup adding histograms to be prettier and to avoid paths for files<BR>
+	in the same directory as the .EXP (better portability)<BR>
+<DT>atomcons.tcl 1.1  2000/05/17<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.17  2000/05/17<DD>
+	add force to rename<BR>
+	add rundisagl for disagl results in separate window<BR>
+	add pleasewait & donewait<BR>
+<DT>gsasmenu.tcl 1.12  2000/05/17<DD>
+	add menubutton option line item to command defs (see genles)<BR>
+	change disagl to use separate script for results in window option<BR>
+<DT>liveplot 1.12  2000/05/17<DD>
+	change donewait to donewaitmsg to avoid conflict with pleasewait/donewait<BR>
+<DT>lstview 1.7  2000/05/17<DD>
+	change donewait to donewaitmsg to avoid conflict with pleasewait/donewait<BR>
+<DT>widplt 1.7  2000/05/17<DD>
+	change donewait to donewaitmsg to avoid conflict with pleasewait/donewait<BR>
+<P>
+<DT>gsascmds.tcl 1.16  2000/05/16<DD>
+	ignore macromolecular phases<BR>
+	correct bug in spacegroup for export to .xtl<BR>
+	handle lowercase .EXP files in UNIX<BR>
+	use dictionary sort for filenames (so case is not sorted on)<BR>
+	Add a messagebox that is centered on parent (MyMessageBox)<BR>
+<DT>readexp.tcl 1.14  2000/05/16<DD>
+	add constrinfo for atom constraint processing<BR>
+<DT>readexp.tcl 1.13  2000/05/16<DD>
+	set expload return value to indicate when .EXP files are "fixed"<BR>
+	add  expmap(phasetype) to indicate phase types<BR>
+	ignore * histgrams (I forget why)<BR>
+	fix error that caused 1st character in phase & overall titles to be lost<BR>
+<P>
+<DT>opts.tcl 1.1  2000/04/24<DD>
+	Initial revision<BR>
+<P>
+<DT>liveplot 1.11  2000/04/10<DD>
+	revise BLT error for bad pkgIndex.tcl file<BR>
+<DT>widplt 1.6  2000/04/10<DD>
+	revise BLT error for bad pkgIndex.tcl file<BR>
+<P>
+<DT>readexp.tcl 1.12  2000/02/02<DD>
+	create HST xx EPHAS records if missing<BR>
+<P>
+<DT><B>expgui 1.22</B>  1999/11/19<DD>
+	fixup Archive code for Windows (as per Pamela Whitfield)<BR>
+	make autoload option UNIX only (until we can run GSAS pgms synchronously)<BR>
+<P>
+<DT>gsascmds.tcl 1.15  1999/11/17<DD>
+	Add routine to delete history records<BR>
+	fix composition bug for multiphase refinements<BR>
+<DT>gsasmenu.tcl 1.11  1999/11/17<DD>
+	Add EraseHistory command<BR>
+<DT>notebook.tcl 1.2  1999/11/17<DD>
+	define a -title configuration option<BR>
+<DT>readexp.tcl 1.11  1999/11/17<DD>
+	Add routines to delete history records<BR>
+<P>
+<DT><B>expgui 1.21</B>  1999/11/16<DD>
+	Switch over to use of pure Tk notebook widget when Tix is not present<BR>
+	define expgui(initstring) for user-defined initializations<BR>
+<DT><B>expgui 1.20</B>  1999/11/16<DD>
+	add timing option for debug<BR>
+	try deleting trace for speed up (no improvement in speed under wish 8.1)<BR>
+<P>
+<DT>notebook.tcl 1.1  1999/11/15<DD>
+	Initial revision<BR>
+<P>
+<DT><B>expgui 1.19</B>  1999/10/11<DD>
+	cleanup multiple histogram selection -> single histogram transition<BR>
+	<BR>
+	rewrite global profile display code to group or not group phases together<BR>
+<DT>addcmds.tcl 1.3  1999/10/11<DD>
+	*** empty log message ***<BR>
+<DT>gsasmenu.tcl 1.10  1999/10/11<DD>
+	document new global modes ("Group Phases Together")<BR>
+<DT>widplt 1.5  1999/10/11<DD>
+	Define expgui(debug)<BR>
+<P>
+<DT><B>expgui 1.18</B>  1999/09/09<DD>
+	correct background window bug (spelling of putontop)<BR>
+<DT>gsascmds.tcl 1.14  1999/09/09<DD>
+	hide grab fail error messages<BR>
+	,<BR>
+<DT>gsasmenu.tcl 1.9  1999/09/09<DD>
+	fix vrstplot call so that EXP name is passed<BR>
+<P>
+<DT><B>expgui 1.17</B>  1999/07/22<DD>
+	clear atom box etc when loading an "empty" .EXP file<BR>
+	avoid DisplayProfile error when loading an "empty" .EXP file<BR>
+<DT>addcmds.tcl 1.2  1999/07/22<DD>
+	revise for exptool that adds multiple atoms<BR>
+<DT>gsascmds.tcl 1.13  1999/07/22<DD>
+	Fix resize of ShowBigMessage<BR>
+<P>
+<DT><B>expgui 1.16</B>  1999/07/21<DD>
+	add autoload mode<BR>
+	add support for adding phases, histograms and atoms<BR>
+	reset expmap when loading a new .EXP file<BR>
+	use putontop and afterputontop<BR>
+	change alpha, beta & gamma to greek letters<BR>
+<DT><B>expgui 1.15</B>  1999/07/21<DD>
+	fix windows archive error<BR>
+<DT>addcmds.tcl 1.1  1999/07/21<DD>
+	Initial revision<BR>
+<DT>gsascmds.tcl 1.12  1999/07/21<DD>
+	adopt putontop and afterputontop<BR>
+	new autoexpload option<BR>
+	change file lists to -dictionary<BR>
+	add ShowBigMessage<BR>
+<DT>lstview 1.6  1999/07/21<DD>
+	fix error reading R(F2)<BR>
+<DT>readexp.tcl 1.10  1999/07/21<DD>
+	fix bug in create blank exp file (createexp) and make sure that lines<BR>
+	will always be padded long enough<BR>
+<P>
+<DT>liveplot 1.10  1999/04/20<DD>
+	rearrange order of commands so that graph & menus are made when icdd & cmpr are added<BR>
+<P>
+<DT><B>expgui 1.14</B>  1999/04/08<DD>
+	Add Id to top of file<BR>
+<DT>gsascmds.tcl 1.11  1999/04/08<DD>
+	define histogram slider to reach all maximum histogram for liveplot options<BR>
+	Add Id<BR>
+<DT>gsasmenu.tcl 1.8  1999/04/08<DD>
+	Add Id to header<BR>
+<DT>liveplot 1.9  1999/04/08<DD>
+	add tick autoscaling<BR>
+	deal with two word colors (Peach Puff)<BR>
+<DT>readexp.tcl 1.9  1999/04/08<DD>
+	Add Id to header<BR>
+<DT>widplt 1.4  1999/04/08<DD>
+	Add Id to header<BR>
+<P>
+<DT>liveplot 1.8  1999/04/06<DD>
+	add background subtraction<BR>
+	adjust pixelregion for hkl labeling<BR>
+	move tickmarks before histogram in File menu<BR>
+<DT>liveplot 1.7  1999/04/06<DD>
+	Add peak label dialog; delete label option<BR>
+	add obs symbol dialog<BR>
+	remove update plot on tick mark config<BR>
+	hkl listbox<BR>
+	add color example to peak configure<BR>
+	save more options<BR>
+<DT>lstview 1.5  1999/04/06<DD>
+	add Id<BR>
+<P>
+<DT>liveplot 1.6  1999/04/05<DD>
+	fix BLT element -show/-hide option<BR>
+	add timing debug option<BR>
+<P>
+<DT><B>expgui 1.13</B>  1999/03/30<DD>
+	Set expnam on command line to upper case<BR>
+	move expgui to center of screen window, if we will put the file open<BR>
+	on top. This is because the open window can end up partly off screen otherwise.<BR>
+<P>
+<DT><B>expgui 1.12</B>  1999/03/19<DD>
+	bug fixes for reading new .EXP files<BR>
+<DT>gsascmds.tcl 1.10  1999/03/19<DD>
+	rename file directory routines<BR>
+	make file menus smarter w/r to windows usage<BR>
+	fix bug with spaces in filenames<BR>
+<DT>liveplot 1.5  1999/03/19<DD>
+	major reworking -- implement tcldump, and new display options, hkl labels<BR>
+<P>
+<DT><B>expgui 1.11</B>  1999/02/22<DD>
+	save the selected atom list and move the scroll restore so it is done correctly<BR>
+<P>
+<DT><B>expgui 1.10</B>  1999/02/19<DD>
+	Cleanup warnings<BR>
+<DT>gsascmds.tcl 1.9  1999/02/19<DD>
+	cleanup warnings<BR>
+<DT>gsascmds.tcl 1.8  1999/02/19<DD>
+	*** empty log message ***<BR>
+<DT>gsascmds.tcl 1.7  1999/02/19<DD>
+	Clean up file input dialogs for convert and .exp files<BR>
+	Add composition computation (composition & writelst)<BR>
+	Add XTL coordinate export routine (exp2xtl, SetExportPhase & writextl)<BR>
+<DT>gsasmenu.tcl 1.7  1999/02/19<DD>
+	Add composition and exp2xtl commands, remove slst and sexp [not implemented anyway]<BR>
+<P>
+<DT>readexp.tcl 1.8  1999/02/18<DD>
+	Fix U aniso order<BR>
+<DT>readexp.tcl 1.7  1999/02/18<DD>
+	add space group to phase info<BR>
+<DT>readexp.tcl 1.6  1999/02/18<DD>
+	Add support for atom multiplicity<BR>
+<P>
+<DT>gsascmds.tcl 1.6  1999/02/16<DD>
+	change comment<BR>
+<DT>gsasmenu.tcl 1.6  1999/02/16<DD>
+	bug fixed<BR>
+<DT>gsasmenu.tcl 1.5  1999/02/16<DD>
+	add vrstplot<BR>
+<DT>liveplot 1.4  1999/02/16<DD>
+	1. better error messages<BR>
+	2. allow pointflag in cols 6/7<BR>
+	3. ignore file delete errors<BR>
+<P>
+<DT><B>expgui 1.9</B>  1999/02/02<DD>
+	fix typo in 1.8<BR>
+	update phase page on reload<BR>
+	make sure that all set commands trigger the expgui(changed) flag<BR>
+<DT>readexp.tcl 1.5  1999/02/02<DD>
+	add label-set<BR>
+<P>
+<DT>gsascmds.tcl 1.5  1999/01/25<DD>
+	fix bug in ChooseExpFil to allow lower case .exp<BR>
+<P>
+<DT>liveplot 1.3  1999/01/21<DD>
+	move & consolidate sourcing<BR>
+<DT>liveplot 1.2  1999/01/21<DD>
+	drop arg #2 (get gsasexe from location/.gsas_config)<BR>
+	use localconfig & .gsas_config<BR>
+	add SaveOptions<BR>
+	change histdump.inp to histdump$hst.inp in case 2 liveplots are running at once<BR>
+	track mod. time on .EXP file to avoid extra reads<BR>
+	use file read to pull cycle number from .EXP file<BR>
+	comment out background for now<BR>
+<DT>lstview 1.4  1999/01/21<DD>
+	add SaveOptions<BR>
+	use localconfig & .gsas_config<BR>
+	move AutoAdvance to new Options menu<BR>
+<DT>widplt 1.3  1999/01/21<DD>
+	now 1 arg (get gsasexe from location/.gsas_config)<BR>
+	use readexp.tcl<BR>
+	remove /tmp/ in makepostscriptout<BR>
+	move some global vars to array elements<BR>
+	use catch on compute loop for undefined widths<BR>
+	SaveOptions<BR>
+	use localconfig & .gsas_config<BR>
+<P>
+<DT><B>expgui 1.8</B>  1999/01/20<DD>
+	use custom file open box<BR>
+	allow for a new .EXP file to be opened from a dialog<BR>
+	add filesort option<BR>
+	add phase select to readnewexp<BR>
+	fix bug in SetupExtractHist for empty .EXP files<BR>
+<DT>gsascmds.tcl 1.4  1999/01/20<DD>
+	change labels on .EXP select menu<BR>
+<DT>gsascmds.tcl 1.3  1999/01/20<DD>
+	use custom file open box; fix GSAS env definition on -95 and -NT<BR>
+<DT>gsasmenu.tcl 1.4  1999/01/20<DD>
+	remove unused stuff<BR>
+	add SaveOptions<BR>
+	remove New_expnam<BR>
+<P>
+<DT><B>expgui 1.7</B>  1999/01/13<DD>
+	redo loadexp so that page does not change on reload<BR>
+	Add SaveOptions<BR>
+<DT>gsasmenu.tcl 1.3  1999/01/13<DD>
+	minor changes<BR>
+	document "Override backspace" & exit<BR>
+<P>
+<DT>gsasmenu.tcl 1.2  1999/01/09<DD>
+	minor wording<BR>
+<P>
+<DT><B>expgui 1.6</B>  1999/01/07<DD>
+	misc fixes:<BR>
+		set working directory when expgui(expfile) is changed because GSAS must be<BR>
+		run in the directory of the EP file<BR>
+	<BR>
+		fixup relative paths if used for the script name<BR>
+	<BR>
+		fix bug in expgui(gsasexe) file join<BR>
+	<BR>
+		in DisplayProfile & make sure that entrycmd(trace) is as 0 when return is done<BR>
+	<BR>
+		add Override backspace to options<BR>
+<DT>gsascmds.tcl 1.2  1999/01/07<DD>
+	remove compressprog -- not used<BR>
+	<BR>
+	move definition of environment variables so they are defined at runtime<BR>
+	<BR>
+	move xterm errors to catch statement<BR>
+<P>
+<DT><B>expgui 1.5</B>  1999/01/06<DD>
+	Many changes so that expgui incorporates tkgsas (gsas shell) capabilities<BR>
+	<BR>
+	Allow expgui to create nearly empty .EXP files<BR>
+		Fix the various menus so that these blank files are treated properly<BR>
+<DT>gsascmds.tcl 1.1  1999/01/06<DD>
+	Initial revision<BR>
+<DT>gsasmenu.tcl 1.1  1999/01/06<DD>
+	Initial revision<BR>
+<DT>readexp.tcl 1.4  1999/01/06<DD>
+	add createexp to create an EXP file<BR>
+	fix bug in exphistory when no HSTRY records are present<BR>
+	add title to expinfo<BR>
+	add set option for name (phase name) in phaseinfo<BR>
+	fix padding in expwrite<BR>
+<P>
+<DT><B>expgui 1.4</B>  1999/01/01<DD>
+	add tcl_version < 8.0 error<BR>
+	add history display & tracking<BR>
+	update title when modified<BR>
+	move lsPage to 1st page<BR>
+	change option menu name & merge in Global mode menu<BR>
+	add loop to flag external changes to current exp file (afterawhile & whenidle)<BR>
+	move Archive Exp to options<BR>
+<DT>readexp.tcl 1.3  1999/01/01<DD>
+	add existsexp, delexp, exphistory<BR>
+	change cdatget to use existsexp to avoid the debug warning<BR>
+<P>
+<DT><B>expgui 1.3</B>  1998/12/31<DD>
+	move scale to "scaling" (prev phase frac) page<BR>
+	add scroll bar to phase fractions<BR>
+	rename archiveexp to savearchiveexp<BR>
+	move "set expgui(changed) 0" to savearchiveexp<BR>
+<P>
+<DT><B>expgui 1.2</B>  1998/12/28<DD>
+	minor fixes<BR>
+	comment out $expgui(lsFrame).f1.a.cbXXX entries until Bob gets the new version out<BR>
+<DT>readexp.tcl 1.2  1998/12/28<DD>
+	fix bug -- set print option as 0 for missing entry.<BR>
+<P>
+<DT><B>expgui 1.1</B>  1998/12/26<DD>
+	Initial revision<BR>
+<DT>readexp.tcl 1.1  1998/12/26<DD>
+	Initial revision<BR>
+<P>
+<DT>liveplot 1.1  1998/11/23<DD>
+	Initial revision<BR>
+<DT>lstview 1.3  1998/11/23<DD>
+	Fix Revision bug<BR>
+	Change name to LSTVIEW<BR>
+<DT>lstview 1.2  1998/11/23<DD>
+	Bug for cycles > 999 fixed<BR>
+	Added "Auto advance" feature<BR>
+<DT>lstview 1.1  1998/11/23<DD>
+	Initial revision<BR>
+<DT>widplt 1.2  1998/11/23<DD>
+	Fix revision<BR>
+<DT>widplt 1.1  1998/11/23<DD>
+	Initial revision<BR>
+<P>
+</DL></DL>
+
+    <p><hr>
+    <TABLE BORDER BGCOLOR="#FFFF40" ALIGN=RIGHT>
+    <TR><TH><A  Href="expgui.html">EXPGUI top</A> 
+    </TH><TH><A Href="wishlist.html">Past and Planned<BR>Updates</A>  
+    </TH></TR></TABLE>
+   </blockquote>
+
+Created Fri Jul 03 20:35:34 CDT 2009
+</body></html>
